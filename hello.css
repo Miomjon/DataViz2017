@@ -1,0 +1,10 @@
+p{
+		color: red;
+}
+
+.timetableCell{
+	background-color: #f6f6f6;
+	min-height: 50px;
+	min-width: 90px;
+	text-align: center;
+}
