@@ -42,6 +42,12 @@ var ISA_data = [
 				time : 5,
 				room : "BC 778",
 				activity : 0
+			},
+			{
+				day : 2,
+				time : 6,
+				room : "BC 778",
+				activity : 0
 			}
 		] 
 	}

@@ -1,6 +1,3 @@
-p{
-		color: red;
-}
 
 .timetableCell{
 	background-color: #f6f6f6;
@@ -17,7 +14,7 @@ p{
 }
 
 .timetableCellExercise{
-	border-radius: 25px;
+	border-radius: 5px;
 	background-color: #3f43a9;
 	min-height: 50px;
 	min-width: 90px;

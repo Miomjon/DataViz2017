@@ -1,5 +1,5 @@
 
-function createTimetable() {
+function createTimetable(data) {
 
 	let tableH = DaViSettings.dayEnd - DaViSettings.dayStart;
 
@@ -32,25 +32,47 @@ function createTimetable() {
 
 	table.appendChild(tbody);
 
-	for(course of ISA_data){
-		for(timeslot of course.timeslots){
+	for(course of data){
+		let sortedSlots = course.timeslots.sort(ts => ts.day*100 + ts.time);
+		sortedSlots.reverse()
+		console.log(sortedSlots)
+		let lastActivity = -1;
+		let lastTime = 0;
+		let lastCell = null;
+		for(timeslot of sortedSlots){
+
+			activity = timeslot.activity;
+			time = timeslot.time;
 			id = "courseCell"+timeslot.time+"_"+timeslot.day;
-			cell = document.getElementById(id);
-			cell.innerHTML = course.name;
-			switch(timeslot.activity) {
-		    case 0:
-		        cell.className = DaViSettings.cellCourseClass;
-		        break;
-		    case 1:
-		        cell.className = DaViSettings.cellExerciseClass;
-		        break;
-		    default:
-		        cell.className = DaViSettings.cellDefaultClass;
+
+			if(lastCell !==null && activity === lastActivity && lastTime +1=== time) {
+				lastTime = time;
+				lastCell.rowSpan  = (lastCell.rowSpan  + 1) | 2;
+				elem = document.getElementById(id);
+				elem.parentNode.removeChild(elem);
+
 			}
+			else{
+				lastTime = time;
+				lastActivity = activity;
+				lastCell = document.getElementById(id);
+				lastCell.innerHTML = course.name;
+				switch(timeslot.activity) {
+			    case 0:
+			        lastCell.className = DaViSettings.cellCourseClass;
+			        break;
+			    case 1:
+			        lastCell.className = DaViSettings.cellExerciseClass;
+			        break;
+			    default:
+			        lastCell.className = DaViSettings.cellDefaultClass;
+				}
+			}
+			
 		}
 
 	}
 
 
 }
-createTimetable()
+createTimetable(ISA_data)
