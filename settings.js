@@ -4,5 +4,7 @@ var DaViSettings = {
 	dayEnd : 19,
 	days : ["Monday","Tuesday","Wensday","Thursday","Friday","Saturday"],
 	timeTableId : "timetable",
-	cellDefaultClass : "timetableCell"
+	cellDefaultClass : "timetableCell",
+	cellCourseClass : "timetableCellCourse",
+	cellExerciseClass : "timetableCellExercise"
 }

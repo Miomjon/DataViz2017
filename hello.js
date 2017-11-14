@@ -29,18 +29,28 @@ function createTimetable() {
 		}
 		tbody.appendChild(row);
 	}
-	
+
 	table.appendChild(tbody);
-	
+
 	for(course of ISA_data){
 		for(timeslot of course.timeslots){
 			id = "courseCell"+timeslot.time+"_"+timeslot.day;
 			cell = document.getElementById(id);
 			cell.innerHTML = course.name;
+			switch(timeslot.activity) {
+		    case 0:
+		        cell.className = DaViSettings.cellCourseClass;
+		        break;
+		    case 1:
+		        cell.className = DaViSettings.cellExerciseClass;
+		        break;
+		    default:
+		        cell.className = DaViSettings.cellDefaultClass;
+			}
 		}
-		
+
 	}
-	
+
 
 }
 createTimetable()

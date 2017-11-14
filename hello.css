@@ -8,3 +8,18 @@ p{
 	min-width: 90px;
 	text-align: center;
 }
+
+.timetableCellCourse{
+	background-color: lightblue;
+	min-height: 50px;
+	min-width: 90px;
+	text-align: center;
+}
+
+.timetableCellExercise{
+	border-radius: 25px;
+	background-color: #3f43a9;
+	min-height: 50px;
+	min-width: 90px;
+	text-align: center;
+}
