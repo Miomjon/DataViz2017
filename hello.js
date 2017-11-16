@@ -163,33 +163,34 @@ class TimeTable{
 		let button = document.getElementById(DaViSettings.rescaleTableButtonId);
 		if(this.isDisplayBig){
 			button.innerHTML = '';
-			rescale(button,30,1,60);
-			timtable.createTimetable(ISA_data,false)
-			rescale(
-				table,
-				DaViSettings.tableDimSmall[0],
-				DaViSettings.tableDimSmall[1],
-				200,
-				()=>{
-					
-					rescale(button,30,30,60,()=>button.innerHTML = '<b>   +   </b> ');
-				}
-			);
-
+			rescale(button,20,0,100, ()=>{
+				timtable.createTimetable(ISA_data,false)
+				rescale(
+					table,
+					DaViSettings.tableDimSmall[0],
+					DaViSettings.tableDimSmall[1],
+					200,
+					()=>{
+						
+						rescale(button,20,25,100,()=>button.innerHTML = '<b>   ➕   </b> ');
+					}
+				);
+			});
 			this.isDisplayBig = false;
 		}else{
 			button.innerHTML = '';
-			rescale(button,30,1,60);
-			rescale(
-				table,
-				DaViSettings.tableDimBig[0],
-				DaViSettings.tableDimBig[1],
-				200,
-				()=>{
-					timtable.createTimetable(ISA_data,true);
-					rescale(button,30,30,60,()=>button.innerHTML = '<b>   -   </b>');
-				}
-			);
+			rescale(button,20,0,100,()=>{
+				rescale(
+					table,
+					DaViSettings.tableDimBig[0],
+					DaViSettings.tableDimBig[1],
+					200,
+					()=>{
+						timtable.createTimetable(ISA_data,true);
+						rescale(button,20,25,100,()=>button.innerHTML = '<b>   ➖   </b>');
+					}
+				);
+			});
 			this.isDisplayBig = true;
 
 		}
