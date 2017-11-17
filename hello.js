@@ -40,7 +40,6 @@ function rescale(elem,width,height,time, onEnd){
 	transition(oneStep,onEnd);
 }
 
-
 class TimeTable{
 
 	constructor() {
@@ -127,7 +126,7 @@ class TimeTable{
 					}else{
 						coursA.innerHTML = course.name;
 					}
-					
+
 					switch(timeslot.activity) {
 				    case 0:
 				        lastCell.className = DaViSettings.cellCourseClass;
@@ -139,11 +138,38 @@ class TimeTable{
 				        lastCell.className = DaViSettings.cellDefaultClass;
 					}
 				}
-				
+
 			}
 
 		}
 
+	}
+
+	createCourseList(data) {
+
+		let table = document.getElementById(DaViSettings.courseListId);
+
+		let tbody = document.createElement("tbody");
+		let titlerow =  document.createElement("tr");
+		let cell = document.createElement("th");
+		cell.innerHTML = "Courses";
+
+		titlerow.appendChild(cell)
+		tbody.appendChild(titlerow)
+		for(let course of data) {
+			let row = document.createElement("tr");
+			row.className = DaViSettings.timetableRowClass;
+
+			let courseName = document.createElement("td");
+			courseName.innerHTML = course.name;
+			let button = document.createElement("button");
+			button.innerHTML = "click";
+			row.appendChild(button);
+			row.appendChild(courseName)
+			tbody.appendChild(row);
+		}
+
+		table.appendChild(tbody);
 	}
 
 	swithDisplayMode(){
@@ -158,13 +184,16 @@ class TimeTable{
 			this.isDisplayBig = true;
 
 		}
-		
+
 	}
-	
+
 }
+
 
 var timtable = new TimeTable()
 timtable.createTimetable(ISA_data,false)
-testThing =document.getElementById(DaViSettings.rescaleTableButtonId) 
+timtable.createCourseList(ISA_data)
+testThing =document.getElementById(DaViSettings.rescaleTableButtonId)
 testThing.onclick = timtable.swithDisplayMode;
-
+//var courseList = new courseList();
+//courseList.createTimetable(ISA_data);

@@ -5,6 +5,7 @@ var DaViSettings = {
 	days : ["Monday","Tuesday","Wensday","Thursday","Friday","Saturday"],
 	timeTableDivId : "tableDiv",
 	timeTableId : "timetable",
+	courseListId : "courses",
 	cellDefaultClass : "timetableCell",
 	cellCourseClass : "timetableCellCourse",
 	cellExerciseClass : "timetableCellExercise",
