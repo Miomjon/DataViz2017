@@ -10,6 +10,7 @@ var DaViSettings = {
 	cellCourseClass : "timetableCellCourse",
 	cellExerciseClass : "timetableCellExercise",
 	timetableRowClass : "timetableRow",
+	courseListRowClass : "courseListRow",
 	rescaleTableButtonId : "rescaleTableButton",
 	cellId : "courseCell",
 	cellDivId : "courseCellDiv",

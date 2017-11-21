@@ -96,6 +96,7 @@ class TimeTable{
 		table.appendChild(tbody);
 
 		for(let course of data){
+
 			let sortedSlots = course.timeslots.sort(ts => ts.day*100 + ts.time);
 			sortedSlots.reverse()
 			let lastActivity = -1;
@@ -138,38 +139,10 @@ class TimeTable{
 				        lastCell.className = DaViSettings.cellDefaultClass;
 					}
 				}
-
 			}
 
 		}
 
-	}
-
-	createCourseList(data) {
-
-		let table = document.getElementById(DaViSettings.courseListId);
-
-		let tbody = document.createElement("tbody");
-		let titlerow =  document.createElement("tr");
-		let cell = document.createElement("th");
-		cell.innerHTML = "Courses";
-
-		titlerow.appendChild(cell)
-		tbody.appendChild(titlerow)
-		for(let course of data) {
-			let row = document.createElement("tr");
-			row.className = DaViSettings.timetableRowClass;
-
-			let courseName = document.createElement("td");
-			courseName.innerHTML = course.name;
-			let button = document.createElement("button");
-			button.innerHTML = "click";
-			row.appendChild(button);
-			row.appendChild(courseName)
-			tbody.appendChild(row);
-		}
-
-		table.appendChild(tbody);
 	}
 
 	swithDisplayMode(){
@@ -182,18 +155,16 @@ class TimeTable{
 		}else{
 			rescale(table,DaViSettings.tableDimBig[0],DaViSettings.tableDimBig[1],200,()=>timtable.createTimetable(ISA_data,true));
 			this.isDisplayBig = true;
-
 		}
-
 	}
 
 }
 
 
-var timtable = new TimeTable()
-timtable.createTimetable(ISA_data,false)
-timtable.createCourseList(ISA_data)
+let timtable = new TimeTable()
+timtable.createTimetable([],false)
 testThing =document.getElementById(DaViSettings.rescaleTableButtonId)
 testThing.onclick = timtable.swithDisplayMode;
+
 //var courseList = new courseList();
 //courseList.createTimetable(ISA_data);

@@ -1,6 +1,7 @@
 var ISA_data = [
 	{
 		name : "Cours 1",
+		enabled : 0,
 		timeslots : [
 			{
 				day : 0,
@@ -26,10 +27,11 @@ var ISA_data = [
 				room : "INF 108",
 				activity : 1
 			}
-		] 
+		]
 	},
 	{
 		name : "Cours 2",
+		enabled : 1,
 		timeslots : [
 			{
 				day : 2,
@@ -49,6 +51,6 @@ var ISA_data = [
 				room : "BC 778",
 				activity : 0
 			}
-		] 
+		]
 	}
 ];
