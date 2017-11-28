@@ -12,11 +12,15 @@
 }
 #rescaleTableButton{
 	border-style: solid;
-	border-top-color : lightgray;
+	border-color : gray;
 	border-width: 1px;
+	order-top-width : 3px;
+	text-align: center;
 	text-shadow: 2px 2px 4px #000000;
-	width: 25px;
+	width: 20px;
 	height: 25px;
+	top : 0px;
+	c
 }
 .timetableRow{
 	height: 10%;

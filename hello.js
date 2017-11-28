@@ -17,23 +17,35 @@ function rescale(elem,width,height,time, onEnd){
 
 	let dw = (width-eWidth)/time * 16;
 	let dh = (height-eHeight)/time * 16;
+	let timeStart = new Date().getTime();
 	function oneStep () {
 
 		let widthBefor = elem.offsetWidth
 		let heightBefor = elem.offsetHeight
-		elem.style.width = widthBefor+ dw+"px"
-		elem.style.height  = heightBefor+ dh+"px"
 
 		let wideEnought = false;
 		let highEnought = false;
 
-		if(Math.abs(elem.offsetWidth - width)< Math.abs(dw)) {
+		let dt = new Date().getTime() - timeStart;
+		if(dt >= time){
+			elem.offsetWidth = width;
+			elem.offsetHeight = height;
+			return false;
+		}
+
+		if((width-elem.offsetWidth - dw)* dw <= 0 ) {
 			wideEnought = true;
 			elem.offsetWidth = width;
+		}else{
+
+			elem.style.width = widthBefor+ dw+"px";
 		}
-		if(Math.abs(elem.offsetHeight - height)< Math.abs(dh)) {
+		if((height-elem.offsetHeight - dh)* dh <= 0 ) {
 			highEnought = true;
 			elem.offsetHeight = height;
+		}else{
+
+			elem.style.height  = heightBefor+ dh+"px"
 		}
 		return !wideEnought || !highEnought;
 	}
@@ -147,13 +159,37 @@ class TimeTable{
 
 	swithDisplayMode(){
 		let table = document.getElementById(DaViSettings.timeTableDivId);
+		let button = document.getElementById(DaViSettings.rescaleTableButtonId);
 		if(this.isDisplayBig){
-			console.log("plop")
-			timtable.createTimetable(ISA_data,false)
-			rescale(table,DaViSettings.tableDimSmall[0],DaViSettings.tableDimSmall[1],200);
+			button.innerHTML = '';
+			rescale(button,20,0,100, ()=>{
+				timtable.createTimetable(ISA_data,false)
+				rescale(
+					table,
+					DaViSettings.tableDimSmall[0],
+					DaViSettings.tableDimSmall[1],
+					200,
+					()=>{
+						
+						rescale(button,20,25,100,()=>button.innerHTML = '<b>   ➕   </b> ');
+					}
+				);
+			});
 			this.isDisplayBig = false;
 		}else{
-			rescale(table,DaViSettings.tableDimBig[0],DaViSettings.tableDimBig[1],200,()=>timtable.createTimetable(ISA_data,true));
+			button.innerHTML = '';
+			rescale(button,20,0,100,()=>{
+				rescale(
+					table,
+					DaViSettings.tableDimBig[0],
+					DaViSettings.tableDimBig[1],
+					200,
+					()=>{
+						timtable.createTimetable(ISA_data,true);
+						rescale(button,20,25,100,()=>button.innerHTML = '<b>   ➖   </b>');
+					}
+				);
+			});
 			this.isDisplayBig = true;
 		}
 	}
