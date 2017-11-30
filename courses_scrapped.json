@@ -5,6 +5,22 @@
         "timeslots": [
             {
                 "activity": 0,
+                "day": 1,
+                "room": [
+                    "BC03"
+                ],
+                "time": 2
+            },
+            {
+                "activity": 0,
+                "day": 1,
+                "room": [
+                    "BC03"
+                ],
+                "time": 3
+            },
+            {
+                "activity": 0,
                 "day": 3,
                 "room": [
                     "INM201"
@@ -18,14 +34,6 @@
                     "INM201"
                 ],
                 "time": 3
-            },
-            {
-                "activity": 0,
-                "day": 3,
-                "room": [
-                    "INM201"
-                ],
-                "time": 4
             }
         ]
     },
@@ -35,21 +43,35 @@
         "timeslots": [
             {
                 "activity": 0,
+                "day": 3,
+                "room": [
+                    "SG1"
+                ],
+                "time": 0
+            },
+            {
+                "activity": 0,
+                "day": 3,
+                "room": [
+                    "SG1"
+                ],
+                "time": 1
+            },
+            {
+                "activity": 0,
                 "day": 4,
-                "room": [],
+                "room": [
+                    "BCH 2201"
+                ],
                 "time": 5
             },
             {
                 "activity": 0,
                 "day": 4,
-                "room": [],
+                "room": [
+                    "BCH 2201"
+                ],
                 "time": 6
-            },
-            {
-                "activity": 0,
-                "day": 4,
-                "room": [],
-                "time": 7
             }
         ]
     },
@@ -61,6 +83,22 @@
                 "activity": 0,
                 "day": 1,
                 "room": [
+                    "INM10"
+                ],
+                "time": 2
+            },
+            {
+                "activity": 0,
+                "day": 1,
+                "room": [
+                    "INM10"
+                ],
+                "time": 3
+            },
+            {
+                "activity": 0,
+                "day": 1,
+                "room": [
                     "INR113"
                 ],
                 "time": 4
@@ -72,14 +110,6 @@
                     "INR113"
                 ],
                 "time": 5
-            },
-            {
-                "activity": 0,
-                "day": 1,
-                "room": [
-                    "INR113"
-                ],
-                "time": 6
             }
         ]
     },
@@ -94,7 +124,7 @@
                     "INF1",
                     "INM201"
                 ],
-                "time": 7
+                "time": 5
             },
             {
                 "activity": 0,
@@ -103,7 +133,16 @@
                     "INF1",
                     "INM201"
                 ],
-                "time": 8
+                "time": 6
+            },
+            {
+                "activity": 0,
+                "day": 3,
+                "room": [
+                    "INF1",
+                    "INM201"
+                ],
+                "time": 7
             }
         ]
     },
@@ -113,11 +152,30 @@
         "timeslots": [
             {
                 "activity": 0,
-                "day": 4,
+                "day": 3,
                 "room": [
+                    "CO5",
                     "ELG120"
                 ],
-                "time": 3
+                "time": 8
+            },
+            {
+                "activity": 0,
+                "day": 3,
+                "room": [
+                    "CO5",
+                    "ELG120"
+                ],
+                "time": 9
+            },
+            {
+                "activity": 0,
+                "day": 3,
+                "room": [
+                    "CO5",
+                    "ELG120"
+                ],
+                "time": 10
             },
             {
                 "activity": 0,
@@ -125,7 +183,23 @@
                 "room": [
                     "ELG120"
                 ],
-                "time": 4
+                "time": 1
+            },
+            {
+                "activity": 0,
+                "day": 4,
+                "room": [
+                    "ELG120"
+                ],
+                "time": 2
+            },
+            {
+                "activity": 0,
+                "day": 4,
+                "room": [
+                    "ELG120"
+                ],
+                "time": 3
             }
         ]
     },
@@ -133,6 +207,22 @@
         "credits": 4,
         "summary": "Basic course in biochemistry as well as cellular and molecular biology for non-life science students enrolling at the Master or PhD thesis level from various engineering disciplines. It reviews essential notions necessary for a training in biology-related engineering fields.",
         "timeslots": [
+            {
+                "activity": 0,
+                "day": 1,
+                "room": [
+                    "SG0213"
+                ],
+                "time": 6
+            },
+            {
+                "activity": 0,
+                "day": 1,
+                "room": [
+                    "SG0213"
+                ],
+                "time": 7
+            },
             {
                 "activity": 0,
                 "day": 1,
@@ -148,14 +238,6 @@
                     "SG0213"
                 ],
                 "time": 9
-            },
-            {
-                "activity": 0,
-                "day": 1,
-                "room": [
-                    "SG0213"
-                ],
-                "time": 10
             }
         ]
     },
@@ -167,9 +249,17 @@
                 "activity": 0,
                 "day": 1,
                 "room": [
-                    "INR219"
+                    "INM200"
                 ],
-                "time": 5
+                "time": 0
+            },
+            {
+                "activity": 0,
+                "day": 1,
+                "room": [
+                    "INM200"
+                ],
+                "time": 1
             },
             {
                 "activity": 0,
@@ -177,7 +267,7 @@
                 "room": [
                     "INR219"
                 ],
-                "time": 6
+                "time": 5
             }
         ]
     },
@@ -185,6 +275,38 @@
         "credits": 7,
         "summary": "This course introduces the basics of cryptography. We review several types of cryptographic primitives, when it is safe to use them and how to select the appropriate security parameters. We detail how they work and sketch how they can be implemented.",
         "timeslots": [
+            {
+                "activity": 0,
+                "day": 2,
+                "room": [
+                    "INJ218"
+                ],
+                "time": 1
+            },
+            {
+                "activity": 0,
+                "day": 2,
+                "room": [
+                    "INJ218"
+                ],
+                "time": 2
+            },
+            {
+                "activity": 0,
+                "day": 3,
+                "room": [
+                    "CM5"
+                ],
+                "time": 2
+            },
+            {
+                "activity": 0,
+                "day": 3,
+                "room": [
+                    "CM5"
+                ],
+                "time": 3
+            },
             {
                 "activity": 0,
                 "day": 4,
@@ -200,14 +322,6 @@
                     "CM1"
                 ],
                 "time": 2
-            },
-            {
-                "activity": 0,
-                "day": 4,
-                "room": [
-                    "CM1"
-                ],
-                "time": 3
             }
         ]
     },
@@ -215,6 +329,22 @@
         "credits": 4,
         "summary": "Understanding why and how to present complex data interactively in an effective manner has become a crucial skill for any data scientist. In this course, you will learn how to design, judge, build and present your own interactive data visualizations.",
         "timeslots": [
+            {
+                "activity": 0,
+                "day": 1,
+                "room": [
+                    "INF1"
+                ],
+                "time": 2
+            },
+            {
+                "activity": 0,
+                "day": 1,
+                "room": [
+                    "INF1"
+                ],
+                "time": 3
+            },
             {
                 "activity": 0,
                 "day": 1,
@@ -232,15 +362,6 @@
                     "INF3"
                 ],
                 "time": 6
-            },
-            {
-                "activity": 0,
-                "day": 1,
-                "room": [
-                    "INF1",
-                    "INF3"
-                ],
-                "time": 7
             }
         ]
     },
@@ -248,6 +369,38 @@
         "credits": 6,
         "summary": "A decentralized system is one that works when no single party is in charge or fully trusted. This course teaches decentralized systems principles while guiding students through the development and testing of their own decentralized system incorporating messaging, encryption, and blockchain concepts.",
         "timeslots": [
+            {
+                "activity": 0,
+                "day": 0,
+                "room": [
+                    "INR113"
+                ],
+                "time": 2
+            },
+            {
+                "activity": 0,
+                "day": 0,
+                "room": [
+                    "INR113"
+                ],
+                "time": 3
+            },
+            {
+                "activity": 0,
+                "day": 4,
+                "room": [
+                    "INF213"
+                ],
+                "time": 5
+            },
+            {
+                "activity": 0,
+                "day": 4,
+                "room": [
+                    "INF213"
+                ],
+                "time": 6
+            },
             {
                 "activity": 0,
                 "day": 4,
@@ -263,14 +416,6 @@
                     "INF213"
                 ],
                 "time": 8
-            },
-            {
-                "activity": 0,
-                "day": 4,
-                "room": [
-                    "INF213"
-                ],
-                "time": 9
             }
         ]
     },
@@ -280,6 +425,30 @@
         "timeslots": [
             {
                 "activity": 0,
+                "day": 1,
+                "room": [
+                    "INM10"
+                ],
+                "time": 0
+            },
+            {
+                "activity": 0,
+                "day": 1,
+                "room": [
+                    "INM10"
+                ],
+                "time": 1
+            },
+            {
+                "activity": 0,
+                "day": 3,
+                "room": [
+                    "INF119"
+                ],
+                "time": 2
+            },
+            {
+                "activity": 0,
                 "day": 3,
                 "room": [
                     "INF119"
@@ -293,14 +462,6 @@
                     "INF119"
                 ],
                 "time": 4
-            },
-            {
-                "activity": 0,
-                "day": 3,
-                "room": [
-                    "INF119"
-                ],
-                "time": 5
             }
         ]
     },
@@ -310,11 +471,19 @@
         "timeslots": [
             {
                 "activity": 0,
-                "day": 4,
+                "day": 0,
                 "room": [
-                    "CM1106"
+                    "INF119"
                 ],
-                "time": 3
+                "time": 6
+            },
+            {
+                "activity": 0,
+                "day": 0,
+                "room": [
+                    "INF119"
+                ],
+                "time": 7
             },
             {
                 "activity": 0,
@@ -322,7 +491,15 @@
                 "room": [
                     "CM1106"
                 ],
-                "time": 4
+                "time": 2
+            },
+            {
+                "activity": 0,
+                "day": 4,
+                "room": [
+                    "CM1106"
+                ],
+                "time": 3
             }
         ]
     },
@@ -336,6 +513,22 @@
                 "room": [
                     "INR113"
                 ],
+                "time": 0
+            },
+            {
+                "activity": 0,
+                "day": 1,
+                "room": [
+                    "INR113"
+                ],
+                "time": 1
+            },
+            {
+                "activity": 0,
+                "day": 1,
+                "room": [
+                    "INR113"
+                ],
                 "time": 2
             },
             {
@@ -345,14 +538,6 @@
                     "INR113"
                 ],
                 "time": 3
-            },
-            {
-                "activity": 0,
-                "day": 1,
-                "room": [
-                    "INR113"
-                ],
-                "time": 4
             }
         ]
     },
@@ -364,11 +549,17 @@
                 "activity": 0,
                 "day": 0,
                 "room": [
-                    "BC01",
-                    "BC02",
-                    "BC03"
+                    "CM1"
                 ],
-                "time": 9
+                "time": 7
+            },
+            {
+                "activity": 0,
+                "day": 0,
+                "room": [
+                    "CM1"
+                ],
+                "time": 8
             },
             {
                 "activity": 0,
@@ -378,7 +569,7 @@
                     "BC02",
                     "BC03"
                 ],
-                "time": 10
+                "time": 9
             }
         ]
     },
@@ -386,6 +577,22 @@
         "credits": 5,
         "summary": "The goal of this course is to provide methods and tools for modeling distributed intelligent systems as well as designing and optimizing coordination strategies. The course is a well-balanced mixture of theory and laboratory exercises using simulation and real hardware platforms.",
         "timeslots": [
+            {
+                "activity": 0,
+                "day": 1,
+                "room": [
+                    "CM4"
+                ],
+                "time": 2
+            },
+            {
+                "activity": 0,
+                "day": 1,
+                "room": [
+                    "CM4"
+                ],
+                "time": 3
+            },
             {
                 "activity": 0,
                 "day": 2,
@@ -412,15 +619,6 @@
                     "GRC002"
                 ],
                 "time": 7
-            },
-            {
-                "activity": 0,
-                "day": 2,
-                "room": [
-                    "GRB001",
-                    "GRC002"
-                ],
-                "time": 8
             }
         ]
     },
@@ -432,9 +630,17 @@
                 "activity": 0,
                 "day": 2,
                 "room": [
-                    "CE1106"
+                    "CM5"
                 ],
-                "time": 2
+                "time": 0
+            },
+            {
+                "activity": 0,
+                "day": 2,
+                "room": [
+                    "CM5"
+                ],
+                "time": 1
             },
             {
                 "activity": 0,
@@ -442,7 +648,7 @@
                 "room": [
                     "CE1106"
                 ],
-                "time": 3
+                "time": 2
             }
         ]
     },
@@ -455,6 +661,24 @@
                 "day": 4,
                 "room": [
                     "INF3",
+                    "INM10"
+                ],
+                "time": 0
+            },
+            {
+                "activity": 0,
+                "day": 4,
+                "room": [
+                    "INF3",
+                    "INM10"
+                ],
+                "time": 1
+            },
+            {
+                "activity": 0,
+                "day": 4,
+                "room": [
+                    "INF3",
                     "INM203"
                 ],
                 "time": 2
@@ -467,15 +691,6 @@
                     "INM203"
                 ],
                 "time": 3
-            },
-            {
-                "activity": 0,
-                "day": 4,
-                "room": [
-                    "INF3",
-                    "INM203"
-                ],
-                "time": 4
             }
         ]
     },
@@ -485,6 +700,22 @@
         "timeslots": [
             {
                 "activity": 0,
+                "day": 1,
+                "room": [
+                    "INM200"
+                ],
+                "time": 2
+            },
+            {
+                "activity": 0,
+                "day": 1,
+                "room": [
+                    "INM200"
+                ],
+                "time": 3
+            },
+            {
+                "activity": 0,
                 "day": 2,
                 "room": [
                     "CO020"
@@ -498,14 +729,6 @@
                     "CO020"
                 ],
                 "time": 3
-            },
-            {
-                "activity": 0,
-                "day": 2,
-                "room": [
-                    "CO020"
-                ],
-                "time": 4
             }
         ]
     },
@@ -513,6 +736,42 @@
         "credits": 6,
         "summary": "This course covers fundamental notions in image and video processing, as well as covers most popular tools used, such as edge detection, motion estimation, segmentation, and compression. It is composed of lectures, laboratory sessions, and mini-projects.",
         "timeslots": [
+            {
+                "activity": 0,
+                "day": 2,
+                "room": [
+                    "BC04",
+                    "CO5"
+                ],
+                "time": 0
+            },
+            {
+                "activity": 0,
+                "day": 2,
+                "room": [
+                    "BC04",
+                    "CO5"
+                ],
+                "time": 1
+            },
+            {
+                "activity": 0,
+                "day": 2,
+                "room": [
+                    "BC04",
+                    "CO5"
+                ],
+                "time": 2
+            },
+            {
+                "activity": 0,
+                "day": 2,
+                "room": [
+                    "BC04",
+                    "CO5"
+                ],
+                "time": 3
+            },
             {
                 "activity": 0,
                 "day": 3,
@@ -530,15 +789,6 @@
                     "CO4"
                 ],
                 "time": 1
-            },
-            {
-                "activity": 0,
-                "day": 3,
-                "room": [
-                    "BC04",
-                    "CO4"
-                ],
-                "time": 2
             }
         ]
     },
@@ -584,19 +834,6 @@
                     "CO6"
                 ],
                 "time": 4
-            },
-            {
-                "activity": 0,
-                "day": 3,
-                "room": [
-                    "CM1",
-                    "CM1103",
-                    "CM1110",
-                    "CO4",
-                    "CO5",
-                    "CO6"
-                ],
-                "time": 5
             }
         ]
     },
@@ -604,6 +841,38 @@
         "credits": 7,
         "summary": "The mathematical principles of communication that govern the compression and transmission of data and the design of efficient methods of doing so.",
         "timeslots": [
+            {
+                "activity": 0,
+                "day": 0,
+                "room": [
+                    "ELA1"
+                ],
+                "time": 5
+            },
+            {
+                "activity": 0,
+                "day": 0,
+                "room": [
+                    "ELA1"
+                ],
+                "time": 6
+            },
+            {
+                "activity": 0,
+                "day": 1,
+                "room": [
+                    "ELA2"
+                ],
+                "time": 5
+            },
+            {
+                "activity": 0,
+                "day": 1,
+                "room": [
+                    "ELA2"
+                ],
+                "time": 6
+            },
             {
                 "activity": 0,
                 "day": 1,
@@ -619,14 +888,6 @@
                     "ELA2"
                 ],
                 "time": 8
-            },
-            {
-                "activity": 0,
-                "day": 1,
-                "room": [
-                    "ELA2"
-                ],
-                "time": 9
             }
         ]
     },
@@ -634,6 +895,30 @@
         "credits": 6,
         "summary": "Software agents are widely used to control physical, economic and financial processes. The course presents practical methods for implementing software agents and multi-agent systems, supported by programming exercises, and the theoretical underpinnings including computational game theory.",
         "timeslots": [
+            {
+                "activity": 0,
+                "day": 2,
+                "room": [
+                    "INM200"
+                ],
+                "time": 5
+            },
+            {
+                "activity": 0,
+                "day": 2,
+                "room": [
+                    "INM200"
+                ],
+                "time": 6
+            },
+            {
+                "activity": 0,
+                "day": 2,
+                "room": [
+                    "INM200"
+                ],
+                "time": 7
+            },
             {
                 "activity": 0,
                 "day": 3,
@@ -657,14 +942,6 @@
                     "INM200"
                 ],
                 "time": 7
-            },
-            {
-                "activity": 0,
-                "day": 3,
-                "room": [
-                    "INM200"
-                ],
-                "time": 8
             }
         ]
     },
@@ -672,6 +949,44 @@
         "credits": 7,
         "summary": "Machine learning and data analysis are becoming increasingly central in many sciences and applications. In this course, fundamental principles and methods of machine learning will be introduced, analyzed and practically implemented.",
         "timeslots": [
+            {
+                "activity": 0,
+                "day": 1,
+                "room": [
+                    "CO1"
+                ],
+                "time": 9
+            },
+            {
+                "activity": 0,
+                "day": 1,
+                "room": [
+                    "CO1"
+                ],
+                "time": 10
+            },
+            {
+                "activity": 0,
+                "day": 3,
+                "room": [
+                    "INF119",
+                    "INJ218",
+                    "INM11",
+                    "INM202"
+                ],
+                "time": 6
+            },
+            {
+                "activity": 0,
+                "day": 3,
+                "room": [
+                    "INF119",
+                    "INJ218",
+                    "INM11",
+                    "INM202"
+                ],
+                "time": 7
+            },
             {
                 "activity": 0,
                 "day": 3,
@@ -687,14 +1002,6 @@
                     "SG1"
                 ],
                 "time": 9
-            },
-            {
-                "activity": 0,
-                "day": 3,
-                "room": [
-                    "SG1"
-                ],
-                "time": 10
             }
         ]
     },
@@ -702,6 +1009,22 @@
         "credits": 4,
         "summary": "The study of random walks finds many applications in computer science and communications. The goal of the course is to get familiar with the theory of random walks, and to get an overview of some applications of this theory to problems of interest in communications, computer and network science.",
         "timeslots": [
+            {
+                "activity": 0,
+                "day": 3,
+                "room": [
+                    "INM202"
+                ],
+                "time": 4
+            },
+            {
+                "activity": 0,
+                "day": 3,
+                "room": [
+                    "INM202"
+                ],
+                "time": 5
+            },
             {
                 "activity": 0,
                 "day": 4,
@@ -717,14 +1040,6 @@
                     "INM11"
                 ],
                 "time": 8
-            },
-            {
-                "activity": 0,
-                "day": 4,
-                "room": [
-                    "INM11"
-                ],
-                "time": 9
             }
         ]
     },
@@ -732,6 +1047,30 @@
         "credits": 6,
         "summary": "Signal processing tools are presented from an intuitive geometric point of view which is at the heart of all modern signal processing techniques. Student will develop the mathematical depth and rigor needed for the study of advanced topics in signal processing.",
         "timeslots": [
+            {
+                "activity": 0,
+                "day": 0,
+                "room": [
+                    "INM203"
+                ],
+                "time": 6
+            },
+            {
+                "activity": 0,
+                "day": 0,
+                "room": [
+                    "INM203"
+                ],
+                "time": 7
+            },
+            {
+                "activity": 0,
+                "day": 0,
+                "room": [
+                    "INM203"
+                ],
+                "time": 8
+            },
             {
                 "activity": 0,
                 "day": 3,
@@ -747,14 +1086,6 @@
                     "INF213"
                 ],
                 "time": 9
-            },
-            {
-                "activity": 0,
-                "day": 3,
-                "room": [
-                    "INF213"
-                ],
-                "time": 10
             }
         ]
     },
@@ -762,6 +1093,22 @@
         "credits": 6,
         "summary": "This course complements the theoretical knowledge learned in PDC with more advanced topics such as OFDM, MIMO, fading chancels, and GPS positioning. This knowledge is put into practice with hands-on exercises based on Matlab and on a software-defined radio platform.",
         "timeslots": [
+            {
+                "activity": 0,
+                "day": 0,
+                "room": [
+                    "INF119"
+                ],
+                "time": 2
+            },
+            {
+                "activity": 0,
+                "day": 0,
+                "room": [
+                    "INF119"
+                ],
+                "time": 3
+            },
             {
                 "activity": 0,
                 "day": 2,
@@ -777,14 +1124,6 @@
                     "INF119"
                 ],
                 "time": 4
-            },
-            {
-                "activity": 0,
-                "day": 2,
-                "room": [
-                    "INF119"
-                ],
-                "time": 5
             }
         ]
     },
@@ -792,6 +1131,22 @@
         "credits": 7,
         "summary": "This advanced graduate course focuses on key design principles underlying successful computer and communication\nsystems, and teaches how to solve real problems using ideas, techniques, and algorithms from operating systems, networks, databases, programming languages, and computer architecture.",
         "timeslots": [
+            {
+                "activity": 0,
+                "day": 1,
+                "room": [
+                    "INM10"
+                ],
+                "time": 4
+            },
+            {
+                "activity": 0,
+                "day": 1,
+                "room": [
+                    "INM10"
+                ],
+                "time": 5
+            },
             {
                 "activity": 0,
                 "day": 3,
@@ -807,14 +1162,6 @@
                     "INM10"
                 ],
                 "time": 6
-            },
-            {
-                "activity": 0,
-                "day": 3,
-                "room": [
-                    "INM10"
-                ],
-                "time": 7
             }
         ]
     },
@@ -822,6 +1169,22 @@
         "credits": 5,
         "summary": "Set Theory as a foundational system for mathematics.\nRelative consistency of the Axiom of Choice and the Continuum Hypothesis.",
         "timeslots": [
+            {
+                "activity": 0,
+                "day": 0,
+                "room": [
+                    "MAA330"
+                ],
+                "time": 0
+            },
+            {
+                "activity": 0,
+                "day": 0,
+                "room": [
+                    "MAA330"
+                ],
+                "time": 1
+            },
             {
                 "activity": 0,
                 "day": 0,
@@ -837,14 +1200,6 @@
                     "MAA330"
                 ],
                 "time": 3
-            },
-            {
-                "activity": 0,
-                "day": 0,
-                "room": [
-                    "MAA330"
-                ],
-                "time": 4
             }
         ]
     },
@@ -852,6 +1207,22 @@
         "credits": 5,
         "summary": "In the lectures you will learn and understand the main ideas that underlie and the way networks are built and run. You will be able to apply the concepts to the smart grid. In the labs you will exercise practical configurations.",
         "timeslots": [
+            {
+                "activity": 0,
+                "day": 3,
+                "room": [
+                    "CM2"
+                ],
+                "time": 4
+            },
+            {
+                "activity": 0,
+                "day": 3,
+                "room": [
+                    "CM2"
+                ],
+                "time": 5
+            },
             {
                 "activity": 0,
                 "day": 4,
@@ -869,15 +1240,6 @@
                     "INF2"
                 ],
                 "time": 4
-            },
-            {
-                "activity": 0,
-                "day": 4,
-                "room": [
-                    "INF1",
-                    "INF2"
-                ],
-                "time": 5
             }
         ]
     }
