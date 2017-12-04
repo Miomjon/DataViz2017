@@ -1,4 +1,4 @@
-{
+var ISA_data = {
     "Advanced multiprocessor architecture": {
         "credits": 6,
         "summary": "Multiprocessors are now the defacto building blocks for all computer systems. This course will build upon the basic concepts offered in Computer Architecture I to cover the architecture and organization of modern multiprocessors from mobile and embedded platforms to servers, data centers and cloud computing platforms.",

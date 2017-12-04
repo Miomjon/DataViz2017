@@ -107,7 +107,7 @@ class TimeTable{
 
 		table.appendChild(tbody);
 
-		for(let course of data){
+		for(let [name,course] of data){
 
 			let sortedSlots = course.timeslots.sort(ts => ts.day*100 + ts.time);
 			sortedSlots.reverse()
@@ -135,9 +135,9 @@ class TimeTable{
 					lastCell = cell;
 					let coursA = cell.querySelector("#"+DaViSettings.cellAId+key);
 					if(showAll) {
-						coursA.innerHTML = course.name+"\n"+timeslot.room;
+						coursA.innerHTML = name+"\n"+timeslot.room;
 					}else{
-						coursA.innerHTML = course.name;
+						coursA.innerHTML = name;
 					}
 
 					switch(timeslot.activity) {
@@ -163,14 +163,14 @@ class TimeTable{
 		if(this.isDisplayBig){
 			button.innerHTML = '';
 			rescale(button,20,0,100, ()=>{
-				timtable.createTimetable(ISA_data,false)
+				timtable.createTimetable(data_map,false)
 				rescale(
 					table,
 					DaViSettings.tableDimSmall[0],
 					DaViSettings.tableDimSmall[1],
 					200,
 					()=>{
-						
+
 						rescale(button,20,25,100,()=>button.innerHTML = '<b>   ➕   </b> ');
 					}
 				);
@@ -185,7 +185,7 @@ class TimeTable{
 					DaViSettings.tableDimBig[1],
 					200,
 					()=>{
-						timtable.createTimetable(ISA_data,true);
+						timtable.createTimetable(data_map,true);
 						rescale(button,20,25,100,()=>button.innerHTML = '<b>   ➖   </b>');
 					}
 				);

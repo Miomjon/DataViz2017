@@ -1,3 +1,11 @@
+function buildMap(obj) {
+    let map = new Map();
+    Object.keys(obj).forEach(key => {
+        map.set(key, obj[key]);
+    });
+    return map;
+}
+
 class CourseList {
 
 	constructor() {
@@ -16,17 +24,17 @@ class CourseList {
 		titlerow.appendChild(cell)
 		tbody.appendChild(titlerow)
 
-		for(let course of data) {
+		for(let [course, metadata] of data) {
 
 			let row = document.createElement("tr");
 			row.className = DaViSettings.courseListRowClass;
 
 			let courseName = document.createElement("td");
-			courseName.innerHTML = course.name;
+			courseName.innerHTML = course;
 
 			let button = document.createElement("button");
 			button.innerHTML = "click";
-			button.id = course.name+"_button";
+			button.id = course+"_button";
 
 			row.appendChild(button);
 			row.appendChild(courseName)
@@ -36,14 +44,14 @@ class CourseList {
 		table.appendChild(tbody);
 	}
 
-	enableCourse(course) {
-		if(this.enableCourseList.includes(course)) {
-			var index = this.enableCourseList.indexOf(course);
+	enableCourse(metadata) {
+		if(this.enableCourseList.includes(metadata)) {
+			var index = this.enableCourseList.indexOf(metadata);
 			if (index > -1) {
     		this.enableCourseList.splice(index, 1);
 			}
 		} else {
-				this.enableCourseList.push(course)
+				this.enableCourseList.push(metadata)
 		}
 		timtable.createTimetable(this.enableCourseList)
 	}
@@ -52,9 +60,10 @@ class CourseList {
 
 
 let courselist = new CourseList()
-courselist.createCourseList(ISA_data)
-for(let course of ISA_data) {
-	document.getElementById(course.name+"_button").onclick = () => courselist.enableCourse(course);
+let data_map = buildMap(ISA_data);
+courselist.createCourseList(data_map)
+for(let [course, metadata] of data_map) {
+	document.getElementById(course+"_button").onclick = () => courselist.enableCourse([course, metadata]);
 }
 //var courseList = new courseList();
 //courseList.createTimetable(ISA_data);
