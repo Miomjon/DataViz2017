@@ -43,6 +43,7 @@ class CourseList {
 			courseName.innerHTML = course;
       courseName.id = course + "_button";
       courseName.style.background =  "#f6f6f6"
+      courseName.className = DaViSettings.cellCourseRow;
 
 			row.appendChild(courseName)
 			tbody.appendChild(row);

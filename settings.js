@@ -6,6 +6,7 @@ var DaViSettings = {
 	timeTableDivId : "tableDiv",
 	timeTableId : "timetable",
 	courseListId : "courses",
+	cellCourseRow : "card",
 	cellDefaultClass : "timetableCell",
 	cellCourseClass : "timetableCellCourse",
 	cellExerciseClass : "timetableCellExercise",
