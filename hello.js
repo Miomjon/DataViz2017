@@ -52,7 +52,6 @@ function rescale(elem,width,height,time, onEnd){
 	transition(oneStep,onEnd);
 }
 
-
 class TimeTable{
 
 	constructor() {
@@ -108,7 +107,8 @@ class TimeTable{
 
 		table.appendChild(tbody);
 
-		for(let course of data){
+		for(let [name,course] of data){
+
 			let sortedSlots = course.timeslots.sort(ts => ts.day*100 + ts.time);
 			sortedSlots.reverse()
 			let lastActivity = -1;
@@ -135,11 +135,11 @@ class TimeTable{
 					lastCell = cell;
 					let coursA = cell.querySelector("#"+DaViSettings.cellAId+key);
 					if(showAll) {
-						coursA.innerHTML = course.name+"\n"+timeslot.room;
+						coursA.innerHTML = name+"\n"+timeslot.room;
 					}else{
-						coursA.innerHTML = course.name;
+						coursA.innerHTML = name;
 					}
-					
+
 					switch(timeslot.activity) {
 				    case 0:
 				        lastCell.className = DaViSettings.cellCourseClass;
@@ -151,7 +151,6 @@ class TimeTable{
 				        lastCell.className = DaViSettings.cellDefaultClass;
 					}
 				}
-				
 			}
 
 		}
@@ -164,14 +163,14 @@ class TimeTable{
 		if(this.isDisplayBig){
 			button.innerHTML = '';
 			rescale(button,20,0,100, ()=>{
-				timtable.createTimetable(ISA_data,false)
+				timtable.createTimetable(data_map,false)
 				rescale(
 					table,
 					DaViSettings.tableDimSmall[0],
 					DaViSettings.tableDimSmall[1],
 					200,
 					()=>{
-						
+
 						rescale(button,20,25,100,()=>button.innerHTML = '<b>   ➕   </b> ');
 					}
 				);
@@ -186,21 +185,22 @@ class TimeTable{
 					DaViSettings.tableDimBig[1],
 					200,
 					()=>{
-						timtable.createTimetable(ISA_data,true);
+						timtable.createTimetable(data_map,true);
 						rescale(button,20,25,100,()=>button.innerHTML = '<b>   ➖   </b>');
 					}
 				);
 			});
 			this.isDisplayBig = true;
-
 		}
-		
 	}
-	
+
 }
 
-var timtable = new TimeTable()
-timtable.createTimetable(ISA_data,false)
-testThing =document.getElementById(DaViSettings.rescaleTableButtonId) 
+
+let timtable = new TimeTable()
+timtable.createTimetable([],false)
+testThing =document.getElementById(DaViSettings.rescaleTableButtonId)
 testThing.onclick = timtable.swithDisplayMode;
 
+//var courseList = new courseList();
+//courseList.createTimetable(ISA_data);

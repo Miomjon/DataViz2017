@@ -1,4 +1,4 @@
-{
+var ISA_data = {
     "Advanced multiprocessor architecture": {
         "credits": 6,
         "exam_time": "Winter",
