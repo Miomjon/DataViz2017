@@ -1759,4 +1759,3 @@ var ISA_data = {
         "weekly_hours": 4
     }
 }
-}
