@@ -1,15 +1,9 @@
 
 #tableDiv{
-	
-	width : 550px;
-	height : 320px;
 	border-style: solid;
 	border-width: 1px;
 }
-#timetable{
-	width : 100%;
-	height : 100%;
-}
+
 #rescaleTableButton{
 	border-style: solid;
 	border-color : gray;
@@ -20,7 +14,13 @@
 	width: 20px;
 	height: 25px;
 	top : 0px;
-	c
+	
+}
+.cellTextClass {
+	fill: black;
+}
+.cellBackClass{
+	fill: #f6f6f6;
 }
 .timetableRow{
 	height: 10%;
@@ -33,14 +33,11 @@
 }
 
 .timetableCellCourse{
-	background-color: lightblue;
-	min-width: 16%;
+	fill: lightblue;
 	text-align: center;
 }
 
 .timetableCellExercise{
-	border-radius: 5px;
-	background-color: #3f43a9;
-	min-width: 16%;
+	fill: #3f43a9;
 	text-align: center;
 }
