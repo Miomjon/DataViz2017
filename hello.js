@@ -1,206 +1,381 @@
 
 
 
-function transition(oneStep, onEnd){
-	let keepGoing = oneStep()
-	if(keepGoing)
-		setTimeout(()=>transition(oneStep,onEnd), 16)
-	else if(typeof onEnd !== 'undefined') {
-		onEnd();
-	}
-}
-
-function rescale(elem,width,height,time, onEnd){
-
-	let eWidth = elem.offsetWidth;
-	let eHeight = elem.offsetHeight;
-
-	let dw = (width-eWidth)/time * 16;
-	let dh = (height-eHeight)/time * 16;
-	let timeStart = new Date().getTime();
-	function oneStep () {
-
-		let widthBefor = elem.offsetWidth
-		let heightBefor = elem.offsetHeight
-
-		let wideEnought = false;
-		let highEnought = false;
-
-		let dt = new Date().getTime() - timeStart;
-		if(dt >= time){
-			elem.offsetWidth = width;
-			elem.offsetHeight = height;
-			return false;
-		}
-
-		if((width-elem.offsetWidth - dw)* dw <= 0 ) {
-			wideEnought = true;
-			elem.offsetWidth = width;
-		}else{
-
-			elem.style.width = widthBefor+ dw+"px";
-		}
-		if((height-elem.offsetHeight - dh)* dh <= 0 ) {
-			highEnought = true;
-			elem.offsetHeight = height;
-		}else{
-
-			elem.style.height  = heightBefor+ dh+"px"
-		}
-		return !wideEnought || !highEnought;
-	}
-	transition(oneStep,onEnd);
-}
 
 class TimeTable{
 
 	constructor() {
+
+		this.groups = {}
+		this.slotDict = {}
+		this.textInUse = {}
+		this.tableAbsOrigin = ""
 	    this.isDisplayBig = false;
+	    this.classDict = [DaViSettings.cellCourseClass,DaViSettings.cellExerciseClass]
+	    this.cellDimWmargin = DaViSettings.tableDimSmall.minus(DaViSettings.dayshoursDivOffset).divide(DaViSettings.days.length,DaViSettings.dayEnd-DaViSettings.dayStart);
+		this.cellDim = this.cellDimWmargin.minus(DaViSettings.cellMargin.time(2));
   	}
-	createCell(cellKey) {
+	
 
-		let id =  DaViSettings.cellId+cellKey;
-		let cell = document.createElement("td");
-		let cellDiv = document.createElement("div");
-		cell.id = id;
-		cell.className = DaViSettings.cellDefaultClass;
-
-		cellDiv.id = DaViSettings.cellDivId+cellKey;
-		cell.appendChild(cellDiv)
-
-		let cellA = document.createElement("a");
-		cellA.id = DaViSettings.cellAId+cellKey;
-		cellDiv.appendChild(cellA)
-		return cell;
+	cellBackId(dayIndex,hourIndex){
+		return DaViSettings.cellBackId+"_"+dayIndex+"_"+hourIndex;
+	}
+	cellPos(cellId){
+		let sub = cellId.substring(DaViSettings.cellBackId.length+1,cellId.length)
+		return new Vec(sub.split("_"));
 	}
 
-	createTimetable(data,showAll) {
+	alignText(text,boxPos,boxDim,trTime){
+		let backMid = boxDim.divide(2)
 
-		let tableH = DaViSettings.dayEnd - DaViSettings.dayStart;
+		let textPos = this.tableAbsOrigin.plus(boxPos);
 
-		let table = document.getElementById (DaViSettings.timeTableId);
-		table.innerHTML = ''
-		let tbody = document.createElement("tbody");
-		let titlerow =  document.createElement("tr");
-		let topLeft = document.createElement("th");
-		titlerow.appendChild(topLeft)
-		for (let day of DaViSettings.days) {
-			let cell = document.createElement("th");
-			cell.innerHTML = day;
-			titlerow.appendChild(cell)
+		if(trTime){
+			text = text.transition()
+				.duration(trTime)
+				.ease(d3.easeCubicOut)
 		}
-		tbody.appendChild(titlerow)
-		for(var i =0;i< tableH; i++ ) {
-			let row = document.createElement("tr");
-			row.className = DaViSettings.timetableRowClass;
-			let hourCell = document.createElement("td");
-			hourCell.innerHTML = i+DaViSettings.dayStart;
-
-			row.appendChild(hourCell)
-			for(var j =0;j< DaViSettings.days.length; j++ ){
-				let cell = this.createCell(i+"_"+j);
-				cell.className = DaViSettings.cellDefaultClass;
-				row.appendChild(cell)
-			}
-			tbody.appendChild(row);
+		if(text.node().tagName.toLowerCase() == 'div'){
+			text.style("left" , textPos.x+"px")
+				.style("top" ,textPos.y+"px")
+				.style("width",boxDim.x+"px")
+				.style("height",boxDim.y+"px")
+		}else{
+			textPos = textPos.plus(backMid);
+			text.attr("x" , textPos.x)
+				.attr("y" ,textPos.y)
+				.attr("width",boxDim.x)
+				.attr("height",boxDim.y)
 		}
+		
+	}
+	resetCellText(key,trTime,mousepos){
+		let tableDim = DaViSettings.tableDimSmall
+		let text = d3.select("#"+key)
+		if(isUndef(mousepos))
+			mousepos = new Vec(tableDim.x + 100,tableDim.y/3);
+		if(trTime)
+			text = text.transition().duration(trTime).ease(d3.easeCubicOut)
+		text.style("left",mousepos.x+"px")
+			.style("top",mousepos.y+"px")
+			.style('font-size',DaViSettings.cellFontVerySmall)
+			.style("opacity",0);
+	}
+	setCellIsolated(key,color){
+		let cell = d3.select("#"+key)
+		if(!color)
+			color = DaViSettings.cellDefaultColor
+		let posTiled = this.cellPos(key)
+		let pos = posTiled.time(this.cellDimWmargin).plus(DaViSettings.dayshoursDivOffset).plus(DaViSettings.cellMargin)
+		let dim = this.cellDim
+		cell.transition()
+			.attr("x",pos.x)
+			.attr("y",pos.y)
+			.attr("width",dim.x)
+			.attr("height",dim.y)
+			.duration(DaViSettings.defaultDelay)
+			.style("fill",color)
+			.ease(d3.easeCubicOut)
+	}
+	setInGroup(key,isFirst,isLast,color){
+		let cell = d3.select("#"+key)
+		if(!color)
+			color = DaViSettings.cellDefaultColor
+		let posTiled = this.cellPos(key)
 
-		table.appendChild(tbody);
+		let dim = this.cellDim
+		let cellDimWmargin = this.cellDimWmargin;
+		let pos = posTiled.time(cellDimWmargin)
+		pos = pos.plus(DaViSettings.dayshoursDivOffset).plus(DaViSettings.cellMargin)
+		if(isFirst)
+			pos = pos.plus(DaViSettings.cellMargin)
+		else{
+			pos = pos.plus(DaViSettings.cellMargin.x,0)
+			dim = dim.plus(0,DaViSettings.cellMargin.y)
+		}
+		if(!isLast)
+			dim = dim.plus(0,DaViSettings.cellMargin.y)
+		cell.transition()
+			.attr("x",pos.x)
+			.attr("y",pos.y)
+			.attr("width",dim.x)
+			.attr("height",dim.y)
+			.duration(DaViSettings.defaultDelay)
+			.style("fill",color)
+			.ease(d3.easeCubicOut)
+	}
+	appendCourseToDict(coursId,shouldGroup){
 
-		for(let [name,course] of data){
+		let newSlots = {}
+		let newGroups = {}
+		let timetable =this;
+		function group(id,slot){
 
-			let sortedSlots = course.timeslots.sort(ts => ts.day*100 + ts.time);
-			sortedSlots.reverse()
-			let lastActivity = -1;
-			let lastTime = 0;
-			let lastCell = null;
-			for(let timeslot of sortedSlots){
+			let g = {start:new Vec(slot.day,slot.time),height : 1, firstSlot : slot,itemIndex:-1}
+			let groupOf = timetable.groups[id];
+			if(!groupOf)
+				groupOf = []
+			groupOf.push(g)
+			timetable.groups[id] = groupOf;
 
-				let activity = timeslot.activity;
-				let time = timeslot.time;
 
-				let key = timeslot.time+"_"+timeslot.day
-				let id = DaViSettings.cellId+ key;
-				let cell = document.getElementById(id);
+			let groupOfNew = newGroups[id] ;
+			if(!groupOfNew)
+				groupOfNew = []
+			groupOfNew.push(g)
+			newGroups[id] = groupOfNew;
 
-				if(lastCell !==null && activity === lastActivity && lastTime +1=== time) {
-					lastTime = time;
-					lastCell.rowSpan  = (lastCell.rowSpan  + 1) | 2;
-					cell.parentNode.removeChild(cell);
+			return g
+		}
+		function entry(id,slot){
+			let key = timetable.cellBackId(slot.day,slot.time)
+			let slotsNow = timetable.slotDict[key] 
+			if(!slotsNow)
+				slotsNow = {}
+			slotsNow[id] = slot
+			timetable.slotDict[key] = slotsNow;
 
+			let slotsNowNew = newSlots[key];
+			if(!slotsNowNew)
+				slotsNowNew = {}
+
+			slotsNowNew[id] = slot
+			newSlots[key] = slotsNowNew;
+		}
+		let course = ISA_data[coursId];
+		let groupedSlot = [];
+		if(course.timeslots.length > 0){
+			let sortedSlots = course.timeslots.slice().sort(ts => ts.day*100 + ts.time);
+			sortedSlots.reverse();
+			let firstOfWeek = sortedSlots.shift()
+			entry(coursId,firstOfWeek)
+			let lastGroup = group(coursId,firstOfWeek)
+			let last = firstOfWeek
+			for(let slot of sortedSlots){
+				entry(coursId,slot)
+				if(last.day == slot.day && shouldGroup(last,slot)){
+					lastGroup.height +=1;
 				}
 				else{
-					lastTime = time;
-					lastActivity = activity;
-					lastCell = cell;
-					let coursA = cell.querySelector("#"+DaViSettings.cellAId+key);
-					if(showAll) {
-						coursA.innerHTML = name+"\n"+timeslot.room;
-					}else{
-						coursA.innerHTML = name;
-					}
+					last = slot;
+					lastGroup = group(coursId,slot)
 
-					switch(timeslot.activity) {
-				    case 0:
-				        lastCell.className = DaViSettings.cellCourseClass;
-				        break;
-				    case 1:
-				        lastCell.className = DaViSettings.cellExerciseClass;
-				        break;
-				    default:
-				        lastCell.className = DaViSettings.cellDefaultClass;
-					}
 				}
+				last = slot;
 			}
 
+		} 	
+		
+		return {slotDict:newSlots,groups:newGroups}
+	}
+	
+	
+	takeTextId(){
+		for(let i = 0; i < DaViSettings.tableTextCount; i++){
+			if(!this.textInUse[i]){
+				this.textInUse[i] = true
+				return i;
+			}
 		}
+	}
+	freeTextId(i){
+		this.textInUse[i] = false
+	}
+	initTimetable() {
+		let figure = d3.select("#"+DaViSettings.timeTableId);
+		let tableBody = d3.select("#"+DaViSettings.timeTableDivId);
+
+		figure.selectAll("*").remove();
+		let tableDim = DaViSettings.tableDimSmall
+		figure.attr("width",tableDim.x)
+			.attr("height",tableDim.y)
+		let offset = DaViSettings.dayshoursDivOffset
+		let cellMargin = DaViSettings.cellMargin;
+		let tableBox = tableBody.node();
+		this.tableAbsOrigin = offset.plus(tableBox.offsetLeft ,tableBox.offsetTop);
+		for(let day = 0;day<DaViSettings.days.length;day++){
+			for (let hour = 0; hour < DaViSettings.dayEnd-DaViSettings.dayStart; hour++)
+				figure.append("rect")
+					.attr("x",this.cellDimWmargin.x * day + cellMargin.x + offset.x)
+					.attr("y",this.cellDimWmargin.y * hour + cellMargin.y + offset.y )
+					.attr("width",this.cellDim.x)
+					.attr("height",this.cellDim.y)
+					.attr("id",this.cellBackId(day,hour))
+					.attr('fill',DaViSettings.cellDefaultColor);
+		}
+		for(let day = 0;day<DaViSettings.days.length;day++){
+			let text = figure.append("text")
+					.attr("x",this.cellDimWmargin.x * day + cellMargin.x + offset.x)
+					.attr("y",0)
+					.style('text-anchor', 'middle')
+					.text(DaViSettings.days[day])
+			this.alignText(text,new Vec(this.cellDimWmargin.x * day + cellMargin.x + offset.x, 0).minus(this.tableAbsOrigin), new Vec(this.cellDimWmargin.x,offset.y),200)	
+		}
+		for(let hour = DaViSettings.dayStart;hour <= DaViSettings.dayEnd;hour++){
+			let posY = (hour - DaViSettings.dayStart) * this.cellDimWmargin.y + offset.y;
+			figure.append("text")
+				.attr("x",-80)
+				.attr("y",posY)
+				.text(""+hour+" _ ")
+				.transition()
+				.duration(500)
+				.attr("x",cellMargin.x)
+				.ease(d3.easeCubicOut)
+		}
+		for(let i = 0 ;i < DaViSettings.tableTextCount;i++){
+
+			let txt = tableBody.append("div")
+				.attr("id",DaViSettings.cellTextId+i)
+				.classed(DaViSettings.cellTextClass,true)
+				.style('text-anchor', 'middle')
+			this.resetCellText(DaViSettings.cellTextId+i)
+				
+		}
+		
 
 	}
+	addCourse(coursId,mousePos){
+		if(this.groups[coursId])
+			return
+		let news = this.appendCourseToDict(coursId,(a,b)=> a.activity === b.activity && a.time+1 == b.time);
+		let newGroups = news.groups
+		let newSlots = news.slotDict
+		let gcNow = Object.keys(this.groups).length
+		let gcBefore = gcNow - Object.keys(newGroups).length
+		let i = gcBefore
+		let cellDim = this.cellDim;
+		for(let groupId in newGroups){
+			for(let group of newGroups[groupId]){
+				group.itemIndex = this.takeTextId();
+				let groupStart = group.start;
+				
+				if(!isUndef(mousePos)){
+					d3.select("#"+DaViSettings.cellTextId+group.itemIndex).style("left" , mousePos.x+"px")
+						.style("top" ,mousePos.y+"px")
+				}
+				let textOnTheWay = d3.select("#"+DaViSettings.cellTextId+group.itemIndex).text(groupId)
+					.transition()
+					.duration(DaViSettings.shortNoticeableDelay)
+					.ease(d3.easeCubicOut)
+					.style('font-size',DaViSettings.cellFontDefault)
+					.style("opacity",1);
+				this.alignText(textOnTheWay,groupStart.time(this.cellDimWmargin).plus(DaViSettings.cellMargin),cellDim.time(1,group.height))
 
-	swithDisplayMode(){
-		let table = document.getElementById(DaViSettings.timeTableDivId);
+				for(let t = 0; t <group.height;t++){
+					let key = this.cellBackId(group.firstSlot.day,group.firstSlot.time+t)
+					let slot = this.slotDict[key][groupId]
+					this.setInGroup(key,t==0,t==group.height-1,DaViSettings.cellColorMap[slot.activity])
+				}
+				i++;
+			}
+		}
+		
+	}
+	removeGroupFromSlots(groups,coursId){
+		for(let g of groups){
+			for(let i =0; i < g.height;i++){
+				let key = this.cellBackId(g.firstSlot.day,g.firstSlot.time+i)
+				let slots = this.slotDict[key]
+				if(slots){
+					delete this.slotDict[key][coursId];
+				}
+				if(!Object.keys(slots).length){
+					this.setCellIsolated(key);
+				}	
+				
+			}
+		}
+	}
+	removeCourse(coursId,mousepos){
+		let deletedGroups = this.groups[coursId]
+		if(!deletedGroups)
+			return
+
+		let deletedSlots = this.slotDict[coursId]
+
+		this.removeGroupFromSlots(deletedGroups,coursId);
+
+		let maxId = Object.keys(this.groups).length;
+		for (let deletedGroup of deletedGroups){
+			let oldGroupId = deletedGroup.itemIndex
+			this.freeTextId(oldGroupId)
+			this.resetCellText(DaViSettings.cellTextId + oldGroupId,DaViSettings.defaultDelay,mousepos)
+		}
+		delete this.groups[coursId]
+		delete this.slotDict[coursId]
+
+	}
+	resizeCell(cell,dims,time,onEnd){
+		let back = cell.back;
+		let text = cell.text;
+		let boxPos = Vec.Pos(back);
+
+		let txtDim = Vec.Dim(text.getBBox());
+
+		let txtMid = txtDim.divide(2);
+
+		let backDim = Vec.Dim(back.getBBox())
+
+		let backMid = backDim.divide(2);
+
+		let pos = backMid.minus(txtMid).plus(boxPos);
+		text.setAttribute("x", ""+pos.x);
+		text.setAttribute("y", ""+pos.y);
+		rescale(back,dims,time,onEnd)
+
+	}
+	rescaleAllCell(scale,time,onEnd){
+		let end = onEnd;
+		for (let cell of this.cells){
+			let backBox = cell.back.getBBox()
+			let backDim = Vec.Dim(backBox);
+			let newDims = backDim.time(scale);
+			this.resizeCell(cell,newDims,time);
+
+		} 
+		setTimeout(onEnd,time);
+	}
+	switchDisplayMode(){
+		let table = document.getElementById(DaViSettings.timeTableId);
 		let button = document.getElementById(DaViSettings.rescaleTableButtonId);
+		
 		if(this.isDisplayBig){
 			button.innerHTML = '';
-			rescale(button,20,0,100, ()=>{
-				timtable.createTimetable(data_map,false)
-				rescale(
-					table,
-					DaViSettings.tableDimSmall[0],
-					DaViSettings.tableDimSmall[1],
+
+			rescale(button,new Vec(20,0),100, ()=>{
+				this.initTimetable(ISA_data,false)
+				this.rescaleAllCell( //Here it faile if we use this, despite the => opperator
+					DaViSettings.cellBigScale.invert(),
 					200,
 					()=>{
-
-						rescale(button,20,25,100,()=>button.innerHTML = '<b>   ➕   </b> ');
+						
+						rescale(button,new Vec(20,20),100,()=>button.innerHTML = '<b>   ➕   </b> ');
 					}
 				);
 			});
 			this.isDisplayBig = false;
 		}else{
 			button.innerHTML = '';
-			rescale(button,20,0,100,()=>{
-				rescale(
-					table,
-					DaViSettings.tableDimBig[0],
-					DaViSettings.tableDimBig[1],
+			rescale(button,new Vec(20,0),100,()=>{
+				this.rescaleAllCell(
+					DaViSettings.cellBigScale,
 					200,
 					()=>{
-						timtable.createTimetable(data_map,true);
-						rescale(button,20,25,100,()=>button.innerHTML = '<b>   ➖   </b>');
+						this.initTimetable(ISA_data,true);
+						rescale(button,new Vec(20,20),100,()=>button.innerHTML = '<b>   ➖   </b>');
 					}
 				);
 			});
 			this.isDisplayBig = true;
-		}
-	}
 
+		}
+		
+	}
+	
 }
 
+var timtable = new TimeTable()
+timtable.initTimetable(ISA_data,false)
+testThing =document.getElementById(DaViSettings.rescaleTableButtonId) 
+testThing.onclick = ()=>timtable.swithDisplayMode();
 
-let timtable = new TimeTable()
-timtable.createTimetable([],false)
-testThing =document.getElementById(DaViSettings.rescaleTableButtonId)
-testThing.onclick = timtable.swithDisplayMode;
-
-//var courseList = new courseList();
-//courseList.createTimetable(ISA_data);

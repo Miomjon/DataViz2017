@@ -109,7 +109,7 @@ class CourseList {
 			if (index > -1) {
     		this.enableCourseList.splice(index, 1);
         this.coursesInList.splice(index, 1);
-        // timtable.removeCourse(c);
+        timtable.removeCourse(c);
         var wasOrange = false;
         for(let conflict of this.conflictList.get(c)) {
           if(document.getElementById(conflict+"_button").style.background === "orange"||document.getElementById(conflict+"_button").style.background === "green") {
@@ -128,7 +128,7 @@ class CourseList {
 		} else {
 				this.enableCourseList.push(c)
         this.coursesInList.push(c)
-        // timtable.addCourse(c);
+        timtable.addCourse(c);
         var wasGreen = false;
         for(let conflict of this.conflictList.get(c)) {
           if(document.getElementById(conflict+"_button").style.background === "green" || document.getElementById(conflict+"_button").style.background === "orange") {
@@ -164,7 +164,6 @@ class CourseList {
         }
       }
     }
-		timtable.createTimetable(this.enableCourseList)
 	}
 
 // remove and do a function that precomputes the conflicts for each course

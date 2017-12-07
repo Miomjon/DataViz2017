@@ -9,21 +9,34 @@
 <body>
 
 	<div id="tableDiv">
-		<table id="timetable"></table>
+		
+		<svg id="svgTable" transform="matrix(1,0,0,1,0,0)" class="timetable" xmlns="http://www.w3.org/2000/svg"></svg>
 	</div>
+
 
 	<div id="rescaleTableButton"><b>   ➖   </b> </div>
 
-  <div id="coursListDiv">
-    <table id="courses"></table>
+  	<div id="coursListDiv">
+  		<div id="listWrapper">
+	    	<table id="courses"></table>
+	    	<div id ="thing"></div>
+  		</div>
 	</div>
 
-	<script src="settings.js"></script>
 	<script src="courses_scrapped.js"></script>
 
-  <script src="courselist.js"></script>
-	<script src="hello.js"></script>
+	
+		
 
-</script>
+	<script src="utils.js"></script> 
+	<script src="Vec.js"></script> 
+ 
+
+	<script src="D3.js"></script>
+
+	<script src="settings.js"></script> 
+	<script src="courselist.js"></script>
+	<script src="hello.js"></script> 	
+
 </body>
 </html>
