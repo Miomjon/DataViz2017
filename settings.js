@@ -13,10 +13,13 @@ var DaViSettings = {
 	timetableRowClass : "timetableRow",
 	courseListRowClass : "courseListRow",
 	rescaleTableButtonId : "rescaleTableButton",
+	tooltipClass : "tooltip",
+	tooltipTextClass : "tooltiptext",
 	cellId : "courseCell",
 	cellDivId : "courseCellDiv",
 	cellAId : "courseCellA",
 	tableDimBig : [825,480],
-	tableDimSmall : [550,320]
+	tableDimSmall : [550,320],
+	chartClass : "chart"
 
 }
