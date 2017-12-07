@@ -253,7 +253,7 @@ class TimeTable{
 					d3.select("#"+DaViSettings.cellTextId+group.itemIndex).style("left" , mousePos.x+"px")
 						.style("top" ,mousePos.y+"px")
 				}
-				let textOnTheWay = d3.select("#"+DaViSettings.cellTextId+group.itemIndex).text(groupId)
+				let textOnTheWay = this.fillText(d3.select("#"+DaViSettings.cellTextId+group.itemIndex),groupId,ISA_data[groupId])
 					.transition()
 					.duration(DaViSettings.shortNoticeableDelay)
 					.ease(d3.easeCubicOut)
@@ -285,6 +285,22 @@ class TimeTable{
 				
 			}
 		}
+	}
+	fillText(text,coursName,coursData){
+		text.node().innerHTML = "";
+		let codeA = text.append("a")
+			.classed(DaViSettings.cellTextVis0,true)
+			.classed(DaViSettings.cellTextVis2,true)
+		let nameA = text.append("a")
+			.classed(DaViSettings.cellTextVis1,true)
+			.classed(DaViSettings.cellTextVis2,true)
+		let roomA = text.append("a")
+			.classed(DaViSettings.cellTextVis2,true)
+		codeA.text(coursData.code)
+		nameA.text(coursName)
+		roomA.text(coursData.timeslots[0].room.join())
+		return text;
+
 	}
 	removeCourse(coursId,mousepos){
 		let deletedGroups = this.groups[coursId]
