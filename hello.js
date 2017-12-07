@@ -9,27 +9,13 @@ class TimeTable{
 		this.groups = {}
 		this.slotDict = {}
 		this.textInUse = {}
+		this.tableAbsOrigin = ""
 	    this.isDisplayBig = false;
 	    this.classDict = [DaViSettings.cellCourseClass,DaViSettings.cellExerciseClass]
 	    this.cellDimWmargin = DaViSettings.tableDimSmall.minus(DaViSettings.dayshoursDivOffset).divide(DaViSettings.days.length,DaViSettings.dayEnd-DaViSettings.dayStart);
 		this.cellDim = this.cellDimWmargin.minus(DaViSettings.cellMargin.time(2));
   	}
-	createCell(cellKey) {
-
-		let id =  DaViSettings.cellId+cellKey;
-		let cell = document.createElement("td");
-		let cellDiv = document.createElement("div");
-		cell.id = id;
-		cell.className = DaViSettings.cellDefaultClass;
-
-		cellDiv.id = DaViSettings.cellDivId+cellKey;
-		cell.appendChild(cellDiv)
-
-		let cellA = document.createElement("a");
-		cellA.id = DaViSettings.cellAId+cellKey;
-		cellDiv.appendChild(cellA)
-		return cell;
-	}
+	
 
 	cellBackId(dayIndex,hourIndex){
 		return DaViSettings.cellBackId+"_"+dayIndex+"_"+hourIndex;
@@ -42,18 +28,36 @@ class TimeTable{
 	alignText(text,boxPos,boxDim,trTime){
 		let backMid = boxDim.divide(2)
 
-		let textPos = boxPos.plus(backMid);
+		let textPos = this.tableAbsOrigin.plus(boxPos);
+
 		if(trTime){
-			text.transition()
+			text = text.transition()
 				.duration(trTime)
-				.attr("x",textPos.x)
-				.attr("y",textPos.y)
 				.ease(d3.easeCubicOut)
+		}
+		if(text.node().tagName.toLowerCase() == 'div'){
+			text.style("left" , textPos.x+"px")
+				.style("top" ,textPos.y+"px")
+				.style("width",boxDim.x+"px")
+				.style("height",boxDim.y+"px")
 		}else{
-			text.attr("x",textPos.x)
-				.attr("y",textPos.y)
+			textPos = textPos.plus(backMid);
+			text.attr("x" , textPos.x)
+				.attr("y" ,textPos.y)
+				.attr("width",boxDim.x)
+				.attr("height",boxDim.y)
 		}
 		
+	}
+	resetCellText(key,trTime){
+		let tableDim = DaViSettings.tableDimSmall
+		let text = d3.select("#"+key)
+		if(trTime)
+			text = text.transition().duration(trTime).ease(d3.easeCubicOut)
+		text.style("left",tableDim.x + 100+"px")
+			.style("top",tableDim.y/3+"px")
+			.style('font-size',DaViSettings.cellFontVerySmall)
+			.style("opacity",0);
 	}
 	setCellIsolated(key,color){
 		let cell = d3.select("#"+key)
@@ -163,15 +167,7 @@ class TimeTable{
 		return {slotDict:newSlots,groups:newGroups}
 	}
 	
-	resetCellText(key,trTime){
-		let tableDim = DaViSettings.tableDimSmall
-		let text = d3.select("#"+key)
-		if(trTime)
-			text = text.transition().duration(trTime).ease(d3.easeCubicOut)
-		text.attr("x",tableDim.x + 100)
-			.attr("y",tableDim.y/3)
-			.style('font-size',DaViSettings.cellFontVerySmall);
-	}
+	
 	takeTextId(){
 		for(let i = 0; i < DaViSettings.tableTextCount; i++){
 			if(!this.textInUse[i]){
@@ -185,13 +181,16 @@ class TimeTable{
 	}
 	initTimetable() {
 		let figure = d3.select("#"+DaViSettings.timeTableId);
+		let tableBody = d3.select("#"+DaViSettings.timeTableDivId);
+
 		figure.selectAll("*").remove();
 		let tableDim = DaViSettings.tableDimSmall
 		figure.attr("width",tableDim.x)
 			.attr("height",tableDim.y)
 		let offset = DaViSettings.dayshoursDivOffset
 		let cellMargin = DaViSettings.cellMargin;
-
+		let tableBox = tableBody.node();
+		this.tableAbsOrigin = offset.plus(tableBox.offsetLeft ,tableBox.offsetTop);
 		for(let day = 0;day<DaViSettings.days.length;day++){
 			for (let hour = 0; hour < DaViSettings.dayEnd-DaViSettings.dayStart; hour++)
 				figure.append("rect")
@@ -206,16 +205,16 @@ class TimeTable{
 			let text = figure.append("text")
 					.attr("x",this.cellDimWmargin.x * day + cellMargin.x + offset.x)
 					.attr("y",0)
-					.attr('text-anchor', 'middle')
+					.style('text-anchor', 'middle')
 					.text(DaViSettings.days[day])
-			this.alignText(text,new Vec(this.cellDimWmargin.x * day + cellMargin.x + offset.x,0),new Vec(this.cellDimWmargin.x ,offset.y),200)	
+			this.alignText(text,new Vec(this.cellDimWmargin.x * day + cellMargin.x + offset.x, 0).minus(this.tableAbsOrigin), new Vec(this.cellDimWmargin.x,offset.y),200)	
 		}
 		for(let hour = DaViSettings.dayStart;hour <= DaViSettings.dayEnd;hour++){
 			let posY = (hour - DaViSettings.dayStart) * this.cellDimWmargin.y + offset.y;
 			figure.append("text")
 				.attr("x",-80)
 				.attr("y",posY)
-				.text(""+hour)
+				.text(""+hour+" _ ")
 				.transition()
 				.duration(500)
 				.attr("x",cellMargin.x)
@@ -223,8 +222,9 @@ class TimeTable{
 		}
 		for(let i = 0 ;i < DaViSettings.tableTextCount;i++){
 
-			let txt = figure.append("text")
+			let txt = tableBody.append("div")
 				.attr("id",DaViSettings.cellTextId+i)
+				.classed(DaViSettings.cellTextClass,true)
 				.style('text-anchor', 'middle')
 			this.resetCellText(DaViSettings.cellTextId+i)
 				
@@ -232,7 +232,7 @@ class TimeTable{
 		
 
 	}
-	addCourse(coursId){
+	addCourse(coursId,mousePos){
 		if(this.groups[coursId])
 			return
 		let news = this.appendCourseToDict(coursId,(a,b)=> a.activity === b.activity && a.time+1 == b.time);
@@ -241,18 +241,23 @@ class TimeTable{
 		let gcNow = Object.keys(this.groups).length
 		let gcBefore = gcNow - Object.keys(newGroups).length
 		let i = gcBefore
-		let cellDim = this.cellDimWmargin;
+		let cellDim = this.cellDim;
 		for(let groupId in newGroups){
 			for(let group of newGroups[groupId]){
 				group.itemIndex = this.takeTextId();
 				let groupStart = group.start;
-				let textOnTheWay = d3.select("#"+DaViSettings.cellTextId+group.itemIndex)
-					.text(groupId)
+				
+				if(!isUndef(mousePos)){
+					d3.select("#"+DaViSettings.cellTextId+group.itemIndex).style("left" , mousePos.x+"px")
+						.style("top" ,mousePos.y+"px")
+				}
+				let textOnTheWay = d3.select("#"+DaViSettings.cellTextId+group.itemIndex).text(groupId)
 					.transition()
 					.duration(DaViSettings.shortNoticeableDelay)
 					.ease(d3.easeCubicOut)
-					.style('font-size',DaViSettings.cellFontDefault);
-				this.alignText(textOnTheWay,groupStart.time(cellDim),cellDim.time(1,group.height))
+					.style('font-size',DaViSettings.cellFontDefault)
+					.style("opacity",1);
+				this.alignText(textOnTheWay,groupStart.time(this.cellDimWmargin).plus(DaViSettings.cellMargin),cellDim.time(1,group.height))
 
 				for(let t = 0; t <group.height;t++){
 					let key = this.cellBackId(group.firstSlot.day,group.firstSlot.time+t)

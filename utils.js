@@ -3,5 +3,5 @@ function isNumber(something){
 }
 
 function isUndef(a){
-	return typeof a !== 'undefined';
+	return typeof a === 'undefined';
 }

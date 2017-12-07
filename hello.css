@@ -18,13 +18,24 @@
 	
 }
 .cellTextClass {
-	fill: black;
+	color: black;
+	position: fixed;
+	z-index: 10;
+	display : flex;
+  	align-items : center;
+  	text-align: center;
 }
 .cellBackClass{
 	fill: #f6f6f6;
 }
 .timetableRow{
 	height: 10%;
+}
+.timetableCell{
+	background-color: #f6f6f6;
+	height: 10%;
+	width: 16%;
+	text-align: center;
 }
 .timetableCell{
 	background-color: #f6f6f6;
@@ -54,14 +65,15 @@
 }
 #listWrapper{
 	width: 800px;
-	overflow-y:hidden;
+	
 }
 .timetableCellExercise{
 	fill: #3f43a9;
 	text-align: center;
 }
 #coursListDiv{
-	overflow:hidden; 
+	overflow-y:scroll;
+	overflow-x:hidden;
 	top : 0px;
 	height: 480px;
 }
@@ -69,4 +81,5 @@
     width: 250px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     text-align: center;
+    z-index: 20;
 }
