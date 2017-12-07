@@ -228,6 +228,7 @@ class TimeTable{
 				.attr("id",DaViSettings.cellTextId+i)
 				.classed(DaViSettings.cellTextClass,true)
 				.style('text-anchor', 'middle')
+			this.mkText(txt)
 			this.resetCellText(DaViSettings.cellTextId+i)
 				
 		}
@@ -286,21 +287,48 @@ class TimeTable{
 			}
 		}
 	}
+	mkText(text){
+		text.append("div")
+			.classed(DaViSettings.cellCodeDiv,true)
+			.classed(DaViSettings.cellTextVis+"0",true)
+			.classed(DaViSettings.cellTextVis+"2",true)
+		text.append("div")
+			.classed(DaViSettings.cellNameDiv,true)
+			.classed(DaViSettings.cellTextVis+"1",true)
+			.classed(DaViSettings.cellTextVis+"2",true)
+		text.append("div")
+			.classed(DaViSettings.cellRoomDiv,true)
+			.classed(DaViSettings.cellTextVis+"2",true)
+	}
 	fillText(text,coursName,coursData){
-		text.node().innerHTML = "";
-		let codeA = text.append("a")
-			.classed(DaViSettings.cellTextVis0,true)
-			.classed(DaViSettings.cellTextVis2,true)
-		let nameA = text.append("a")
-			.classed(DaViSettings.cellTextVis1,true)
-			.classed(DaViSettings.cellTextVis2,true)
-		let roomA = text.append("a")
-			.classed(DaViSettings.cellTextVis2,true)
-		codeA.text(coursData.code)
-		nameA.text(coursName)
-		roomA.text(coursData.timeslots[0].room.join())
+		let codeA = text.append("div")
+			.classed(DaViSettings.cellTextVis+"0",true)
+			.classed(DaViSettings.cellTextVis+"2",true)
+		let nameA = text.append("div")
+			.classed(DaViSettings.cellTextVis+"1",true)
+			.classed(DaViSettings.cellTextVis+"2",true)
+		let roomA = text.append("div")
+			.classed(DaViSettings.cellTextVis+"2",true)
+		text.select("."+DaViSettings.cellCodeDiv).text(coursData.code)
+		text.select("."+DaViSettings.cellNameDiv).text(coursName)
+		text.select("."+DaViSettings.cellRoomDiv).text(coursData.timeslots[0].room.join())
 		return text;
 
+	}
+	setLevelOpcaity(level,opacity,target){
+		if(isUndef(target))
+			target = d3;
+		let t = target.selectAll("."+DaViSettings.cellTextVis+level)
+				.transition()
+				.duration(DaViSettings.shortNoticeableDelay)
+				.ease(d3.easeCubicOut)
+				.style("opacity",opacity)
+		if(opacity == 0)
+			t.style("height",0+"px")
+		else
+			t.style("height","auto");
+				
+		
 	}
 	removeCourse(coursId,mousepos){
 		let deletedGroups = this.groups[coursId]
@@ -356,42 +384,22 @@ class TimeTable{
 		let button = document.getElementById(DaViSettings.rescaleTableButtonId);
 		
 		if(this.isDisplayBig){
-			button.innerHTML = '';
 
-			rescale(button,new Vec(20,0),100, ()=>{
-				this.initTimetable(ISA_data,false)
-				this.rescaleAllCell( //Here it faile if we use this, despite the => opperator
-					DaViSettings.cellBigScale.invert(),
-					200,
-					()=>{
-						
-						rescale(button,new Vec(20,20),100,()=>button.innerHTML = '<b>   ➕   </b> ');
-					}
-				);
-			});
-			this.isDisplayBig = false;
+			this.setLevelOpcaity(1,0)
+			this.setLevelOpcaity(2,0)
+			this.setLevelOpcaity(0,1)
+			this.isDisplayBig = false
 		}else{
-			button.innerHTML = '';
-			rescale(button,new Vec(20,0),100,()=>{
-				this.rescaleAllCell(
-					DaViSettings.cellBigScale,
-					200,
-					()=>{
-						this.initTimetable(ISA_data,true);
-						rescale(button,new Vec(20,20),100,()=>button.innerHTML = '<b>   ➖   </b>');
-					}
-				);
-			});
-			this.isDisplayBig = true;
-
+			this.setLevelOpcaity(1,1)
+			this.setLevelOpcaity(2,1)
+			this.setLevelOpcaity(0,1)
+			this.isDisplayBig = true
 		}
-		
 	}
-	
 }
 
 var timtable = new TimeTable()
 timtable.initTimetable(ISA_data,false)
 testThing =document.getElementById(DaViSettings.rescaleTableButtonId) 
-testThing.onclick = ()=>timtable.swithDisplayMode();
+testThing.onclick = ()=>timtable.switchDisplayMode();
 
