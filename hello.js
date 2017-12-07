@@ -49,13 +49,15 @@ class TimeTable{
 		}
 		
 	}
-	resetCellText(key,trTime){
+	resetCellText(key,trTime,mousepos){
 		let tableDim = DaViSettings.tableDimSmall
 		let text = d3.select("#"+key)
+		if(isUndef(mousepos))
+			mousepos = new Vec(tableDim.x + 100,tableDim.y/3);
 		if(trTime)
 			text = text.transition().duration(trTime).ease(d3.easeCubicOut)
-		text.style("left",tableDim.x + 100+"px")
-			.style("top",tableDim.y/3+"px")
+		text.style("left",mousepos.x+"px")
+			.style("top",mousepos.y+"px")
 			.style('font-size',DaViSettings.cellFontVerySmall)
 			.style("opacity",0);
 	}
@@ -284,7 +286,7 @@ class TimeTable{
 			}
 		}
 	}
-	removeCourse(coursId){
+	removeCourse(coursId,mousepos){
 		let deletedGroups = this.groups[coursId]
 		if(!deletedGroups)
 			return
@@ -297,7 +299,7 @@ class TimeTable{
 		for (let deletedGroup of deletedGroups){
 			let oldGroupId = deletedGroup.itemIndex
 			this.freeTextId(oldGroupId)
-			this.resetCellText(DaViSettings.cellTextId + oldGroupId,DaViSettings.defaultDelay)
+			this.resetCellText(DaViSettings.cellTextId + oldGroupId,DaViSettings.defaultDelay,mousepos)
 		}
 		delete this.groups[coursId]
 		delete this.slotDict[coursId]
