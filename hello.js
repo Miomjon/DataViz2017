@@ -32,17 +32,17 @@ class TimeTable{
 	}
 
 	cellBackId(dayIndex,hourIndex){
-		return DaViSettings.cellBackId+"("+(hourIndex+DaViSettings.dayStart)+"_"+dayIndex+")";
+		return DaViSettings.cellBackId+"_"+dayIndex+"_"+hourIndex;
 	}
 	cellPos(cellId){
-		let sub = cellId.substring(DaViSettings.cellBackId.length+1,cellId.length-2)
+		let sub = cellId.substring(DaViSettings.cellBackId.length+1,cellId.length)
 		return new Vec(sub.split("_"));
 	}
 
 	alignText(text,boxPos,boxDim,trTime){
 		let backMid = boxDim.divide(2)
 
-		let textPos = boxPos.plus(backMid)
+		let textPos = boxPos.plus(backMid);
 		if(trTime){
 			text.transition()
 				.duration(trTime)
@@ -60,8 +60,8 @@ class TimeTable{
 		if(!color)
 			color = DaViSettings.cellDefaultColor
 		let posTiled = this.cellPos(key)
-		let pos = posTiled.time(cellDimWmargin).plus(DaViSettings.dayshoursDivOffset).plus(DaViSettings.cellMargin)
-		let dim = cellDim
+		let pos = posTiled.time(this.cellDimWmargin).plus(DaViSettings.dayshoursDivOffset).plus(DaViSettings.cellMargin)
+		let dim = this.cellDim
 		cell.transition()
 			.attr("x",pos.x)
 			.attr("y",pos.y)
@@ -77,8 +77,10 @@ class TimeTable{
 			color = DaViSettings.cellDefaultColor
 		let posTiled = this.cellPos(key)
 
-		let dim = cellDim
-		let pos = posTiled.time(cellDimWmargin).plus(DaViSettings.dayshoursDivOffset).plus(DaViSettings.cellMargin)
+		let dim = this.cellDim
+		let cellDimWmargin = this.cellDimWmargin;
+		let pos = posTiled.time(cellDimWmargin)
+		pos = pos.plus(DaViSettings.dayshoursDivOffset).plus(DaViSettings.cellMargin)
 		if(isFirst)
 			pos = pos.plus(DaViSettings.cellMargin)
 		else{
@@ -96,66 +98,77 @@ class TimeTable{
 			.style("fill",color)
 			.ease(d3.easeCubicOut)
 	}
-	mkInfoDict(courseOfWeek,shouldGroup){
+	appendCourseToDict(coursId,shouldGroup){
 
 		let newSlots = {}
 		let newGroups = {}
+		let timetable =this;
 		function group(id,slot){
 
 			let g = {start:new Vec(slot.day,slot.time),height : 1, firstSlot : slot,itemIndex:-1}
-			let groupOf = this.groups[id] | [];
+			let groupOf = timetable.groups[id];
+			if(!groupOf)
+				groupOf = []
 			groupOf.push(g)
-			this.groups[id] = g;
+			timetable.groups[id] = groupOf;
 
 
-			let groupOfNew = this.newGroups[id] | [];
+			let groupOfNew = newGroups[id] ;
+			if(!groupOfNew)
+				groupOfNew = []
 			groupOfNew.push(g)
-			this.newGroups[id] = g;
+			newGroups[id] = groupOfNew;
 
 			return g
 		}
 		function entry(id,slot){
-			let key = this.cellBackId(slot.day,slot.time)
-			let slotsNow = this.slotDict[key] | {};
+			let key = timetable.cellBackId(slot.day,slot.time)
+			let slotsNow = timetable.slotDict[key] 
+			if(!slotsNow)
+				slotsNow = {}
 			slotsNow[id] = slot
-			this.slotDict[key] = slotsNow;
+			timetable.slotDict[key] = slotsNow;
 
-			let slotsNowNew = this.newSlots[key] | {};
+			let slotsNowNew = newSlots[key];
+			if(!slotsNowNew)
+				slotsNowNew = {}
+
 			slotsNowNew[id] = slot
-			this.newSlots[key] = slotsNowNew;
+			newSlots[key] = slotsNowNew;
 		}
-		for(let coursId in courseOfWeek){
-			course = courseOfWeek[coursId];
-			let groupedSlot = [];
-			if(course.timeslots.length > 0){
-				let sortedSlots = course.timeslots.sort(ts => ts.day*100 + ts.time);
-				sortedSlots.reverse();
-				let firstOfWeek = sortedSlots.shift()
-				entry(firstOfWeek)
-				let lastGroup = group(coursId,firstOfWeek)
-
-				for(let slot of sortedSlots){
-					entry(slot)
-					if(last.day == slot.day && shouldGroup(last,slot)){
-						lastGroup.height +=1;
-					}
-					else{
-						lastGroup = group(coursId,slot)
-
-					}
+		let course = ISA_data[coursId];
+		let groupedSlot = [];
+		if(course.timeslots.length > 0){
+			let sortedSlots = course.timeslots.slice().sort(ts => ts.day*100 + ts.time);
+			sortedSlots.reverse();
+			let firstOfWeek = sortedSlots.shift()
+			entry(coursId,firstOfWeek)
+			let lastGroup = group(coursId,firstOfWeek)
+			let last = firstOfWeek
+			for(let slot of sortedSlots){
+				entry(coursId,slot)
+				if(last.day == slot.day && shouldGroup(last,slot)){
+					lastGroup.height +=1;
 				}
-				back.last = true;
+				else{
+					last = slot;
+					lastGroup = group(coursId,slot)
 
-			} 	
-		}
+				}
+				last = slot;
+			}
+
+		} 	
+		
 		return {slotDict:newSlots,groups:newGroups}
 	}
 	
-	resetCellText(text,trTime){
+	resetCellText(key,trTime){
+		let tableDim = DaViSettings.tableDimSmall
+		let text = d3.select("#"+key)
 		if(trTime)
-			text = text.transition.duration(trTime).ease(d3.easeCubicOut)
-		text
-			.attr("x",tableDim.x + 100)
+			text = text.transition().duration(trTime).ease(d3.easeCubicOut)
+		text.attr("x",tableDim.x + 100)
 			.attr("y",tableDim.y/3)
 			.style('font-size',DaViSettings.cellFontVerySmall);
 	}
@@ -211,9 +224,9 @@ class TimeTable{
 		for(let i = 0 ;i < DaViSettings.tableTextCount;i++){
 
 			let txt = figure.append("text")
-				.attr("id",DaViSettings.cellTextId+i);
-				.attr('text-anchor', 'middle')
-			resetCellText(txt)
+				.attr("id",DaViSettings.cellTextId+i)
+				.style('text-anchor', 'middle')
+			this.resetCellText(DaViSettings.cellTextId+i)
 				
 		}
 		
@@ -222,8 +235,7 @@ class TimeTable{
 	addCourse(coursId){
 		if(this.groups[coursId])
 			return
-		let data = ISA_data[coursId];
-		let news = this.mkInfoDict(data,(a,b)=> a.day == b.day && a.activity === b.activity && a.time+1 = b.time);
+		let news = this.appendCourseToDict(coursId,(a,b)=> a.activity === b.activity && a.time+1 == b.time);
 		let newGroups = news.groups
 		let newSlots = news.slotDict
 		let gcNow = Object.keys(this.groups).length
@@ -231,54 +243,56 @@ class TimeTable{
 		let i = gcBefore
 		let cellDim = this.cellDimWmargin;
 		for(let groupId in newGroups){
-			let group = newGroups[groupId]
-			group.itemIndex = this.resetCellText(oldKey);
-			let groupStart = group.start;
-			let textOnTheWay = d3.select("#"+DaViSettings.cellTextId+group.itemIndex)
-				.text(groupId)
-				.transition()
-				.duration(DaViSettings.shortNoticeableDelay)
-				.ease(d3.easeCubicOut)
-				.style('font-size',DaViSettings.cellFontDefault);
-			this.alignText(textOnTheWay,groupStart.time(cellDim),cellDim.time(1,group.height))
+			for(let group of newGroups[groupId]){
+				group.itemIndex = this.takeTextId();
+				let groupStart = group.start;
+				let textOnTheWay = d3.select("#"+DaViSettings.cellTextId+group.itemIndex)
+					.text(groupId)
+					.transition()
+					.duration(DaViSettings.shortNoticeableDelay)
+					.ease(d3.easeCubicOut)
+					.style('font-size',DaViSettings.cellFontDefault);
+				this.alignText(textOnTheWay,groupStart.time(cellDim),cellDim.time(1,group.height))
 
-			for(let t = 0; t <group.height;t++){
-				let key = this.cellBackId(g.firstSlot.day,d.firstSlot.time+t)
-				let slot = this.slotDict[key]
-				this.setInGroup(key,t==0,t==group.height-1,DaViSettings.cellColorMap[slot.activity])
+				for(let t = 0; t <group.height;t++){
+					let key = this.cellBackId(group.firstSlot.day,group.firstSlot.time+t)
+					let slot = this.slotDict[key][groupId]
+					this.setInGroup(key,t==0,t==group.height-1,DaViSettings.cellColorMap[slot.activity])
+				}
+				i++;
 			}
-			i++;
 		}
 		
 	}
-	removeGroupFromSlots(groups){
-		for(g of groups){
+	removeGroupFromSlots(groups,coursId){
+		for(let g of groups){
 			for(let i =0; i < g.height;i++){
-				let key = this.cellBackId(g.firstSlot.day,d.firstSlot.time+i)
+				let key = this.cellBackId(g.firstSlot.day,g.firstSlot.time+i)
 				let slots = this.slotDict[key]
 				if(slots){
-					delete slots[key];
+					delete this.slotDict[key][coursId];
 				}
-				if(Object.keys(this.slots).length){
+				if(!Object.keys(slots).length){
 					this.setCellIsolated(key);
-				}
+				}	
+				
 			}
 		}
 	}
-	revomeCourse(coursId){
+	removeCourse(coursId){
 		let deletedGroups = this.groups[coursId]
 		if(!deletedGroups)
 			return
 
 		let deletedSlots = this.slotDict[coursId]
 
-		this.removeGroupFromSlots(deletedGroups);
+		this.removeGroupFromSlots(deletedGroups,coursId);
 
 		let maxId = Object.keys(this.groups).length;
-		for (deletedGroup of deletedGroups){
+		for (let deletedGroup of deletedGroups){
 			let oldGroupId = deletedGroup.itemIndex
 			this.freeTextId(oldGroupId)
-			this.resetCellText(oldKey)
+			this.resetCellText(DaViSettings.cellTextId + oldGroupId,DaViSettings.defaultDelay)
 		}
 		delete this.groups[coursId]
 		delete this.slotDict[coursId]

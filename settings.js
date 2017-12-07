@@ -5,10 +5,13 @@ var DaViSettings = {
 	days : ["Monday","Tuesday","Wensday","Thursday","Friday","Saturday"],
 	timeTableDivId : "tableDiv",
 	timeTableId : "svgTable",
+	courseListId : "courses",
+	cellCourseRow : "card",
 	cellDefaultClass : "timetableCell",
 	cellCourseClass : "timetableCellCourse",
 	cellExerciseClass : "timetableCellExercise",
 	timetableRowClass : "timetableRow",
+	courseListRowClass : "courseListRow",
 	rescaleTableButtonId : "rescaleTableButton",
 	tableGroupId : "tableGroup",
 	cellDefaultColor : "#f6f6f6",
@@ -19,17 +22,17 @@ var DaViSettings = {
 	cellId : "courseCell",
 	cellDivId : "courseCellDiv",
 	cellAId : "courseCellA",
-	cellFontVerySmall : "0.5em",
-	cellFontDefault : "1.5em",
+	cellFontVerySmall : "0.2em",
+	cellFontDefault : "1em",
 	defaultDelay : 200,
 	shortNoticeableDelay : 500,
 	dayshoursDivOffset : new Vec(50,50),
 	tableDimBig : new Vec(825,480),
 	tableDimSmall : new Vec(825,480),
 	cellBigScale : new Vec(1.5,1.5),
-	cellMargin : new Vec(2,2)
+	cellMargin : new Vec(2,2),
 	tableTextCount  : 100,
 	tempTextId : "tempTextId",
-	cellColorMap{0:"green",1:"red",2:'blue'};
+	cellColorMap : {0:"#9ED4E0",1:"#D1E874",2:'#67706F'}
 
 }

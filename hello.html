@@ -5,30 +5,38 @@
   <meta charset="utf-8">
   <link rel="stylesheet" type="text/css" href="hello.css">
 </head>
-	
+
 <body>
 
 	<div id="tableDiv">
 		
-		<svg id="svgTable" transform="matrix(1,0,0,1,0,0)" class="timetable" xmlns="http://www.w3.org/2000/svg">
+		<svg id="svgTable" transform="matrix(1,0,0,1,0,0)" class="timetable" xmlns="http://www.w3.org/2000/svg"></svg>
 	</div>
-	<div id="coursListDiv">
-		
-	</div>
-	<div id="rescaleTableButton"><b>   ➕   </b></div>
 
+
+	<div id="rescaleTableButton"><b>   ➖   </b> </div>
+
+  	<div id="coursListDiv">
+  		<div id="listWrapper">
+	    	<table id="courses"></table>
+	    	<div id ="thing"></div>
+  		</div>
+	</div>
+
+	<script src="courses_scrapped.js"></script>
 
 	
 		
-	</svg>
-	<script src="D3.js"></script>
-	<script src="utils.js"></script>  
+
+	<script src="utils.js"></script> 
 	<script src="Vec.js"></script> 
+ 
+
+	<script src="D3.js"></script>
+
 	<script src="settings.js"></script> 
-	<script src="data.js"></script> 
-	
+	<script src="courselist.js"></script>
 	<script src="hello.js"></script> 	
 
-</script>
 </body>
 </html>

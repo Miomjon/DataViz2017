@@ -10,8 +10,8 @@ class Vec{
 		}else{
 			let something = args[0];
 			function check(a,b){
-				let aVal = something[a];
-				let bVal = something[b];
+				let aVal = parseFloat(something[a]);
+				let bVal = parseFloat(something[b]);
 				if(isNumber(aVal) && isNumber(bVal)){
 					aX=aVal;
 		    		aY=bVal;
