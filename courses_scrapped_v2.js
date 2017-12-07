@@ -1,5 +1,6 @@
 var ISA_data = {
     "Advanced multiprocessor architecture": {
+        "code": "CS-471",
         "credits": 6,
         "exam_time": "Winter",
         "exam_type": "During the semester",
@@ -57,6 +58,7 @@ var ISA_data = {
         "weekly_hours": 4
     },
     "Applied data analysis": {
+        "code": "CS-401",
         "credits": 6,
         "exam_time": "Winter",
         "exam_type": "Written",
@@ -115,6 +117,7 @@ var ISA_data = {
         "weekly_hours": 4
     },
     "Audio signal processing and virtual acoustics": {
+        "code": "COM-415",
         "credits": 4,
         "exam_time": "Winter",
         "exam_type": "Written",
@@ -170,6 +173,7 @@ var ISA_data = {
         "weekly_hours": 4
     },
     "Automatic speech processing": {
+        "code": "EE-554",
         "credits": 3,
         "exam_time": "Winter",
         "exam_type": "Written",
@@ -217,6 +221,7 @@ var ISA_data = {
         "weekly_hours": 3
     },
     "Biomedical signal processing": {
+        "code": "EE-512",
         "credits": 6,
         "exam_time": "Winter",
         "exam_type": "Written",
@@ -288,6 +293,7 @@ var ISA_data = {
         "weekly_hours": 6
     },
     "Cellular biology and biochemistry for engineers": {
+        "code": "BIO-105",
         "credits": 4,
         "exam_time": "Winter",
         "exam_type": "Written",
@@ -339,6 +345,7 @@ var ISA_data = {
         "weekly_hours": 4
     },
     "Concurrent algorithms": {
+        "code": "CS-453",
         "credits": 4,
         "exam_time": "Winter",
         "exam_type": "Written",
@@ -392,6 +399,7 @@ var ISA_data = {
         "weekly_hours": 3
     },
     "Cryptography and security": {
+        "code": "COM-401",
         "credits": 7,
         "exam_time": "Winter",
         "exam_type": "Written",
@@ -477,6 +485,7 @@ var ISA_data = {
         "weekly_hours": 6
     },
     "Data visualization": {
+        "code": "COM-480",
         "credits": 4,
         "exam_time": "Winter",
         "exam_type": "During the semester",
@@ -532,6 +541,7 @@ var ISA_data = {
         "weekly_hours": 4
     },
     "Decentralized systems engineering": {
+        "code": "CS-438",
         "credits": 6,
         "exam_time": "Winter",
         "exam_type": "During the semester",
@@ -605,6 +615,7 @@ var ISA_data = {
         "weekly_hours": 6
     },
     "Design technologies for integrated systems": {
+        "code": "CS-472",
         "credits": 6,
         "exam_time": "Winter",
         "exam_type": "During the semester",
@@ -668,6 +679,7 @@ var ISA_data = {
         "weekly_hours": 5
     },
     "Digital 3D Geometry Processing": {
+        "code": "CS-446",
         "credits": 5,
         "exam_time": "Winter",
         "exam_type": "Written",
@@ -723,6 +735,7 @@ var ISA_data = {
         "weekly_hours": 4
     },
     "Digital education & learning analytics": {
+        "code": "CS-411",
         "credits": 4,
         "exam_time": "Winter",
         "exam_type": "Oral",
@@ -774,6 +787,7 @@ var ISA_data = {
         "weekly_hours": 4
     },
     "Distributed algorithms": {
+        "code": "CS-451",
         "credits": 4,
         "exam_time": "Winter",
         "exam_type": "Written",
@@ -827,6 +841,7 @@ var ISA_data = {
         "weekly_hours": 3
     },
     "Distributed intelligent systems": {
+        "code": "ENG-466",
         "credits": 5,
         "exam_time": "Winter",
         "exam_type": "Written",
@@ -890,6 +905,7 @@ var ISA_data = {
         "weekly_hours": 5
     },
     "Dynamical system theory for engineers": {
+        "code": "COM-502",
         "credits": 4,
         "exam_time": "Winter",
         "exam_type": "Written",
@@ -940,6 +956,7 @@ var ISA_data = {
         "weekly_hours": 3
     },
     "Embedded systems": {
+        "code": "CS-473",
         "credits": 4,
         "exam_time": "Winter",
         "exam_type": "Oral",
@@ -995,6 +1012,7 @@ var ISA_data = {
         "weekly_hours": 4
     },
     "Foundations of software": {
+        "code": "CS-452",
         "credits": 4,
         "exam_time": "Winter",
         "exam_type": "Written",
@@ -1048,6 +1066,7 @@ var ISA_data = {
         "weekly_hours": 4
     },
     "Image and video processing": {
+        "code": "EE-550",
         "credits": 6,
         "exam_time": "Winter",
         "exam_type": "Oral",
@@ -1119,6 +1138,7 @@ var ISA_data = {
         "weekly_hours": 6
     },
     "Image processing I": {
+        "code": "MICRO-511",
         "credits": 3,
         "exam_time": "Winter",
         "exam_type": "Written",
@@ -1166,6 +1186,7 @@ var ISA_data = {
         "weekly_hours": 3
     },
     "Information theory and coding": {
+        "code": "COM-404",
         "credits": 7,
         "exam_time": "Winter",
         "exam_type": "Written",
@@ -1241,6 +1262,7 @@ var ISA_data = {
         "weekly_hours": 6
     },
     "Intelligent agents": {
+        "code": "CS-430",
         "credits": 6,
         "exam_time": "Winter",
         "exam_type": "During the semester",
@@ -1312,6 +1334,7 @@ var ISA_data = {
         "weekly_hours": 6
     },
     "Machine learning": {
+        "code": "CS-433",
         "credits": 7,
         "exam_time": "Winter",
         "exam_type": "Written",
@@ -1397,6 +1420,7 @@ var ISA_data = {
         "weekly_hours": 6
     },
     "Markov chains and algorithmic applications": {
+        "code": "COM-516",
         "credits": 4,
         "exam_time": "Winter",
         "exam_type": "Written",
@@ -1454,6 +1478,7 @@ var ISA_data = {
         "weekly_hours": 4
     },
     "Mathematical foundations of signal processing": {
+        "code": "COM-514",
         "credits": 6,
         "exam_time": "Winter",
         "exam_type": "Written",
@@ -1517,6 +1542,7 @@ var ISA_data = {
         "weekly_hours": 5
     },
     "Modern digital communications: a hands-on approach": {
+        "code": "COM-430",
         "credits": 6,
         "exam_time": "Winter",
         "exam_type": "During the semester",
@@ -1576,6 +1602,7 @@ var ISA_data = {
         "weekly_hours": 4
     },
     "Principles of computer systems": {
+        "code": "CS-522",
         "credits": 7,
         "exam_time": "Winter",
         "exam_type": "During the semester",
@@ -1647,6 +1674,7 @@ var ISA_data = {
         "weekly_hours": 4
     },
     "Set theory": {
+        "code": "MATH-318",
         "credits": 5,
         "exam_time": "Winter",
         "exam_type": "Written",
@@ -1698,6 +1726,7 @@ var ISA_data = {
         "weekly_hours": 4
     },
     "TCP/IP networking": {
+        "code": "COM-407",
         "credits": 5,
         "exam_time": "Winter",
         "exam_type": "Written",

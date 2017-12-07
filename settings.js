@@ -37,5 +37,8 @@ var DaViSettings = {
 	tableTextCount  : 100,
 	tempTextId : "tempTextId",
 	cellColorMap : {0:"#9ED4E0",1:"#D1E874",98:'#67706F'}
+	tooltipClass : "tooltip",
+	tooltipTextClass : "tooltiptext",
+	chartClass : "chart"
 
 }

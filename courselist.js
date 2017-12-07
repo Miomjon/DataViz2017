@@ -14,6 +14,14 @@ function isIterable(obj) {
   return typeof obj[Symbol.iterator] === 'function';
 }
 
+function createActivityData(metadata) {
+  var activities = [0,0,0];
+  for(let times of metadata.timeslots) {
+    activities[times.activity%96] += 1
+  }
+  return activities;
+}
+
 class CourseList {
 
 	constructor() {
@@ -40,11 +48,54 @@ class CourseList {
 			row.className = DaViSettings.courseListRowClass;
 
 			let courseName = document.createElement("td");
-			courseName.innerHTML = course;
-      courseName.id = course + "_button";
-      courseName.style.background =  "#f6f6f6"
-      courseName.className = DaViSettings.cellCourseRow;
+			// courseName.innerHTML = course;
 
+      // courseName.className = DaViSettings.cellCourseRow;
+
+      let hover = document.createElement("div");
+      hover.id = course + "_button";
+      hover.style.background =  "#f6f6f6"
+      hover.className = DaViSettings.tooltipClass;
+      hover.innerHTML = course;
+
+      let hoverInside = document.createElement("span");
+      hoverInside.className = DaViSettings.tooltipTextClass;
+      hoverInside.innerHTML = course
+
+      let charT = document.createElement("div");
+      charT.className = DaViSettings.chartClass;
+
+      var activities = createActivityData(metadata);
+      var datas = [1, 2, 3]
+      let firstDiv = document.createElement("div");
+      firstDiv.id = "firstId";
+      firstDiv.className = DaViSettings.chartClass;
+      d3.select("#firstId")
+          .data(datas)
+          .style("height", function(d) { return d*10 + "px"; })
+          .text(function(d) { return d; });
+
+      let secondDiv = document.createElement("div");
+      secondDiv.id = "secondId";
+      // d3.select("#secondId")
+      //     .data(activities[1])
+      //     .style("width", function(e) { return (e-10)*10 + "px"; })
+      //     .text(function(e) { return e; });
+
+      let thirdDiv = document.createElement("div");
+      thirdDiv.id = "thirdId";
+      // d3.select("#thirdId")
+      //     .data(activities[2])
+      //     .style("width", function(d) { return d*10 + "px"; })
+      //     .text(function(d) { return d; });
+
+      charT.appendChild(firstDiv);
+      charT.appendChild(secondDiv);
+      charT.appendChild(thirdDiv);
+
+      hoverInside.appendChild(charT);
+      hover.appendChild(hoverInside)
+      courseName.appendChild(hover)
 			row.appendChild(courseName)
 			tbody.appendChild(row);
 		}
