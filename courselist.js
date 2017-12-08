@@ -109,7 +109,7 @@ class CourseList {
 			if (index > -1) {
     		this.enableCourseList.splice(index, 1);
         this.coursesInList.splice(index, 1);
-        timtable.removeCourse(c);
+        timtable.removeCourse(c, new Vec(event.clientX, event.clientY));
         var wasOrange = false;
         for(let conflict of this.conflictList.get(c)) {
           if(document.getElementById(conflict+"_button").style.background === "orange"||document.getElementById(conflict+"_button").style.background === "green") {
@@ -128,7 +128,7 @@ class CourseList {
 		} else {
 				this.enableCourseList.push(c)
         this.coursesInList.push(c)
-        timtable.addCourse(c);
+        timtable.addCourse(c, new Vec(event.clientX, event.clientY));
         var wasGreen = false;
         for(let conflict of this.conflictList.get(c)) {
           if(document.getElementById(conflict+"_button").style.background === "green" || document.getElementById(conflict+"_button").style.background === "orange") {
@@ -149,7 +149,6 @@ class CourseList {
       if(isIterable(conf)) {
         // console.log(Array.from(this.conflictList.get(conf)))
         for(let list of this.conflictList.get(conf)) {
-          console.log(list);
           if(document.getElementById(list+"_button").style.background === "green" || document.getElementById(list+"_button").style.background === "orange") {
             document.getElementById(list+"_button").style.background = "orange";
             goesOrange = true;
@@ -188,6 +187,19 @@ class CourseList {
     }
   }
 
+  showConflicts(course) {
+    var old = document.getElementById("courseInfo").children;
+    var length = old.length;
+    for(var i = 0; i < length; i++) {
+      old[0].parentNode.removeChild(old[0]);
+    }
+    for(let conflict of this.conflictList.get(course)) {
+      let con = document.createElement("div");
+      con.innerHTML = conflict;
+      document.getElementById("courseInfo").appendChild(con);
+    }
+  }
+
 }
 
 
@@ -196,7 +208,8 @@ let data_map = buildMap(ISA_data);
 courselist.createCourseList(data_map)
 courselist.conflicts(data_map)
 for(let [course, metadata] of data_map) {
-	document.getElementById(course+"_button").onclick = () => courselist.enableCourse(course);
+	document.getElementById(course+"_button").onclick = () => courselist.enableCourse(course, event);
+  document.getElementById(course+"_button").onmouseover = function(){courselist.showConflicts(course)}
 }
 //var courseList = new courseList();
 //courseList.createTimetable(ISA_data);
