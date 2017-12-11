@@ -97,7 +97,10 @@
     text-align: center;
     z-index: 20;
 }
-
+.left{float:left;}
+.right{float:right;}
+.center{display: inline-block;
+    margin:0 auto;}
 
 /* Tooltip container */
 .tooltip {
