@@ -32,13 +32,13 @@ function createActivityData(metadata) {
 
 class CourseList {
 
-	constructor() {
-		this.enableCourseList = [];
+  constructor() {
+    this.enableCourseList = [];
     this.coursesInList = [];
     this.conflictList = new Map();
-	}
+  }
 
-	createCourseList(data) {
+  createCourseList(data) {
 
     let table = document.getElementById(DaViSettings.courseListId);
 
@@ -94,69 +94,68 @@ class CourseList {
 
       i ++;
     }
-	}
+  }
 
-	enableCourse(c) {
-		if(this.coursesInList.includes(c)) {
-			var index = this.coursesInList.indexOf(c);
-			if (index > -1) {
-    		this.enableCourseList.splice(index, 1);
+  enableCourse(c, event) {
+    if(this.coursesInList.includes(c)) {
+      var index = this.coursesInList.indexOf(c);
+      if (index > -1) {
+        this.enableCourseList.splice(index, 1);
         this.coursesInList.splice(index, 1);
         timtable.removeCourse(c, new Vec(event.clientX, event.clientY));
         var wasOrange = false;
         for(let conflict of this.conflictList.get(c)) {
-          if(document.getElementById(conflict+"_button").style.background === "orange"||document.getElementById(conflict+"_button").style.background === "green") {
-            document.getElementById(conflict+"_button").style.background = "green";
+          if(document.getElementById(conflict+"_button").style.backgroundColor === "orange"||document.getElementById(conflict+"_button").style.backgroundColor === "green") {
+            document.getElementById(conflict+"_button").style.backgroundColor = "green";
             wasOrange = true;
           } else {
-            document.getElementById(conflict+"_button").style.background = "#f6f6f6"
+            document.getElementById(conflict+"_button").style.backgroundColor = "#f6f6f6"
           }
         }
         if(wasOrange) {
-          document.getElementById(c+"_button").style.background = "red";
+          document.getElementById(c+"_button").style.backgroundColor = "red";
         } else {
-          document.getElementById(c+"_button").style.background = "#f6f6f6"
+          document.getElementById(c+"_button").style.backgroundColor = "#f6f6f6"
         }
       }
-		} else {
-				this.enableCourseList.push(c)
+    } else {
+        this.enableCourseList.push(c)
         this.coursesInList.push(c)
         timtable.addCourse(c, new Vec(event.clientX, event.clientY));
         var wasGreen = false;
         for(let conflict of this.conflictList.get(c)) {
-          if(document.getElementById(conflict+"_button").style.background === "green" || document.getElementById(conflict+"_button").style.background === "orange") {
-            document.getElementById(conflict+"_button").style.background = "orange";
+          if(document.getElementById(conflict+"_button").style.backgroundColor === "green" || document.getElementById(conflict+"_button").style.backgroundColor === "orange") {
+            document.getElementById(conflict+"_button").style.backgroundColor = "orange";
             wasGreen = true;
           } else {
-            document.getElementById(conflict+"_button").style.background = "red"
+            document.getElementById(conflict+"_button").style.backgroundColor = "red"
           }
         }
         if(wasGreen) {
-          document.getElementById(c+"_button").style.background = "orange";
+          document.getElementById(c+"_button").style.backgroundColor = "orange";
         } else {
-          document.getElementById(c+"_button").style.background = "green";
+          document.getElementById(c+"_button").style.backgroundColor = "green";
         }
-		}
+    }
     for(let conf of this.enableCourseList) {
       var goesOrange = false;
-      if(isIterable(conf)) {
-        // console.log(Array.from(this.conflictList.get(conf)))
-        for(let list of this.conflictList.get(conf)) {
-          if(document.getElementById(list+"_button").style.background === "green" || document.getElementById(list+"_button").style.background === "orange") {
-            document.getElementById(list+"_button").style.background = "orange";
-            goesOrange = true;
-          } else {
-            document.getElementById(list+"_button").style.background = "red"
-          }
-        }
-        if(goesOrange) {
-          document.getElementById(conf+"_button").style.background = "orange"
+      // console.log(Array.from(this.conflictList.get(conf)))
+      for(let list of this.conflictList.get(conf)) {
+        if(document.getElementById(list+"_button").style.backgroundColor === "green" || document.getElementById(list+"_button").style.backgroundColor === "orange") {
+          document.getElementById(list+"_button").style.backgroundColor = "orange";
+          goesOrange = true;
         } else {
-          document.getElementById(conf+"_button").style.background = "green"
+          document.getElementById(list+"_button").style.backgroundColor = "red"
         }
       }
+      if(goesOrange) {
+        document.getElementById(conf+"_button").style.backgroundColor = "orange"
+      } else {
+        document.getElementById(conf+"_button").style.backgroundColor = "green"
+      }
+      
     }
-	}
+  }
 
 // remove and do a function that precomputes the conflicts for each course
   conflicts(data) {
@@ -202,6 +201,6 @@ let data_map = buildMap(ISA_data);
 courselist.createCourseList(data_map)
 courselist.conflicts(data_map)
 for(let [course, metadata] of data_map) {
-	document.getElementById(course+"_button").onclick = () => courselist.enableCourse(course, event);
+  document.getElementById(course+"_button").onclick = (event) => courselist.enableCourse(course, event);
   document.getElementById(course+"_button").onmouseover = function(){courselist.showDetails(course, metadata)}
 }

@@ -21,9 +21,21 @@
 	color: black;
 	position: fixed;
 	z-index: 10;
-	display : flex;
   	align-items : center;
   	text-align: center;
+  	overflow: hidden;
+}
+.cellTextClass {
+	color: black;
+	position: fixed;
+	z-index: 10;
+  	align-items : center;
+  	text-align: center;
+  	overflow: hidden;
+}
+.detailDiv{
+	width: 100%;
+	height: auto;
 }
 .cellBackClass{
 	fill: #f6f6f6;
