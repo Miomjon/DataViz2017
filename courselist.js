@@ -15,11 +15,19 @@ function isIterable(obj) {
 }
 
 function createActivityData(metadata) {
-  var activities = [0,0,0];
+  var activities = [0,0,0,0];
   for(let times of metadata.timeslots) {
-    activities[times.activity%96] += 1
+    activities[times.activity%95] += 1
   }
-  return activities;
+  var datActivity = [];
+  for(var i = 0; i < activities.length; i++) {
+    var temp = {
+      "duration": activities[i],
+      "activity": i
+    }
+    datActivity.push(temp);
+  }
+  return datActivity;
 }
 
 class CourseList {
@@ -32,23 +40,25 @@ class CourseList {
 
 	createCourseList(data) {
 
-		let table = document.getElementById(DaViSettings.courseListId);
+    let table = document.getElementById(DaViSettings.courseListId);
 
-		let tbody = document.createElement("tbody");
-		let titlerow =  document.createElement("tr");
-		let cell = document.createElement("th");
-		cell.innerHTML = "Courses";
+    let tbody = document.createElement("tbody");
+    table.appendChild(tbody);
 
-		titlerow.appendChild(cell)
-		tbody.appendChild(titlerow)
+    let titlerow =  document.createElement("tr");
+    let cell = document.createElement("th");
+    cell.innerHTML = "Courses";
 
-		for(let [course, metadata] of data) {
+    titlerow.appendChild(cell)
+    tbody.appendChild(titlerow)
+    let i =0
+    for(let [course, metadata] of data) {
 
-			let row = document.createElement("tr");
-			row.className = DaViSettings.courseListRowClass;
+      let row = document.createElement("tr");
+      row.className = DaViSettings.courseListRowClass;
 
-			let courseName = document.createElement("td");
-			// courseName.innerHTML = course;
+      let courseName = document.createElement("td");
+      // courseName.innerHTML = course;
 
       // courseName.className = DaViSettings.cellCourseRow;
 
@@ -63,44 +73,27 @@ class CourseList {
       hoverInside.innerHTML = course
 
       let charT = document.createElement("div");
+      charT.id = "Fixme"+i;
       charT.className = DaViSettings.chartClass;
 
       var activities = createActivityData(metadata);
-      var datas = [1, 2, 3]
-      let firstDiv = document.createElement("div");
-      firstDiv.id = "firstId";
-      firstDiv.className = DaViSettings.chartClass;
-      d3.select("#firstId")
-          .data(datas)
-          .style("height", function(d) { return d*10 + "px"; })
-          .text(function(d) { return d; });
-
-      let secondDiv = document.createElement("div");
-      secondDiv.id = "secondId";
-      // d3.select("#secondId")
-      //     .data(activities[1])
-      //     .style("width", function(e) { return (e-10)*10 + "px"; })
-      //     .text(function(e) { return e; });
-
-      let thirdDiv = document.createElement("div");
-      thirdDiv.id = "thirdId";
-      // d3.select("#thirdId")
-      //     .data(activities[2])
-      //     .style("width", function(d) { return d*10 + "px"; })
-      //     .text(function(d) { return d; });
-
-      charT.appendChild(firstDiv);
-      charT.appendChild(secondDiv);
-      charT.appendChild(thirdDiv);
-
       hoverInside.appendChild(charT);
       hover.appendChild(hoverInside)
       courseName.appendChild(hover)
-			row.appendChild(courseName)
-			tbody.appendChild(row);
-		}
+      row.appendChild(courseName)
+      tbody.appendChild(row);
 
-		table.appendChild(tbody);
+      d3.select("#"+charT.id)
+        .selectAll('div')
+        .data(activities).enter()
+        .append('div')
+        .text(function(d) { return d.duration; })
+        .style("background", d => DaViSettings.cellColorMap[d.activity])
+        .style("width", function(d) { return d.duration*10 + "px"; });
+
+
+      i ++;
+    }
 	}
 
 	enableCourse(c) {
@@ -187,8 +180,10 @@ class CourseList {
     }
   }
 
-  showConflicts(course) {
-    var old = document.getElementById("courseInfo").children;
+  showDetails(course, metadata) {
+    let doc = document.getElementById("courseInfo");
+
+    var old = doc.children;
     var length = old.length;
     for(var i = 0; i < length; i++) {
       old[0].parentNode.removeChild(old[0]);
@@ -196,10 +191,9 @@ class CourseList {
     for(let conflict of this.conflictList.get(course)) {
       let con = document.createElement("div");
       con.innerHTML = conflict;
-      document.getElementById("courseInfo").appendChild(con);
+      doc.appendChild(con);
     }
   }
-
 }
 
 
@@ -209,7 +203,5 @@ courselist.createCourseList(data_map)
 courselist.conflicts(data_map)
 for(let [course, metadata] of data_map) {
 	document.getElementById(course+"_button").onclick = () => courselist.enableCourse(course, event);
-  document.getElementById(course+"_button").onmouseover = function(){courselist.showConflicts(course)}
+  document.getElementById(course+"_button").onmouseover = function(){courselist.showDetails(course, metadata)}
 }
-//var courseList = new courseList();
-//courseList.createTimetable(ISA_data);
