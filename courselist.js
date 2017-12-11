@@ -35,13 +35,14 @@ class CourseList {
 		let table = document.getElementById(DaViSettings.courseListId);
 
 		let tbody = document.createElement("tbody");
+    table.appendChild(tbody);
 		let titlerow =  document.createElement("tr");
 		let cell = document.createElement("th");
 		cell.innerHTML = "Courses";
 
 		titlerow.appendChild(cell)
 		tbody.appendChild(titlerow)
-
+    let i =0
 		for(let [course, metadata] of data) {
 
 			let row = document.createElement("tr");
@@ -63,47 +64,32 @@ class CourseList {
       hoverInside.innerHTML = course
 
       let charT = document.createElement("div");
+      charT.id = "Fixme"+i;
       charT.className = DaViSettings.chartClass;
 
       var activities = createActivityData(metadata);
       var datas = [1, 2, 3]
-      let firstDiv = document.createElement("div");
-      firstDiv.id = "firstId";
-      firstDiv.className = DaViSettings.chartClass;
-      d3.select("#firstId")
-          .data(datas)
-          .style("height", function(d) { return d*10 + "px"; })
-          .text(function(d) { return d; });
-
-      let secondDiv = document.createElement("div");
-      secondDiv.id = "secondId";
-      // d3.select("#secondId")
-      //     .data(activities[1])
-      //     .style("width", function(e) { return (e-10)*10 + "px"; })
-      //     .text(function(e) { return e; });
-
-      let thirdDiv = document.createElement("div");
-      thirdDiv.id = "thirdId";
-      // d3.select("#thirdId")
-      //     .data(activities[2])
-      //     .style("width", function(d) { return d*10 + "px"; })
-      //     .text(function(d) { return d; });
-
-      charT.appendChild(firstDiv);
-      charT.appendChild(secondDiv);
-      charT.appendChild(thirdDiv);
-
       hoverInside.appendChild(charT);
       hover.appendChild(hoverInside)
       courseName.appendChild(hover)
-			row.appendChild(courseName)
-			tbody.appendChild(row);
+      row.appendChild(courseName)
+      tbody.appendChild(row);
+          
+      d3.select("#"+charT.id)
+        .selectAll('div')
+        .data(datas).enter()
+        .append('div')
+        .style("width", function(d) { return d*10 + "px"; })
+        .text(function(d) { return d; });
+      
+      
+      i ++;
 		}
 
-		table.appendChild(tbody);
+		
 	}
 
-	enableCourse(c) {
+	enableCourse(c,event) {
 		if(this.coursesInList.includes(c)) {
 			var index = this.coursesInList.indexOf(c);
 			if (index > -1) {
@@ -208,7 +194,7 @@ let data_map = buildMap(ISA_data);
 courselist.createCourseList(data_map)
 courselist.conflicts(data_map)
 for(let [course, metadata] of data_map) {
-	document.getElementById(course+"_button").onclick = () => courselist.enableCourse(course, event);
+	document.getElementById(course+"_button").onclick = (event) => courselist.enableCourse(course, event);
   document.getElementById(course+"_button").onmouseover = function(){courselist.showConflicts(course)}
 }
 //var courseList = new courseList();

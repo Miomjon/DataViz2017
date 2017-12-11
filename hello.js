@@ -4,6 +4,7 @@
 
 class TimeTable{
 
+	
 	constructor() {
 
 		this.groups = {}
@@ -14,10 +15,30 @@ class TimeTable{
 	    this.classDict = [DaViSettings.cellCourseClass,DaViSettings.cellExerciseClass]
 	    this.cellDimWmargin = DaViSettings.tableDimSmall.minus(DaViSettings.dayshoursDivOffset).divide(DaViSettings.days.length,DaViSettings.dayEnd-DaViSettings.dayStart);
 		this.cellDim = this.cellDimWmargin.minus(DaViSettings.cellMargin.time(2));
+		this.getColor = (s)=>DaViSettings.cellColorMap[s.activity];
+		
   	}
 	
-
-	cellBackId(dayIndex,hourIndex){
+	Group(slot){
+		function mk(slot){
+			this.start=new Vec(slot.day,slot.time)
+			this.height = 1
+			this.itemIndex=-1
+		}
+		
+		return new mk(slot);
+	}
+	
+	cellBackId(...args){
+		
+		if(args.length == 1){
+			let v = args[0]
+			let dayIndex = v[0]
+			let hourIndex = v[1]
+			return DaViSettings.cellBackId+"_"+dayIndex+"_"+hourIndex;
+		}
+		let dayIndex = args[0]
+		let hourIndex = args[1]
 		return DaViSettings.cellBackId+"_"+dayIndex+"_"+hourIndex;
 	}
 	cellPos(cellId){
@@ -52,6 +73,8 @@ class TimeTable{
 	resetCellText(key,trTime,mousepos){
 		let tableDim = DaViSettings.tableDimSmall
 		let text = d3.select("#"+key)
+		if(!trTime)
+			trTime = 0;
 		if(isUndef(mousepos))
 			mousepos = new Vec(tableDim.x + 100,tableDim.y/3);
 		if(trTime)
@@ -59,7 +82,10 @@ class TimeTable{
 		text.style("left",mousepos.x+"px")
 			.style("top",mousepos.y+"px")
 			.style('font-size',DaViSettings.cellFontVerySmall)
-			.style("opacity",0);
+			.style("opacity",0)
+			.transition()
+			.style("left",-1000+"px")
+			.style("top",-1000+"px")
 	}
 	setCellIsolated(key,color){
 		let cell = d3.select("#"+key)
@@ -77,12 +103,58 @@ class TimeTable{
 			.style("fill",color)
 			.ease(d3.easeCubicOut)
 	}
-	setInGroup(key,isFirst,isLast,color){
-		let cell = d3.select("#"+key)
-		if(!color)
-			color = DaViSettings.cellDefaultColor
-		let posTiled = this.cellPos(key)
+	getFilling(colors){
+		colors = unics(colors)
+		if(colors.length > 1){
+			colors = colors.sort();
+			let patterName = (DaViSettings.dashPatternPrefix + colors.join("_")).split("#").join("")
+				
+			if(!document.getElementById("#"+patterName)){
+				let patternDim = DaViSettings.dashdPatternDims
+				let pattern = d3.select("#"+DaViSettings.timeTableId).select("defs")
+					.append("pattern")
+					.attr("id",patterName)
+					.attr("width",patternDim.x)
+					.attr('height',patternDim.y)
+					.attr('patternUnits',"userSpaceOnUse")
+					.attr('patternTransform',"rotate("+DaViSettings.dashedLineAngle+" 0 0)")
+				let lineWidth = patternDim.x/colors.length;
+				for(let i = 0;i< colors.length;i++){
+					let c = d3.interpolateLab(colors[i], "black")(DaViSettings.shadowDarkness);
+					let x = i*lineWidth + lineWidth/2;
+					pattern.append("line")
+						.attr("x1",x)
+						.attr("x2",x)
+						.attr("y1",0)
+						.attr("y2",patternDim.y)
+						.style("stroke",c)
+						.style("stroke-width",lineWidth);
+				}
+				
+			}
+			return 'url(#'+patterName+')'
+		}
+		return d3.interpolateLab(colors[0], "black")(DaViSettings.shadowDarkness);
+		
+	}
+	updateGroupShadow(cellkey,group){
+		let cell = d3.select("#"+cellkey)
+		let posTiled = this.cellPos(cellkey)
 
+		let slots = this.slotDict[cellkey]
+		
+		
+		let isFirst = true;
+		let isLast = true;
+		let colors = [];
+		if(dictLen(slots) == 1){
+			isFirst = group.start.y === posTiled.y
+			isLast = group.start.y + group.height === posTiled.y + 1;
+			colors = [this.getGroupColor(group)]
+		}else for(let courseId in slots){
+			colors.push(this.getColor(slots[courseId]))
+		}
+		
 		let dim = this.cellDim
 		let cellDimWmargin = this.cellDimWmargin;
 		let pos = posTiled.time(cellDimWmargin)
@@ -95,40 +167,53 @@ class TimeTable{
 		}
 		if(!isLast)
 			dim = dim.plus(0,DaViSettings.cellMargin.y)
-		cell.transition()
-			.attr("x",pos.x)
-			.attr("y",pos.y)
-			.attr("width",dim.x)
-			.attr("height",dim.y)
-			.duration(DaViSettings.defaultDelay)
-			.style("fill",color)
-			.ease(d3.easeCubicOut)
+		let fill = this.getFilling(colors);
+		if(fill.startsWith('url')){
+			cell.style("fill",fill)
+			console.log(fill)
+		}
+		else
+			cell.transition()
+				.duration(DaViSettings.defaultDelay)
+				.ease(d3.easeCubicOut)
+				.style("fill",fill)
+				.attr("x",pos.x)
+				.attr("y",pos.y)
+				.attr("width",dim.x)
+				.attr("height",dim.y)
 	}
-	appendCourseToDict(coursId,shouldGroup){
+	isGroupConflict(group){
+		let s = this.slotDict[this.cellBackId(group.start)];
+		return dictLen(s) > 1
+	}
+	getGroupColor(group){
+		let s = this.slotDict[this.cellBackId(group.start)];
+		let slots = Object.values(s);
+		if(slots.length > 1)
+			return DaViSettings.conflictColor
+		return this.getColor(slots[0]);
+
+	}
+	appendCourseToDict(coursId){
 
 		let newSlots = {}
-		let newGroups = {}
+		let updatedGroups = {}
 		let timetable =this;
-		function group(id,slot){
 
-			let g = {start:new Vec(slot.day,slot.time),height : 1, firstSlot : slot,itemIndex:-1}
+		function appendGroup(id,g){
 			let groupOf = timetable.groups[id];
 			if(!groupOf)
 				groupOf = []
 			groupOf.push(g)
 			timetable.groups[id] = groupOf;
-
-
-			let groupOfNew = newGroups[id] ;
+			
+			let groupOfNew = updatedGroups[id];
 			if(!groupOfNew)
 				groupOfNew = []
 			groupOfNew.push(g)
-			newGroups[id] = groupOfNew;
-
-			return g
+			updatedGroups[id] = groupOfNew;
 		}
-		function entry(id,slot){
-			let key = timetable.cellBackId(slot.day,slot.time)
+		function appendSlot(key,id,slot){
 			let slotsNow = timetable.slotDict[key] 
 			if(!slotsNow)
 				slotsNow = {}
@@ -142,31 +227,96 @@ class TimeTable{
 			slotsNowNew[id] = slot
 			newSlots[key] = slotsNowNew;
 		}
+
+		function getConflicts(day, time){
+
+			let conflictId = timetable.cellBackId(day,time);
+			let conflictSlots = timetable.slotDict[conflictId]
+			for(let confcours in conflictSlots){
+				for(let g of timetable.groups[confcours]){
+					if(g.start.x == day ){
+						if(g.start.y <= time && g.start.y + g.height > time)
+							return {coursId : confcours,group:g};
+					}
+				}
+			}
+		}
+		function resolveConflict(newCourseID,oldCoursId,groupOld,slotNew){
+			
+			if(!updatedGroups[newCourseID])
+				updatedGroups[newCourseID] = [];
+			if(!updatedGroups[oldCoursId])
+				updatedGroups[oldCoursId] = [];
+			
+
+			if(timetable.isGroupConflict(groupOld)){
+				updatedGroups[oldCoursId].push(groupOld)
+				let key = timetable.cellBackId(slotNew.day,slotNew.time)
+				let slotOld = timetable.slotDict[key][oldCoursId];
+				if(slotNew.time == groupOld.start.y && slotNew.time +1 === groupOld.start.y + groupOld.height){
+					appendGroup(newCourseID,groupOld) 
+					return;
+				}
+				let conflictGroup = timetable.Group(slotOld)
+				appendGroup(newCourseID,conflictGroup)
+				appendGroup(oldCoursId,conflictGroup)
+				if(slotNew.time == groupOld.start.y){
+					groupOld.start = groupOld.start.plus(0,1);
+					groupOld.height -= 1;
+				}else if(slotNew.time +1 === groupOld.start.y + groupOld.height){
+					group.height -= 1;
+				}else{
+					let h0 = groupOld.height;
+					groupOld.height = slotNew.time - groupOld.start.y;
+					let t0 = slotNew.time +1;
+					let key = timetable.cellBackId(slotNew.day,t0)
+					let newGroup = timetable.Group(timetable.slotDict[key][oldCoursId])
+					appendGroup(oldCoursId,newGroup)
+					newGroup.height = h0 + groupOld.start.y - slotNew.time -1
+				}
+			}
+		}
+		function group(id,slot,color){
+
+			let g = timetable.Group(slot)
+			appendGroup(id,g)
+			return g
+		}
+		function entry(id,slot){
+			let key = timetable.cellBackId(slot.day,slot.time)
+			appendSlot(key,id,slot)	
+		}
 		let course = ISA_data[coursId];
 		let groupedSlot = [];
 		if(course.timeslots.length > 0){
 			let sortedSlots = course.timeslots.slice().sort(ts => ts.day*100 + ts.time);
 			sortedSlots.reverse();
-			let firstOfWeek = sortedSlots.shift()
-			entry(coursId,firstOfWeek)
-			let lastGroup = group(coursId,firstOfWeek)
-			let last = firstOfWeek
+
+			let lastGroup = ""
+			let last = ""
 			for(let slot of sortedSlots){
+
+				let conflict = getConflicts(slot.day,slot.time);
+
 				entry(coursId,slot)
-				if(last.day == slot.day && shouldGroup(last,slot)){
+
+				if(conflict){
+					resolveConflict(coursId,conflict.coursId,conflict.group,slot)
+				}
+				else if(last && last.day == slot.day && this.shouldGroup(last,slot)){
 					lastGroup.height +=1;
+					last = slot;
 				}
 				else{
+					lastGroup = group(coursId,slot,this.getColor(slot))
 					last = slot;
-					lastGroup = group(coursId,slot)
-
 				}
-				last = slot;
+				
 			}
 
 		} 	
 		
-		return {slotDict:newSlots,groups:newGroups}
+		return {slotDict:newSlots,groups:updatedGroups}
 	}
 	
 	
@@ -181,11 +331,20 @@ class TimeTable{
 	freeTextId(i){
 		this.textInUse[i] = false
 	}
+
+	shouldGroup(a,b){
+		return this[this.groupFunction](a,b)
+	}
+	groupByActivity(a,b){
+		return a.activity === b.activity && a.time+1 == b.time
+	}
 	initTimetable() {
+		this.groupFunction = "groupByActivity";
 		let figure = d3.select("#"+DaViSettings.timeTableId);
 		let tableBody = d3.select("#"+DaViSettings.timeTableDivId);
 
 		figure.selectAll("*").remove();
+		figure.append("defs")
 		let tableDim = DaViSettings.tableDimSmall
 		figure.attr("width",tableDim.x)
 			.attr("height",tableDim.y)
@@ -228,91 +387,295 @@ class TimeTable{
 				.attr("id",DaViSettings.cellTextId+i)
 				.classed(DaViSettings.cellTextClass,true)
 				.style('text-anchor', 'middle')
-			this.mkText(txt)
+
 			this.resetCellText(DaViSettings.cellTextId+i)
 				
 		}
+		this.isDisplayBig = true;
+		this.switchDisplayMode();
 		
 
+	}
+	updateGroup(group){
+		let groupStart = group.start;
+		let textDim = this.cellDim.time(1,group.height)
+		let color = this.getGroupColor(group);
+		let textOnTheWay = this.fillText(d3.select("#"+DaViSettings.cellTextId+group.itemIndex),groupStart,textDim)
+			.transition()
+			.duration(DaViSettings.shortNoticeableDelay)
+			.ease(d3.easeCubicOut)
+			.style('font-size',DaViSettings.cellFontDefault)
+			.style("opacity",1)
+			.style("background-color",color)
+		this.alignText(textOnTheWay,groupStart.time(this.cellDimWmargin).plus(DaViSettings.cellMargin),textDim)
+
+		for(let t = 0; t <group.height;t++){
+			let key = this.cellBackId(group.start.x,group.start.y+t)
+			this.updateGroupShadow(key,group,true)
+		}
 	}
 	addCourse(coursId,mousePos){
 		if(this.groups[coursId])
 			return
-		let news = this.appendCourseToDict(coursId,(a,b)=> a.activity === b.activity && a.time+1 == b.time);
-		let newGroups = news.groups
+		let news = this.appendCourseToDict(coursId,this.shouldGroup);
+		let updatedGroups = news.groups
 		let newSlots = news.slotDict
-		let gcNow = Object.keys(this.groups).length
-		let gcBefore = gcNow - Object.keys(newGroups).length
-		let i = gcBefore
 		let cellDim = this.cellDim;
-		for(let groupId in newGroups){
-			for(let group of newGroups[groupId]){
-				group.itemIndex = this.takeTextId();
-				let groupStart = group.start;
+		for(let groupId in updatedGroups){
+			for(let group of updatedGroups[groupId]){
+				let isNew = group.itemIndex === -1
+				if(isNew)
+					group.itemIndex = this.takeTextId();
+				
 				
 				if(!isUndef(mousePos)){
 					d3.select("#"+DaViSettings.cellTextId+group.itemIndex).style("left" , mousePos.x+"px")
 						.style("top" ,mousePos.y+"px")
 				}
-				let textOnTheWay = this.fillText(d3.select("#"+DaViSettings.cellTextId+group.itemIndex),groupId,ISA_data[groupId])
-					.transition()
-					.duration(DaViSettings.shortNoticeableDelay)
-					.ease(d3.easeCubicOut)
-					.style('font-size',DaViSettings.cellFontDefault)
-					.style("opacity",1);
-				this.alignText(textOnTheWay,groupStart.time(this.cellDimWmargin).plus(DaViSettings.cellMargin),cellDim.time(1,group.height))
-
-				for(let t = 0; t <group.height;t++){
-					let key = this.cellBackId(group.firstSlot.day,group.firstSlot.time+t)
-					let slot = this.slotDict[key][groupId]
-					this.setInGroup(key,t==0,t==group.height-1,DaViSettings.cellColorMap[slot.activity])
-				}
-				i++;
+				this.updateGroup(group,groupId);
 			}
 		}
 		
 	}
 	removeGroupFromSlots(groups,coursId){
+		let groupToUpdate = ""
+		let nameToUpdate = ""
+		let groupToRemove= []
 		for(let g of groups){
-			for(let i =0; i < g.height;i++){
-				let key = this.cellBackId(g.firstSlot.day,g.firstSlot.time+i)
-				let slots = this.slotDict[key]
-				if(slots){
-					delete this.slotDict[key][coursId];
+			if(!this.isGroupConflict(g)){
+				groupToRemove.push(g)
+				for(let i =0; i < g.height;i++){
+
+					let key = this.cellBackId(g.start.x,g.start.y+i)
+					let slots = this.slotDict[key]
+
+					if(slots){
+						delete this.slotDict[key][coursId];
+					}
+					if(!Object.keys(slots).length){
+						this.setCellIsolated(key);
+					}	
 				}
-				if(!Object.keys(slots).length){
-					this.setCellIsolated(key);
-				}	
+			}
+			else{
+
+				let key = this.cellBackId(g.start.x,g.start.y)
+				let confCount = dictLen(this.slotDict[key])
+				delete this.slotDict[key][coursId];
+				if(confCount>2){
+					groupToUpdate = g;
+				}else{
+					for(let coursHere in this.slotDict[key]){
+						let slotHere = this.slotDict[key][coursHere]
+						let upper = this.slotDict[this.cellBackId(g.start.x,g.start.y-1)]
+						let linkUp = false
+						let upcours = "";
+						if(upper && dictLen(upper) == 1)
+							for(upcours in upper)
+								linkUp = this.shouldGroup(upper[upcours],slotHere)
+						let lower = this.slotDict[this.cellBackId(g.start.x,g.start.y+1)]
+						let linkDown = false
+						let lowcours = "";
+						if(lower && dictLen(lower) == 1)
+							for(lowcours in lower)
+								linkDown = this.shouldGroup(slotHere,lower[lowcours])
+						let maybeUpGroup = ""
+						if(linkUp){
+							groupToRemove.push(g)
+							for(maybeUpGroup of this.groups[upcours]){
+								if(maybeUpGroup.start.y + maybeUpGroup.height == g.start.y){
+									maybeUpGroup.height += 1
+									groupToUpdate = maybeUpGroup;
+								}
+							}
+						}
+						if(linkDown){
+							groupToRemove.push(g)
+							for(let maybeDownGroup of this.groups[lowcours]){
+								if(maybeDownGroup.start.y == g.start.y + 1){
+									if(linkUp){
+										groupToRemove.push(maybeDownGroup)
+										maybeUpGroup.height += maybeDownGroup.height 
+									}else{
+										maybeDownGroup.height += 1
+										maybeDownGroup.start = maybeDownGroup.start.minus(0,1);
+										groupToUpdate = maybeDownGroup;
+									}
+									break;
+								}
+							}
+						}
+						if(!(linkUp || linkDown)){
+							groupToUpdate = g;
+						}
+					}
+
+					
+				}
+				
+			}
+			
+		}
+		
+		return {update:groupToUpdate, removed:groupToRemove};
+
+	}
+	removeCourse(coursId,mousepos){
+		let deletedGroups = this.groups[coursId]
+		if(!deletedGroups)
+			return
+
+		let deletedSlots = this.slotDict[coursId]
+		let changes = this.removeGroupFromSlots(deletedGroups,coursId);
+		for(let deletedGroup of changes.removed){
+			let oldGroupId = deletedGroup.itemIndex
+			this.freeTextId(oldGroupId)
+			this.resetCellText(DaViSettings.cellTextId + oldGroupId,DaViSettings.defaultDelay,mousepos)
+
+			deletedGroup.itemIndex = -2;
+		}
+		for(let course in this.groups){
+			this.groups[course] = this.groups[course].filter(g => g.itemIndex !== -2)
+		}
+		if(changes.update)
+			this.updateGroup(changes.update,coursId);
+		
+		delete this.groups[coursId]
+		
+
+	}
+	fillText(parent,groupStart,maxDims){
+		function isOk(dim){
+			return dim.x <= maxDims.x + 1e-3 && dim.y < maxDims.y + 1e-3
+		}
+		function mkRoomLink(parent, room){
+			parent.append("a")
+				.text(room)
+				.attr("href",DaViSettings.epflPlanQuerry+room)
+				.classed(DaViSettings.roomLinkTextClass)
+		}
+		parent.style('font-size',DaViSettings.cellFontDefault)
+		parent.style('width',maxDims.x+"px")
+		parent.html("")
+		let text = parent.append("div")
+			.classed(DaViSettings.detailDiv,true)
+
+		let slots = this.slotDict[this.cellBackId(groupStart)]
+		let allTitleName =[];
+		let allCodes = [];
+
+		
+
+		let textNode= text.node();
+		let fullDims = Vec.Dim(textNode.getBoundingClientRect())
+		let everythingFit = true
+		let isFirst = true
+		for(let coursId in slots){
+			let slot = slots[coursId]
+			let course = ISA_data[coursId]
+			allTitleName.push(coursId)
+			allCodes.push(course.code)
+			if(everythingFit){
+				if(!isFirst)
+					text.append("hr")
+				let detailsDiv = text.append("div")
+				detailsDiv.append("a")
+					.text(coursId+" ("+course.code+")")
+					.classed(DaViSettings.cellTitleTextClass,true)
+				let rooms = slot.room
+				let roomsDiv = text.append("div")
+				mkRoomLink(roomsDiv,rooms[0])
+				for(let i =1;i<rooms.length;i++){
+					roomsDiv.append("spand")
+						.txt(",")
+					mkRoomLink(roomsDiv,rooms[i]);
+				}
+				everythingFit = isOk(Vec.Dim(text.node().getBoundingClientRect()))
+				isFirst = false
+			}
+		}
+		if(!everythingFit){
+			text.html("");
+			isFirst = true
+			for(let coursId in slots){
+				if(!everythingFit)
+					break;
+				
+				let slot = slots[coursId]
+				let course = ISA_data[coursId]
+				
+				if(!isFirst)
+					text.append("hr")
+				let detailsDiv = text.append("div")
+				detailsDiv.append("a")
+					.text(coursId)
+					.classed(DaViSettings.cellTitleTextClass,true)
+				let rooms = slot.room
+				let roomsDiv = text.append("div")
+				mkRoomLink(roomsDiv,rooms[0])
+				for(let i =1;i<rooms.length;i++){
+					roomsDiv.append("spand")
+						.txt(",")
+					mkRoomLink(roomsDiv,rooms[i]);
+				}
+				isFirst = false
+				everythingFit = isOk(Vec.Dim(text.node().getBoundingClientRect()))
+			}
+		}
+		if(!everythingFit){
+			text.html("");
+			isFirst = true
+			for(let coursId in slots){
+
+				if(!everythingFit)
+					break;
+				let slot = slots[coursId]
+				let course = ISA_data[coursId]
+				if(!isFirst)
+					text.append("hr")
+				let detailsDiv = text.append("div")
+				detailsDiv.append("a")
+					.text(course.code)
+					.classed(DaViSettings.cellTitleTextClass,true)
+				let rooms = slot.room
+				let roomsDiv = text.append("div")
+				mkRoomLink(roomsDiv,rooms[0])
+				for(let i =1;i<rooms.length;i++){
+					roomsDiv.append("spand")
+						.txt(",")
+					mkRoomLink(roomsDiv,rooms[i]);
+				}
+				isFirst = false
+				everythingFit = isOk(Vec.Dim(text.node().getBoundingClientRect()))
+				
 				
 			}
 		}
-	}
-	mkText(text){
-		text.append("div")
-			.classed(DaViSettings.cellCodeDiv,true)
-			.classed(DaViSettings.cellTextVis+"0",true)
-			.classed(DaViSettings.cellTextVis+"2",true)
-		text.append("div")
-			.classed(DaViSettings.cellNameDiv,true)
-			.classed(DaViSettings.cellTextVis+"1",true)
-			.classed(DaViSettings.cellTextVis+"2",true)
-		text.append("div")
-			.classed(DaViSettings.cellRoomDiv,true)
-			.classed(DaViSettings.cellTextVis+"2",true)
-	}
-	fillText(text,coursName,coursData){
-		let codeA = text.append("div")
-			.classed(DaViSettings.cellTextVis+"0",true)
-			.classed(DaViSettings.cellTextVis+"2",true)
-		let nameA = text.append("div")
-			.classed(DaViSettings.cellTextVis+"1",true)
-			.classed(DaViSettings.cellTextVis+"2",true)
-		let roomA = text.append("div")
-			.classed(DaViSettings.cellTextVis+"2",true)
-		text.select("."+DaViSettings.cellCodeDiv).text(coursData.code)
-		text.select("."+DaViSettings.cellNameDiv).text(coursName)
-		text.select("."+DaViSettings.cellRoomDiv).text(coursData.timeslots[0].room.join())
-		return text;
+		if(!everythingFit){
+			text.html("");
+			text.classed(DaViSettings.cellTitleTextClass,true)
+			text.text(allTitleName.join(" / "))
+			everythingFit = isOk(Vec.Dim(text.node().getBoundingClientRect()))
+			
+		}
+		if(!everythingFit){
+			let titleDims = Vec.Dim(text.node().getBoundingClientRect())
+			text.text(allCodes.join(" / "))
+			titleDims = Vec.Dim(text.node().getBoundingClientRect())
+			while(allCodes.lenght > 1 && !isOk(titleDims)){
+				allCodes.pop()
+				let otherCount = allCodes.length - allCodes.lenght
+				if(otherCount == 1)
+					otherCount += " other"
+				else
+					otherCount += " others"
+				text.text(allCodes.join(" / ")+" and "+otherCount)
+			}
+		}
+		
+		parent.style('font-size',DaViSettings.cellFontVerySmall)
+		
+		return parent;
 
 	}
 	setLevelOpcaity(level,opacity,target){
@@ -330,55 +693,8 @@ class TimeTable{
 				
 		
 	}
-	removeCourse(coursId,mousepos){
-		let deletedGroups = this.groups[coursId]
-		if(!deletedGroups)
-			return
-
-		let deletedSlots = this.slotDict[coursId]
-
-		this.removeGroupFromSlots(deletedGroups,coursId);
-
-		let maxId = Object.keys(this.groups).length;
-		for (let deletedGroup of deletedGroups){
-			let oldGroupId = deletedGroup.itemIndex
-			this.freeTextId(oldGroupId)
-			this.resetCellText(DaViSettings.cellTextId + oldGroupId,DaViSettings.defaultDelay,mousepos)
-		}
-		delete this.groups[coursId]
-		delete this.slotDict[coursId]
-
-	}
-	resizeCell(cell,dims,time,onEnd){
-		let back = cell.back;
-		let text = cell.text;
-		let boxPos = Vec.Pos(back);
-
-		let txtDim = Vec.Dim(text.getBBox());
-
-		let txtMid = txtDim.divide(2);
-
-		let backDim = Vec.Dim(back.getBBox())
-
-		let backMid = backDim.divide(2);
-
-		let pos = backMid.minus(txtMid).plus(boxPos);
-		text.setAttribute("x", ""+pos.x);
-		text.setAttribute("y", ""+pos.y);
-		rescale(back,dims,time,onEnd)
-
-	}
-	rescaleAllCell(scale,time,onEnd){
-		let end = onEnd;
-		for (let cell of this.cells){
-			let backBox = cell.back.getBBox()
-			let backDim = Vec.Dim(backBox);
-			let newDims = backDim.time(scale);
-			this.resizeCell(cell,newDims,time);
-
-		} 
-		setTimeout(onEnd,time);
-	}
+	
+	
 	switchDisplayMode(){
 		let table = document.getElementById(DaViSettings.timeTableId);
 		let button = document.getElementById(DaViSettings.rescaleTableButtonId);

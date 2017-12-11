@@ -26,6 +26,8 @@ var DaViSettings = {
 	cellFontDefault : "1em",
 	cellTextVis : "cellTextVis",
 	cellVisGroupsCount : 3,
+	cellTitleDiv : "cellTitleDiv",
+	cellCoursesDiv : "cellCoursesDiv",
 	cellCodeDiv : "cellCodeDiv",
 	cellRoomDiv : "cellRoomDiv",
 	cellNameDiv : "cellNameDiv",
@@ -38,9 +40,18 @@ var DaViSettings = {
 	cellMargin : new Vec(2,2),
 	tableTextCount  : 100,
 	tempTextId : "tempTextId",
-	cellColorMap : {0:"#9ED4E0",1:"#D1E874",98:'#67706F'},
+	conflictColor: "#e81200",
+	cellColorMap : {0:"#9ED4E0",1:"#D1E874",2:"#FDFF8798",98:'#67706F',3:'#67706F'},
 	tooltipClass : "tooltip",
 	tooltipTextClass : "tooltiptext",
-	chartClass : "chart"
+	chartClass : "chart",
+	dashPatternPrefix : "dashPattern",
+	detailDiv : "detailDiv",
+	cellTitleTextClass : "cellTitleTextClass",
+	roomLinkTextClass : "roomLinkTextClass",
+	epflPlanQuerry :"https://plan.epfl.ch/?lang=fr&room=",
+	dashdPatternDims : new Vec(30,30),
+	dashedLineAngle : 45,
+	shadowDarkness : 0.3
 
 }
