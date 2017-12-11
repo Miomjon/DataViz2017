@@ -7,6 +7,7 @@ var DaViSettings = {
 	timeTableId : "svgTable",
 	courseListId : "courses",
 	cellCourseRow : "card",
+	titlesInfo: "titlesInfo",
 	cellDefaultClass : "timetableCell",
 	cellCourseClass : "timetableCellCourse",
 	cellExerciseClass : "timetableCellExercise",

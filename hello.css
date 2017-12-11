@@ -102,10 +102,10 @@
 /* Tooltip container */
 .tooltip {
     position: relative;
-		width: 250px;
-		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-		text-align: center;
-		display: inline-block;
+    width: 100%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    text-align: center;
+    display: inline-block;
 }
 
 /* Tooltip text */
@@ -121,7 +121,9 @@
     /* Position the tooltip text */
     position: absolute;
     z-index: 1;
-    left: 105%;
+		top: 150%;
+    left: 50%;
+		margin-left: -50%;
 
     /* Fade in tooltip */
     opacity: 0;
@@ -132,12 +134,12 @@
 .tooltip .tooltiptext::after {
     content: " ";
     position: absolute;
-    top: 50%;
-    right: 100%;
-    margin-top: -5px;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
     border-width: 5px;
     border-style: solid;
-    border-color: transparent #555 transparent transparent;
+    border-color: transparent transparent #555 transparent;
 }
 
 /* Show the tooltip text when you mouse over the tooltip container */
@@ -153,4 +155,11 @@
   padding: 3px;
   margin: 1px;
   color: white;
+	width: 50%;
+}
+
+.titlesInfo {
+	text-align: center;
+	width: 100%;
+	font-weight: bold;
 }

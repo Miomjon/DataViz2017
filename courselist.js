@@ -30,6 +30,19 @@ function createActivityData(metadata) {
   return datActivity;
 }
 
+function getSeason(exam_time, exam_type) {
+  if(exam_time === "Winter") {
+    if(exam_type === "During the semester") {
+      return "🍁"
+    }
+    return "❄️";
+  }
+  if(exam_type === "During the semester") {
+    return "🌼"
+  }
+  return "☀️";
+}
+
 class CourseList {
 
   constructor() {
@@ -56,8 +69,10 @@ class CourseList {
 
       let row = document.createElement("tr");
       row.className = DaViSettings.courseListRowClass;
+      tbody.appendChild(row);
 
       let courseName = document.createElement("td");
+      row.appendChild(courseName)
       // courseName.innerHTML = course;
 
       // courseName.className = DaViSettings.cellCourseRow;
@@ -67,30 +82,41 @@ class CourseList {
       hover.style.background =  "#f6f6f6"
       hover.className = DaViSettings.tooltipClass;
       hover.innerHTML = course;
+      courseName.appendChild(hover)
 
-      let hoverInside = document.createElement("span");
+      let hoverInside = document.createElement("div");
       hoverInside.className = DaViSettings.tooltipTextClass;
-      hoverInside.innerHTML = course
+      // hoverInside.innerHTML = course
+      hoverInside.id = "Fixme2"+i
+      hover.appendChild(hoverInside)
 
-      let charT = document.createElement("div");
-      charT.id = "Fixme"+i;
-      charT.className = DaViSettings.chartClass;
+      d3.select("#"+hoverInside.id)
+        .append("span")
+        .text(course)
 
       var activities = createActivityData(metadata);
-      hoverInside.appendChild(charT);
-      hover.appendChild(hoverInside)
-      courseName.appendChild(hover)
-      row.appendChild(courseName)
-      tbody.appendChild(row);
 
-      d3.select("#"+charT.id)
-        .selectAll('div')
-        .data(activities).enter()
-        .append('div')
-        .text(function(d) { return d.duration; })
-        .style("background", d => DaViSettings.cellColorMap[d.activity])
-        .style("width", function(d) { return d.duration*10 + "px"; });
+      var inside = d3.select("#"+hoverInside.id)
+                      .append("div")
 
+      inside.append("div")
+          .style("float", "left")
+          .selectAll('div')
+          .data(activities).enter()
+          .append('div')
+          .text(function(d) { return d.duration; })
+          .style("background", d => DaViSettings.cellColorMap[d.activity])
+          .style("width", function(d) { return d.duration*10 + "px"; });
+
+      inside.append("div")
+             .text("Credits: ")
+             .append("b")
+             .text(metadata.credits)
+
+      //exam type/block/
+      var season = getSeason(metadata.exam_time, metadata.exam_type)
+      inside.append("div")
+              .text("Time: " + season);
 
       i ++;
     }
@@ -153,7 +179,7 @@ class CourseList {
       } else {
         document.getElementById(conf+"_button").style.backgroundColor = "green"
       }
-      
+
     }
   }
 
@@ -180,18 +206,40 @@ class CourseList {
   }
 
   showDetails(course, metadata) {
-    let doc = document.getElementById("courseInfo");
 
-    var old = doc.children;
-    var length = old.length;
-    for(var i = 0; i < length; i++) {
-      old[0].parentNode.removeChild(old[0]);
+    var details = d3.select("#courseInfo")
+                    .html("")
+
+    details.style("padding-left", "5px")
+
+    var conflicts = details.append("div")
+
+    var confTitle = conflicts.append("span")
+                              .text("Conflicts")
+                              .classed(DaViSettings.titlesInfo, true)
+
+    for(var i = 0; i < this.conflictList.get(course).length; i++) {
+      conflicts.append("div")
+                .text(this.conflictList.get(course)[i])
     }
-    for(let conflict of this.conflictList.get(course)) {
-      let con = document.createElement("div");
-      con.innerHTML = conflict;
-      doc.appendChild(con);
-    }
+
+    conflicts.style("height", "50%")
+              .style("overflow-y", "scroll")
+
+    details.append("hr")
+
+    var descr = details.append("div")
+
+    var descrTitle = descr.append("span")
+                           .text("Description")
+                           .classed(DaViSettings.titlesInfo, true)
+
+    descr.append("div")
+            .text(metadata.summary)
+            .style("bottom", "0px")
+
+    descr.style("overflow-y", "scroll")
+
   }
 }
 
