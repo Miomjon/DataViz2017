@@ -607,9 +607,10 @@ class TimeTable{
 
 		
 		let item = d3.select("#"+DaViSettings.cellTextId+itemIndex)
-		if(!item.attr("daviexpanded") || item.attr("daviexpanded") === "false")
+		if(!item.attr("daviexpanded") || item.attr("daviexpanded") === "false"){
 			this.fillText(item,groupStart,new Vec(10000,10000),true)
 				.attr("daviexpanded",true)
+				.style('z-index',2000)
 				.transition()
 				.duration(DaViSettings.defaultDelay)
 				.ease(d3.easeCubicOut)
@@ -619,7 +620,15 @@ class TimeTable{
 				.style('border',"1px solid")
 				.style('padding', "10px")
 				.style('box-shadow',"5px 10px 18px #888888")
-				.style('z-index',2000)
+			for(let i = 0;i<group.height;i++){
+				let key = this.cellBackId(group.start.x,group.start.y+i);
+				d3.select("#"+key)
+					.transition()
+					.duration(DaViSettings.defaultDelay)
+					.ease(d3.easeCubicOut)
+					.style("fill","white");
+			}
+		}	
 		else
 			reset(group,this)
 				
@@ -655,6 +664,9 @@ class TimeTable{
 			if(everythingFit){
 				if(!isFirst)
 					text.append("hr")
+					.attr("noshade","noshade")
+					.style("background-color","red")
+					.style("color","darkred")
 				let detailsDiv = text.append("div")
 				if(isExepandedMode)
 					detailsDiv.transition()
