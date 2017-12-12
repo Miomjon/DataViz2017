@@ -223,10 +223,9 @@ class CourseList {
                 .text(this.conflictList.get(course)[i])
     }
 
-    conflicts.style("height", "50%")
-              .style("overflow-y", "scroll")
+    conflicts.classed("conflicts", true)
 
-    details.append("hr")
+    details.append("div").style("order","2").append("hr")
 
     var descr = details.append("div")
 
@@ -238,7 +237,7 @@ class CourseList {
             .text(metadata.summary)
             .style("bottom", "0px")
 
-    descr.style("overflow-y", "scroll")
+    descr.classed("descriptions", true)
 
   }
 }

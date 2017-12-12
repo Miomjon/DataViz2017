@@ -66,6 +66,9 @@
 	width: 200px;
 	overflow: hidden;
 	position: sticky;
+	display: flex; 
+	flex-direction:column;
+	justify-content: space-evenly ;
 }
 
 #courses{
@@ -78,8 +81,8 @@
 	text-align: center;
 }
 #listWrapper{
-	width: 800px;
 
+	width:50%;
 }
 .timetableCellExercise{
 	fill: #3f43a9;
@@ -90,6 +93,15 @@
 	overflow-x:hidden;
 	top : 0px;
 	height: 480px;
+
+}
+.descriptions{
+	overflow-y: auto;
+	order:3;
+}
+.conflicts{
+	order:1;
+	overflow-y: auto;
 }
 .card {
     width: 250px;
@@ -115,7 +127,7 @@
 .tooltip .tooltiptext {
     visibility: hidden;
     white-space: nowrap;
-    background-color: #555;
+    background:rgba(.2,.2,.2 ,.7);;
     color: #fff;
     text-align: center;
     padding: 5px;
