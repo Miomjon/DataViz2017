@@ -50,6 +50,7 @@ class CourseList {
     this.coursesInList = [];
     this.conflictList = new Map();
     this.hoverTimout = "";
+    this.topSpe = "";
   }
 
   createCourseList(data) {
@@ -99,6 +100,10 @@ class CourseList {
       if(isObl(metadata))
         hover.innerHTML += "🔸 "
       hover.innerHTML += course;
+      let speSpan = document.createElement("span");
+      let speSpanClasses  = ["speSpanClass0"].concat(metadata.specialisations[DaViSettings.userSection].map(x =>"speSpanClass"+x));
+      speSpan.className = speSpanClasses.join(" ");
+      hover.appendChild(speSpan);
       courseName.appendChild(hover)
 
       let hoverInside = document.createElement("div");
@@ -209,8 +214,33 @@ class CourseList {
 
     }
     insightsHandle.update(this.enableCourseList);
+
+
   }
 
+  showTopSpe(speLetter,speColor){
+    if(this.topSpe !== speLetter){
+      this.topSpe = speLetter;
+      let bColor = d3.interpolateLab(speColor, "black")(0.15)
+      d3.selectAll(".speSpanClass0:not(.speSpanClass"+speLetter+")")
+        .text("")
+        .transition()
+        .duration(DaViSettings.shortNoticeableDelay)
+        .ease(d3.easeQuad)
+        .style("border",null)
+        .style("background-color",null)
+        .style("border-color",null);
+      d3.selectAll(".speSpanClass"+speLetter)
+        .text(speLetter)
+        .transition()
+        .duration(DaViSettings.shortNoticeableDelay)
+        .ease(d3.easeQuad)
+        .style("border","1px solid")
+        .style("background-color",speColor)
+        .style("border-color",bColor);
+    }
+    
+  }
 // remove and do a function that precomputes the conflicts for each course
   conflicts(data) {
     for(let [course, metadata] of data) {

@@ -22,6 +22,19 @@ class Insights{
 
 		let barSep = DaViSettings.spePlotBarMargin * svgDim.x
 		let translate0 = svgDim.time(DaViSettings.spePlotRectO).plus(barSep/4,0)
+		function speColor(speLetter){
+				let index = speLetter.charCodeAt(0)-"A".charCodeAt(0);
+				let map ="1b9e77d95f027570b3e7298a66a61ee6ab02a6761d666666";
+				let mapLength = map.length/6;
+				while(index>=mapLength){
+					index -= mapLength;
+					let c= map.charAt(0)
+					map = map.substring(1)
+					map +=c;
+				}
+				index*=6;
+				return "#"+map.substring(index,index+6);
+			}
 		if(specount){
 			
 			let spePlotSquare = new Vec(Math.min((svgDim.x-translate0.x)/specount - barSep * (specount-1),DaViSettings.peBarMaxWidth * svgDim.x),translate0.y/speToDisplay[0][1]);
@@ -49,19 +62,7 @@ class Insights{
 					.attr("text-anchor","middle")
 				return g;	
 			}
-			function speColor(speLetter){
-				let index = speLetter.charCodeAt(0)-"A".charCodeAt(0);
-				let map ="1b9e77d95f027570b3e7298a66a61ee6ab02a6761d666666";
-				let mapLength = map.length/6;
-				while(index>=mapLength){
-					index -= mapLength;
-					let c= map.charAt(0)
-					map = map.substring(1)
-					map +=c;
-				}
-				index*=6;
-				return "#"+map.substring(index,index+6);
-			}
+			
 			function getSlot(speId){
 				if(document.getElementById(speId))
 					return d3.select("#"+speId)
@@ -131,7 +132,9 @@ class Insights{
 				.attr("transform", "translate(1000,"+translate0.y+")")
 				.remove();
 
-		}	
+		}
+		let topSpe = speToDisplay[0][0]
+		courselist.showTopSpe(topSpe,speColor(topSpe))
 
 	}
 	update(courses){

@@ -88,6 +88,11 @@ html, body {
 	display: flex; 
 
 }
+.speSpanClass0{
+	padding-right: 0.6em;
+	padding-left: 0.6em;
+	margin: 1em 1em;
+}
 .credSumDiv{
 	display: flex;
 	flex-flow: column;
