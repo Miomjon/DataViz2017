@@ -3,7 +3,15 @@
 	border-style: solid;
 	border-width: 1px;
 	float:left;
+	padding:2px;
 }
+
+
+html, body {
+    margin: 0;
+    height: 100%;
+}
+
 
 #rescaleTableButton{
 	border-style: solid;
@@ -16,6 +24,19 @@
 	height: 25px;
 	top : 0px;
 
+}
+.spePlot{
+	height: 100%;
+	min-width: 50%;
+}
+.detailsTile{
+	order: 0;
+	font-family: "Oswald";
+	font-weight: bold;
+	padding-bottom: 3px;
+	font-style: normal;
+	font-variant: normal;
+	position: sticky;
 }
 .cellTextClass {
 	color: black;
@@ -59,7 +80,41 @@
 #table{
 	float :left;
 }
+#insightDiv{
+	background-color:#efefef;
+	flex : 1 1 auto;
+	flex-direction:row;
+	justify-content: space-evenly;
+	display: flex; 
 
+}
+.credSumDiv{
+	display: flex;
+	flex-flow: column;
+	text-align: center
+	padding:5px;
+}
+.smallFlexTitle{
+	order :1;
+	text-align: center;
+	padding-left :0.5em;
+	padding-right :0.5em;
+}
+.bigflexNumber{
+	order :1;
+	font-family: "Montsserat";
+	font-weight : bold;
+	font-size: 5em;
+	text-align: center;
+}
+#superflex{
+	display: flex;
+	flex-flow: column;
+	height: 100%;
+}
+#subflex{
+	flex : 0 0 auto;
+}
 #courseInfo{
 	top : 0px;
 	height: 480px;
@@ -67,8 +122,10 @@
 	overflow: hidden;
 	position: sticky;
 	display: flex; 
+	order : 1;
 	flex-direction:column;
 	justify-content: space-evenly ;
+	flex-grow: 1;
 }
 
 #courses{
@@ -81,18 +138,23 @@
 	text-align: center;
 }
 #listWrapper{
-
-	width:50%;
+	order : 0;
+	display: inline-block;
+	height: 100%;
+	overflow-y:auto;
+	overflow-x:hidden;
+	flex-grow: 1;
 }
 .timetableCellExercise{
 	fill: #3f43a9;
 	text-align: center;
 }
 #courseListDiv{
-	overflow-y:scroll;
-	overflow-x:hidden;
+	overflow:hidden;
 	top : 0px;
 	height: 480px;
+	display: flex;
+	flex-direction:row;
 
 }
 .descriptions{
@@ -118,6 +180,7 @@
 .tooltip {
     position: relative;
     width: 100%;
+    max-width: 100%;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     text-align: center;
     display: inline-block;
@@ -126,12 +189,12 @@
 /* Tooltip text */
 .tooltip .tooltiptext {
     visibility: hidden;
-    white-space: nowrap;
-    background:rgba(.2,.2,.2 ,.7);;
+    background-color : rgba(51,51,51,0.9);
     color: #fff;
     text-align: center;
     padding: 5px;
     border-radius: 6px;
+    max-width: 230px;
 
     /* Position the tooltip text */
     position: absolute;
@@ -143,6 +206,7 @@
     /* Fade in tooltip */
     opacity: 0;
     transition: opacity 1s;
+    display: inline-block;
 }
 
 /* Tooltip arrow */
@@ -151,16 +215,21 @@
     position: absolute;
     bottom: 100%;
     left: 50%;
+    max-width: 230px;
     margin-left: -5px;
     border-width: 5px;
     border-style: solid;
     border-color: transparent transparent #555 transparent;
 }
-
+.tooltipTitle{
+	max-width: 100%;
+	display: inline-block;
+}
 /* Show the tooltip text when you mouse over the tooltip container */
 .tooltip:hover .tooltiptext {
     visibility: visible;
     opacity: 1;
+    position: absolute;
 }
 
 .chart div {
@@ -170,11 +239,12 @@
   padding: 3px;
   margin: 1px;
   color: white;
-	width: 50%;
+  width: 50%;
 }
 
 .titlesInfo {
 	text-align: center;
 	width: 100%;
 	font-weight: bold;
+	font-size: 0.9em
 }

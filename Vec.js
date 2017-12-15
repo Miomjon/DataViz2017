@@ -116,7 +116,9 @@ class Vec{
   		return new Vec(aX,aY);
 
   	}
-
+  	toString(){
+  		return "("+this.x+","+this.y+")";
+  	}
   	genBinOpp(f,args) {
   		if(args.length == 1){
   			let n = args[0]

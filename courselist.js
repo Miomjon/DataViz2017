@@ -1,7 +1,7 @@
 function buildMap(obj) {
-    let map = new Map();
+    let map = [];
     Object.keys(obj).forEach(key => {
-        map.set(key, obj[key]);
+        map.push([key, obj[key]]);
     });
     return map;
 }
@@ -49,10 +49,23 @@ class CourseList {
     this.enableCourseList = [];
     this.coursesInList = [];
     this.conflictList = new Map();
+    this.hoverTimout = "";
   }
 
   createCourseList(data) {
-
+    function isObl(c){
+      if(DaViSettings.userSection === "IN")
+        return c.mandatory_I
+      return c.mandatory_C
+    }
+    function copareCourses(a,b){
+      if(isObl(a[1])){
+        if(!isObl(b[1]))
+          return -1        
+      }else if(isObl(b[1]))
+        return 1;
+        return a[0]>b[0];
+    }
     let table = document.getElementById(DaViSettings.courseListId);
 
     let tbody = document.createElement("tbody");
@@ -61,12 +74,13 @@ class CourseList {
     let titlerow =  document.createElement("tr");
     let cell = document.createElement("th");
     cell.innerHTML = "Courses";
+    cell.className = "detailsTile"
 
     titlerow.appendChild(cell)
     tbody.appendChild(titlerow)
+    data.sort(copareCourses)
     let i =0
     for(let [course, metadata] of data) {
-
       let row = document.createElement("tr");
       row.className = DaViSettings.courseListRowClass;
       tbody.appendChild(row);
@@ -81,7 +95,10 @@ class CourseList {
       hover.id = course + "_button";
       hover.style.background =  "#f6f6f6"
       hover.className = DaViSettings.tooltipClass;
-      hover.innerHTML = course;
+      hover.innerHTML = ""
+      if(isObl(metadata))
+        hover.innerHTML += "🔸 "
+      hover.innerHTML += course;
       courseName.appendChild(hover)
 
       let hoverInside = document.createElement("div");
@@ -93,6 +110,7 @@ class CourseList {
       d3.select("#"+hoverInside.id)
         .append("span")
         .text(course)
+        .classed("tooltipTitle",true)
 
       var activities = createActivityData(metadata);
 
@@ -102,11 +120,15 @@ class CourseList {
       inside.append("div")
           .style("float", "left")
           .selectAll('div')
-          .data(activities).enter()
+          .data(activities.filter(d=>d.duration>0)).enter()
           .append('div')
           .text(function(d) { return d.duration; })
           .style("background", d => DaViSettings.cellColorMap[d.activity])
-          .style("width", function(d) { return d.duration*10 + "px"; });
+          .style("color", "#333333")
+          .style("font-weight","bold")
+          .style("font-size","14px")
+          .style("width", "15px")
+          .style("height", function(d) { return d.duration*15 + "px"; });
 
       inside.append("div")
              .text("Credits: ")
@@ -117,7 +139,12 @@ class CourseList {
       var season = getSeason(metadata.exam_time, metadata.exam_type)
       inside.append("div")
               .text("Time: " + season);
+      let coursteach =  metadata.teachers
+      let teach = "Teacher"
+      if(coursteach.indexOf(",") >0)
+        teach+="s"
 
+      inside.append("div").text(teach+": ").append("b").text(coursteach);
       i ++;
     }
   }
@@ -139,7 +166,7 @@ class CourseList {
           }
         }
         if(wasOrange) {
-          document.getElementById(c+"_button").style.backgroundColor = "red";
+          document.getElementById(c+"_button").style.backgroundColor = DaViSettings.conflictColor;
         } else {
           document.getElementById(c+"_button").style.backgroundColor = "#f6f6f6"
         }
@@ -154,7 +181,7 @@ class CourseList {
             document.getElementById(conflict+"_button").style.backgroundColor = "orange";
             wasGreen = true;
           } else {
-            document.getElementById(conflict+"_button").style.backgroundColor = "red"
+            document.getElementById(conflict+"_button").style.backgroundColor = DaViSettings.conflictColor
           }
         }
         if(wasGreen) {
@@ -171,7 +198,7 @@ class CourseList {
           document.getElementById(list+"_button").style.backgroundColor = "orange";
           goesOrange = true;
         } else {
-          document.getElementById(list+"_button").style.backgroundColor = "red"
+          document.getElementById(list+"_button").style.backgroundColor = DaViSettings.conflictColor
         }
       }
       if(goesOrange) {
@@ -181,6 +208,7 @@ class CourseList {
       }
 
     }
+    insightsHandle.update(this.enableCourseList);
   }
 
 // remove and do a function that precomputes the conflicts for each course
@@ -212,15 +240,27 @@ class CourseList {
 
     details.style("padding-left", "5px")
 
+    details.append("span").text(course).classed("detailsTile",true)
+
     var conflicts = details.append("div")
 
     var confTitle = conflicts.append("span")
                               .text("Conflicts")
                               .classed(DaViSettings.titlesInfo, true)
-
+    let noActiveConf = []
     for(var i = 0; i < this.conflictList.get(course).length; i++) {
+      let conflictCours = this.conflictList.get(course)[i]
+      if(this.enableCourseList.indexOf(conflictCours)>=0){
+        conflicts.append("div")
+          .text(conflictCours)
+          .style("color",DaViSettings.conflictColor)
+      }else{
+        noActiveConf.push(conflictCours)
+      }
+    }
+    for(let conf of noActiveConf){
       conflicts.append("div")
-                .text(this.conflictList.get(course)[i])
+          .text(conf)
     }
 
     conflicts.classed("conflicts", true)
@@ -228,16 +268,30 @@ class CourseList {
     details.append("div").style("order","2").append("hr")
 
     var descr = details.append("div")
+      .classed("descriptions", true)
 
     var descrTitle = descr.append("span")
-                           .text("Description")
+                           .text("Infromation")
                            .classed(DaViSettings.titlesInfo, true)
+    let descrSub = descr.append("div")
+    if(DaViSettings.userSection == "IN" && metadata.mandatory_I || DaViSettings.userSection == "SC" && metadata.mandatory_C)
+      descrSub.append("div")
+        .text("🔸 Mandatory group")
+    let spes = metadata.specialisations[DaViSettings.userSection]
+    if(spes.length){
 
-    descr.append("div")
-            .text(metadata.summary)
-            .style("bottom", "0px")
+      let infoDivText = "Specialisation"
+      if(spes.length>1)
+        infoDivText +="s"
+      infoDivText+= ": "+spes.join(", ")
+      descrSub.append("div").text(infoDivText)
+      .style("padding-top","0.5em")
+      .style("padding-bottom","0.5em")
+    }
+    
+    descrSub.append("div")
+        .text("\n"+metadata.summary)
 
-    descr.classed("descriptions", true)
 
   }
 }
@@ -249,5 +303,17 @@ courselist.createCourseList(data_map)
 courselist.conflicts(data_map)
 for(let [course, metadata] of data_map) {
   document.getElementById(course+"_button").onclick = (event) => courselist.enableCourse(course, event);
-  document.getElementById(course+"_button").onmouseover = function(){courselist.showDetails(course, metadata)}
+  document.getElementById(course+"_button").onmouseover = function(){
+    if(courselist.hoverTimout){
+      window.clearTimeout(courselist.hoverTimout);
+      courselist.hoverTimout = "";
+    }
+    courselist.hoverTimout = window.setTimeout(()=>courselist.showDetails(course, metadata),DaViSettings.HoverTimout)
+  }
+  document.getElementById(course+"_button").onmouseout = function(){
+    if(courselist.hoverTimout){
+      window.clearTimeout(courselist.hoverTimout);
+      courselist.hoverTimout = "";
+    }
+  }
 }

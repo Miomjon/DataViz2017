@@ -57,6 +57,7 @@ class TimeTable{
 				.ease(d3.easeCubicOut)
 		}
 		if(text.node().tagName.toLowerCase() == 'div'){
+			textPos = textPos.minus(DaViSettings.textOff)
 			text.style("left" , textPos.x+"px")
 				.style("top" ,textPos.y+"px")
 				.style("width",boxDim.x+"px")
@@ -86,7 +87,6 @@ class TimeTable{
 			.transition()
 			.style("left",-1000+"px")
 			.style("top",-1000+"px")
-			.style('border',null)
 			.style('padding',null)
 			.style('box-shadow',null)
 			.attr("daviexpanded",false)
@@ -125,7 +125,7 @@ class TimeTable{
 					.attr('patternTransform',"rotate("+DaViSettings.dashedLineAngle+" 0 0)")
 				let lineWidth = patternDim.x/colors.length;
 				for(let i = 0;i< colors.length;i++){
-					let c = d3.interpolateLab(colors[i], "black")(DaViSettings.shadowDarkness);
+					let c = d3.interpolateLab(colors[i], DaViSettings.cellDefaultColor)(DaViSettings.shadowDarkness);
 					let x = i*lineWidth + lineWidth/2;
 					pattern.append("line")
 						.attr("x1",x)
@@ -139,7 +139,7 @@ class TimeTable{
 			}
 			return 'url(#'+patterName+')'
 		}
-		return d3.interpolateLab(colors[0], "black")(DaViSettings.shadowDarkness);
+		return d3.interpolateLab(colors[0], DaViSettings.cellDefaultColor)(DaViSettings.shadowDarkness);
 		
 	}
 	updateGroupShadow(cellkey,group){
@@ -402,12 +402,11 @@ class TimeTable{
 				.attr("id",DaViSettings.cellTextId+i)
 				.classed(DaViSettings.cellTextClass,true)
 				.style('text-anchor', 'middle')
+				.style('border',"1px solid")
 
 			this.resetCellText(DaViSettings.cellTextId+i)
 				
 		}
-		this.isDisplayBig = true;
-		this.switchDisplayMode();
 		
 
 	}
@@ -430,6 +429,9 @@ class TimeTable{
 			.style('font-size',DaViSettings.cellFontDefault)
 			.style("opacity",1)
 			.style("background-color",color)
+			.style('padding',null)
+			.style('box-shadow',null)
+			.style('border-color',d3.interpolateLab(color, "black")(0.15))
 		this.alignText(textOnTheWay,groupStart.time(this.cellDimWmargin).plus(DaViSettings.cellMargin),textDim)
 
 		for(let t = 0; t <group.height;t++){
@@ -589,8 +591,7 @@ class TimeTable{
 			let item = d3.select("#"+DaViSettings.cellTextId+g.itemIndex)
 
 				if(item.attr("daviexpanded") && item.attr("daviexpanded") === "true"){
-					item.style('border',null)
-						.style('padding',null)
+					item.style('padding',null)
 						.style('box-shadow',null)
 						.attr("daviexpanded",false)
 						.style('z-index',null)
@@ -608,8 +609,8 @@ class TimeTable{
 		
 		let item = d3.select("#"+DaViSettings.cellTextId+itemIndex)
 		if(!item.attr("daviexpanded") || item.attr("daviexpanded") === "false"){
-			this.fillText(item,groupStart,new Vec(10000,10000),true)
-				.attr("daviexpanded",true)
+			let t = this.fillText(item,groupStart,new Vec(10000,10000),true)
+			t.attr("daviexpanded",true)
 				.style('z-index',2000)
 				.transition()
 				.duration(DaViSettings.defaultDelay)
@@ -617,7 +618,6 @@ class TimeTable{
 				.style('font-size',DaViSettings.cellFontDefault)
 				.style('width',"auto")
 				.style('height',"auto")
-				.style('border',"1px solid")
 				.style('padding', "10px")
 				.style('box-shadow',"5px 10px 18px #888888")
 			for(let i = 0;i<group.height;i++){
@@ -668,11 +668,17 @@ class TimeTable{
 					.style("background-color","red")
 					.style("color","darkred")
 				let detailsDiv = text.append("div")
-				if(isExepandedMode)
-					detailsDiv.transition()
+				if(isExepandedMode){
+					let color = this.getColor(slot)
+					let temp = detailsDiv.transition()
 						.ease(d3.easeCubicOut)
 						.duration(DaViSettings.defaultDelay)
-						.style("background-color",this.getColor(slot))
+						.style("background-color",color)
+					if(dictLen(slots)>1)
+						temp.style("padding","2px")
+						.style("border","2px solid")
+						.style("border-color",d3.interpolateLab(color, "black")(0.5))
+				}
 				detailsDiv.append("a")
 					.text(coursId+" ("+course.code+")")
 					.classed(DaViSettings.cellTitleTextClass,true)
@@ -682,7 +688,16 @@ class TimeTable{
 					stuffDiv.append('div')
 						.text('👁')
 						.classed("left",true)
-						.on("click",()=>{d3.event.stopPropagation();courselist.showDetails(coursId, course)})
+						.on("click",()=>{
+							d3.event.stopPropagation();
+							courselist.showDetails(coursId, course);
+							d3.select("#courseInfo")
+							.style('background-color',"rebeccapurple")
+							.transition()
+							.duration(DaViSettings.shortNoticeableDelay)
+							.ease(d3.easeCubicOut)
+							.style('background-color',"white");
+						})
 					stuffDiv.append('div')
 						.text('❌')
 						.classed("right",true)
@@ -817,23 +832,6 @@ class TimeTable{
 	}
 	
 	
-	switchDisplayMode(){
-		let table = document.getElementById(DaViSettings.timeTableId);
-		let button = document.getElementById(DaViSettings.rescaleTableButtonId);
-		
-		if(this.isDisplayBig){
-
-			this.setLevelOpcaity(1,0)
-			this.setLevelOpcaity(2,0)
-			this.setLevelOpcaity(0,1)
-			this.isDisplayBig = false
-		}else{
-			this.setLevelOpcaity(1,1)
-			this.setLevelOpcaity(2,1)
-			this.setLevelOpcaity(0,1)
-			this.isDisplayBig = true
-		}
-	}
 }
 
 var timtable = new TimeTable()

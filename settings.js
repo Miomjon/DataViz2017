@@ -34,15 +34,15 @@ var DaViSettings = {
 	cellNameDiv : "cellNameDiv",
 	defaultDelay : 200,
 	shortNoticeableDelay : 500,
-	dayshoursDivOffset : new Vec(50,50),
+	dayshoursDivOffset : new Vec(30,30),
 	tableDimBig : new Vec(825,480),
 	tableDimSmall : new Vec(825,480),
 	cellBigScale : new Vec(1.5,1.5),
 	cellMargin : new Vec(2,2),
 	tableTextCount  : 100,
 	tempTextId : "tempTextId",
-	conflictColor: "#e81200",
-	cellColorMap : {0:"#9ED4E0",1:"#D1E874",2:"#FDFF8798",98:'#67706F',3:'#67706F'},
+	conflictColor: "#E54535",
+	cellColorMap : {0:"#9ED4E0",1:"#D1E874",2:"#FDFF87",98:'#67706F',3:'#67706F'},
 	tooltipClass : "tooltip",
 	tooltipTextClass : "tooltiptext",
 	chartClass : "chart",
@@ -53,6 +53,15 @@ var DaViSettings = {
 	epflPlanQuerry :"https://plan.epfl.ch/?lang=fr&room=",
 	dashdPatternDims : new Vec(30,30),
 	dashedLineAngle : 45,
-	shadowDarkness : 0.3
+	shadowDarkness : 0.3,
+	maxDisplayedSpe : 4,
+	userSection : "IN",
+	textOff : new Vec(3,3),
+	spePlotId : "insightfullPlot1",
+	spePlotRectO : new Vec(0.1,0.7),
+	spePlotBarMargin : 0.03,
+	peBarMaxWidth : 0.5,
+	HoverTimout : 200
+
 
 }
