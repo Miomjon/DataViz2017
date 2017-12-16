@@ -2,8 +2,8 @@ var DaViSettings = {
 
 	dayStart : 8,
 	dayEnd : 19,
-	days : ["Monday","Tuesday","Wensday","Thursday","Friday"],
-	workdays : ["Monday","Tuesday","Wensday","Thursday","Friday"],
+	days : ["Monday","Tuesday","Wednesday","Thursday","Friday"],
+	workdays : ["Monday","Tuesday","Wednesday","Thursday","Friday"],
 	timeTableDivId : "tableDiv",
 	timeTableId : "svgTable",
 	courseListId : "courses",

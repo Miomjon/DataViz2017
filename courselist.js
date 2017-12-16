@@ -62,7 +62,7 @@ class CourseList {
     function copareCourses(a,b){
       if(isObl(a[1])){
         if(!isObl(b[1]))
-          return -1        
+          return -1
       }else if(isObl(b[1]))
         return 1;
         return a[0]>b[0];
@@ -256,9 +256,9 @@ class CourseList {
               .style("border-color",bColor)
               .style("color",textColor);
           }
-            
+
         }
-        
+
       }else{
         d3.selectAll(".speSpanClass"+speLetter)
         .text(speLetter)
@@ -270,9 +270,9 @@ class CourseList {
         .style("border-color",bColor)
         .style("color",textColor);
       }
-      
+
     }
-    
+
   }
 // remove and do a function that precomputes the conflicts for each course
   conflicts(data) {
@@ -342,7 +342,7 @@ class CourseList {
       .classed("descriptions", true)
 
     var descrTitle = descr.append("span")
-                           .text("Infromation")
+                           .text("Information")
                            .classed(DaViSettings.titlesInfo, true)
     let descrSub = descr.append("div")
     if(DaViSettings.userSection == "IN" && metadata.mandatory_I || DaViSettings.userSection == "SC" && metadata.mandatory_C)
@@ -376,7 +376,7 @@ class CourseList {
         .on("click",d => this.showTopSpe(d,insightsHandle.speColor(d)))
         .exit();
     }
-    
+
     descrSub.append("div")
         .text("\n"+metadata.summary)
 
