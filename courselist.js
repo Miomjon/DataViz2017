@@ -228,7 +228,7 @@ class CourseList {
       this.topSpe = speLetter;
       let bColor = d3.interpolateLab(speColor, "black")(0.15)
       let textColor = "black";
-      if(d3.hsl(speColor).l<0.3)
+      if(d3.hsl(speColor).l<0.5)
         textColor = "white";
       d3.selectAll(".speSpanClass0")
         .text("")
@@ -311,19 +311,27 @@ class CourseList {
                               .text("Conflicts")
                               .classed(DaViSettings.titlesInfo, true)
     let noActiveConf = []
+    let colorFlip = 0
     for(var i = 0; i < this.conflictList.get(course).length; i++) {
       let conflictCours = this.conflictList.get(course)[i]
       if(this.enableCourseList.indexOf(conflictCours)>=0){
-        conflicts.append("div")
+       let a = conflicts.append("div")
           .text(conflictCours)
           .style("color",DaViSettings.conflictColor)
+        if(colorFlip % 2== 0)
+          a.style("background-color","#C2EDC9")
+        colorFlip ++;
       }else{
         noActiveConf.push(conflictCours)
       }
     }
     for(let conf of noActiveConf){
-      conflicts.append("div")
+      let a = conflicts.append("div")
           .text(conf)
+          .style("padding-bottom","0.2em")
+      if(colorFlip % 2== 0)
+          a.style("background-color","#C2EDC9")
+        colorFlip ++;
     }
 
     conflicts.classed("conflicts", true)
@@ -359,6 +367,12 @@ class CourseList {
         .style("border","1px solid")
         .style("background-color",d=>insightsHandle.speColor(d))
         .style("border-color",d=>d3.interpolateLab(insightsHandle.speColor(d), "black")(0.15))
+        .style("color",d=>{
+          let c = insightsHandle.speColor(d);
+          if(d3.hsl(c).l<0.5)
+            return "white"
+          return "black"
+        })
         .on("click",d => this.showTopSpe(d,insightsHandle.speColor(d)))
         .exit();
     }
