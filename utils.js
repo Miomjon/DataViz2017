@@ -11,3 +11,12 @@ function unics(arr){
 function dictLen(dict){
 	return Object.keys(dict).length
 }
+function timeFilter(d,h){
+	return function (cours){
+		for(let slot of cours.timeslots)
+			if((slot.day === d || d==="") && (slot.time === h || h===""))
+				return true;
+
+		return false;	
+	}
+}

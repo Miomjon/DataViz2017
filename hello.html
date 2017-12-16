@@ -3,28 +3,69 @@
 <head>
   <meta charset="utf-8">
   <link rel="stylesheet" type="text/css" href="hello.css">
-  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic|Oswald:400,700" media="screen">
+  <script src="D3.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dimple/2.3.0/dimple.latest.min.js"></script>
 </head>
 
 <body>
+	<div id="superflex">
+		<div id="subflex">
+			<div id="tableDiv">
 
-	<div id="tableDiv">
+				<svg id="svgTable" transform="matrix(1,0,0,1,0,0)" class="timetable" xmlns="http://www.w3.org/2000/svg">
+					<defs></defs>
+				</svg>
+			</div>
 
-		<svg id="svgTable" transform="matrix(1,0,0,1,0,0)" class="timetable" xmlns="http://www.w3.org/2000/svg">
-			<defs></defs>
-		</svg>
+		
+		  	<div id="courseListDiv">
+		  		<div id="listWrapper">
+			    	<table id="courses"></table>
+		  		</div>
+		      <div id ="courseInfo" class="appear"></div>
+			</div>
+		</div>
+		<div id="insightDiv">
+			<div class="credSumDiv" style="order:0; background-color: #c2edc9" onclick="insightsHandle.onCreditClicked()">
+				<span class="smallFlexTitle">Credits</span>
+				<span id="creditsSum" class="bigflexNumber"></span>
+			</div>
+			<div class="credSumDiv" style="order:1;" onclick="insightsHandle.onCreditClicked()">
+				<span class="smallFlexTitle">Mandatory</span>
+				<span id="mandCreditsSum" class="bigflexNumber"></span>
+			</div>
+			
+			<div class="credSumDiv" style="order:2;background-color: #c2edc9">
+				<span class="smallFlexTitle" style="order:0">Expected workload </span>
+				<span id="workloadSum" class="bigflexNumber" style="order:1"></span>
+				<span style="order:2"> Hours at EPFL + Personal work</span>
+			</div>
+			<div class="credSumDiv" style="order:5">
+				<div class="smallFlexTitle" >Credits per Specialisation</div>
+				<div class="credSumDiv" style="order:1">
+					<svg id="insightfullPlot1" style="order:2" class="spePlot" xmlns="http://www.w3.org/2000/svg">
+					</svg>
+				</div>
+			</div>
+			<div class="credSumDiv" style="order:5; background-color: #c2edc9" >
+				<div class="smallFlexTitle" >Activity Balance</div>
+				<div class="credSumDiv" style="order:1">
+					<svg id="insightfullPlot2" style="order:2" class="spePlot" xmlns="http://www.w3.org/2000/svg">
+					</svg>
+				</div>
+			</div>
+			<div class="credSumDiv" style="order:6;margin: 1em">
+				<div class="smallFlexTitle" >Legend</div>
+				<span><span style="background-color: #9ED4E0; order: 1;" class = "legendColorBox">   </span>Lecture</span>
+				<span><span style="background-color: #D1E874;order: 2;" class = "legendColorBox">   </span>Exercise</span>
+				<span><span style="background-color: #FDFF87;order: 3;" class = "legendColorBox">   </span>Project</span>
+				<span><span style="background-color: #67706F;order: 4;" class = "legendColorBox">   </span>TP</span>
+				<span><span style="background-color: #E54535;order: 5;" class = "legendColorBox">   </span>Conflict</span>
+			</div>
+		</div>
 	</div>
-
-
-  	<div id="courseListDiv">
-  		<div id="listWrapper">
-	    	<table id="courses"></table>
-  		</div>
-      <div id ="courseInfo" class="appear"></div>
-	</div>
-
-	<script src="courses_scrapped_v2.js"></script>
+	<script src="courses_scrapped_v3.js"></script>
 
 
 
@@ -33,11 +74,11 @@
 	<script src="Vec.js"></script>
 
 
-	<script src="D3.js"></script>
-
 	<script src="settings.js"></script>
 	<script src="courselist.js"></script>
+
 	<script src="hello.js"></script>
+	<script src="insights.js"></script>
 
 </body>
 </html>

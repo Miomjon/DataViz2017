@@ -1,6 +1,7 @@
 
 
-
+// Intelligent agent, DIS, Auto speech, -Intel Agents.
+// Intelligent agent, ML
 
 class TimeTable{
 
@@ -57,6 +58,7 @@ class TimeTable{
 				.ease(d3.easeCubicOut)
 		}
 		if(text.node().tagName.toLowerCase() == 'div'){
+			textPos = textPos.minus(DaViSettings.textOff)
 			text.style("left" , textPos.x+"px")
 				.style("top" ,textPos.y+"px")
 				.style("width",boxDim.x+"px")
@@ -86,9 +88,9 @@ class TimeTable{
 			.transition()
 			.style("left",-1000+"px")
 			.style("top",-1000+"px")
-			.style('border',null)
 			.style('padding',null)
 			.style('box-shadow',null)
+			.style('width',this.cellDim.x+"px")
 			.attr("daviexpanded",false)
 			.style('z-index',null)
 	}
@@ -125,7 +127,7 @@ class TimeTable{
 					.attr('patternTransform',"rotate("+DaViSettings.dashedLineAngle+" 0 0)")
 				let lineWidth = patternDim.x/colors.length;
 				for(let i = 0;i< colors.length;i++){
-					let c = d3.interpolateLab(colors[i], "black")(DaViSettings.shadowDarkness);
+					let c = d3.interpolateLab(colors[i], DaViSettings.cellDefaultColor)(DaViSettings.shadowDarkness);
 					let x = i*lineWidth + lineWidth/2;
 					pattern.append("line")
 						.attr("x1",x)
@@ -139,7 +141,7 @@ class TimeTable{
 			}
 			return 'url(#'+patterName+')'
 		}
-		return d3.interpolateLab(colors[0], "black")(DaViSettings.shadowDarkness);
+		return d3.interpolateLab(colors[0], DaViSettings.cellDefaultColor)(DaViSettings.shadowDarkness);
 		
 	}
 	updateGroupShadow(cellkey,group){
@@ -354,6 +356,8 @@ class TimeTable{
 		return a.activity === b.activity && a.time+1 == b.time
 	}
 	initTimetable() {
+		
+		
 		this.groupFunction = "groupByActivity";
 		let figure = d3.select("#"+DaViSettings.timeTableId);
 		let tableBody = d3.select("#"+DaViSettings.timeTableDivId);
@@ -375,7 +379,14 @@ class TimeTable{
 					.attr("width",this.cellDim.x)
 					.attr("height",this.cellDim.y)
 					.attr("id",this.cellBackId(day,hour))
-					.attr('fill',DaViSettings.cellDefaultColor);
+					.attr('fill',DaViSettings.cellDefaultColor)
+					.on("click",()=>{
+						window.courselist.showTopSpe(
+							DaViSettings.days[day]+" "+(DaViSettings.dayStart + hour)+"H",
+							"#F6630C",
+							timeFilter(day,hour))
+						}
+					);
 		}
 		for(let day = 0;day<DaViSettings.days.length;day++){
 			let text = figure.append("text")
@@ -383,6 +394,13 @@ class TimeTable{
 					.attr("y",0)
 					.style('text-anchor', 'middle')
 					.text(DaViSettings.days[day])
+					.on("click",()=>{
+						window.courselist.showTopSpe(
+							DaViSettings.days[day],
+							"#F6630C",
+							timeFilter(day,""))
+						}
+					);
 			this.alignText(text,new Vec(this.cellDimWmargin.x * day + cellMargin.x + offset.x, 0).minus(this.tableAbsOrigin), new Vec(this.cellDimWmargin.x,offset.y),200)	
 		}
 		for(let hour = DaViSettings.dayStart;hour <= DaViSettings.dayEnd;hour++){
@@ -391,23 +409,29 @@ class TimeTable{
 				.attr("x",-80)
 				.attr("y",posY)
 				.text(""+hour+" _ ")
+				.on("click",()=>{
+						window.courselist.showTopSpe(
+							hour+"H",
+							"#F6630C",
+							timeFilter("",hour-DaViSettings.dayStart))
+						}
+				)
 				.transition()
 				.duration(500)
 				.attr("x",cellMargin.x)
 				.ease(d3.easeCubicOut)
+				
 		}
 		for(let i = 0 ;i < DaViSettings.tableTextCount;i++){
 
 			let txt = tableBody.append("div")
 				.attr("id",DaViSettings.cellTextId+i)
 				.classed(DaViSettings.cellTextClass,true)
-				.style('text-anchor', 'middle')
+				.style('border',"1px solid")
 
 			this.resetCellText(DaViSettings.cellTextId+i)
 				
 		}
-		this.isDisplayBig = true;
-		this.switchDisplayMode();
 		
 
 	}
@@ -420,16 +444,19 @@ class TimeTable{
 			timetable.switchGroupExpand(grp);
 		}
 		let item = d3.select("#"+DaViSettings.cellTextId+itemIndex)
-
+					.style("max-width",this.cellDim.x+"px")
 		let textOnTheWay = this.fillText(item,groupStart,textDim)
 			.on("click",()=>expand(group,this))
 			.transition()
 			.duration(DaViSettings.shortNoticeableDelay)
 			.ease(d3.easeCubicOut)
-			.style("width",this.cellDim.x)
+			.style("width",this.cellDim.x+"px")
 			.style('font-size',DaViSettings.cellFontDefault)
 			.style("opacity",1)
 			.style("background-color",color)
+			.style('padding',null)
+			.style('box-shadow',null)
+			.style('border-color',d3.interpolateLab(color, "black")(0.15))
 		this.alignText(textOnTheWay,groupStart.time(this.cellDimWmargin).plus(DaViSettings.cellMargin),textDim)
 
 		for(let t = 0; t <group.height;t++){
@@ -462,6 +489,7 @@ class TimeTable{
 	}
 	removeGroupFromSlots(groups,coursId){
 		let updated = {};
+		let removedTracker = {};
 		let groupsToUpdate = [];
 		let nameToUpdate = ""
 		let groupToRemove= []
@@ -471,9 +499,15 @@ class TimeTable{
 				groupsToUpdate.push(ugr);
 			}
 		}
+		function scheduleRemoval(rgr){
+			if(!removedTracker[rgr.itemIndex]){
+				removedTracker[rgr.itemIndex] = true;
+				groupToRemove.push(rgr);
+			}
+		}
 		for(let g of groups){
 			if(!this.isGroupConflict(g)){
-				groupToRemove.push(g)
+				scheduleRemoval(g)
 				for(let i =0; i < g.height;i++){
 
 					let key = this.cellBackId(g.start.x,g.start.y+i)
@@ -487,9 +521,8 @@ class TimeTable{
 				let key = this.cellBackId(g.start.x,g.start.y)
 				let confCount = dictLen(this.slotDict[key])
 				delete this.slotDict[key][coursId];
-				if(confCount>2){
-					scheduleUpdate(g);
-				}else{
+				scheduleUpdate(g);
+				if(confCount == 2){
 					delete this.slotDict[key][coursId];
 					let coursHere = Object.keys(this.slotDict[key])[0]
 					let slotHere = this.slotDict[key][coursHere]
@@ -502,49 +535,16 @@ class TimeTable{
 							let slot = upper[upcours];
 							linkUp = this.shouldGroup(upcours,slot,coursHere,slotHere)
 						}
-					
-					
-					let lower = this.slotDict[this.cellBackId(g.start.x,g.start.y+1)]
-					let linkDown = false
-					let lowcours = "";
-					if(lower && dictLen(lower) == 1){
-						for(lowcours in lower){
-							let slot = lower[lowcours];
-							linkDown = this.shouldGroup(coursHere,slotHere,lowcours,slot)
-						}
-					}
-					
 					let maybeUpGroup = ""
 					if(linkUp){
-						groupToRemove.push(g)
 						for(maybeUpGroup of this.groups[upcours]){
 							if(maybeUpGroup.start.y + maybeUpGroup.height == g.start.y){
-								maybeUpGroup.height += 1
-								scheduleUpdate(maybeUpGroup);
+								g.height += maybeUpGroup.height
+								g.start = g.start.minus(0,maybeUpGroup.height);
+								scheduleRemoval(maybeUpGroup);
 							}
 						}
 					}
-					if(linkDown){
-						groupToRemove.push(g)
-						for(let maybeDownGroup of this.groups[lowcours]){
-							if(maybeDownGroup.start.y == g.start.y + 1){
-								if(linkUp){
-									groupToRemove.push(maybeDownGroup)
-									maybeUpGroup.height += maybeDownGroup.height + g.height
-									scheduleUpdate(maybeUpGroup);
-								}else{
-									maybeDownGroup.height += 1
-									maybeDownGroup.start = maybeDownGroup.start.minus(0,g.height);
-									scheduleUpdate(maybeDownGroup);
-								}
-								break;
-							}
-						}
-					}
-					if(!(linkUp || linkDown)){
-						scheduleUpdate(g);
-					}
-					
 				}
 			
 			}
@@ -574,8 +574,10 @@ class TimeTable{
 		for(let course in this.groups){
 			this.groups[course] = this.groups[course].filter(g => g.itemIndex !== -2)
 		}
-		for(let change of changes.update)
-			this.updateGroup(change,coursId);
+		for(let change of changes.update){
+			if(change.itemIndex>=0)
+				this.updateGroup(change,coursId);
+		}
 		
 		delete this.groups[coursId]
 		
@@ -589,8 +591,7 @@ class TimeTable{
 			let item = d3.select("#"+DaViSettings.cellTextId+g.itemIndex)
 
 				if(item.attr("daviexpanded") && item.attr("daviexpanded") === "true"){
-					item.style('border',null)
-						.style('padding',null)
+					item.style('padding',null)
 						.style('box-shadow',null)
 						.attr("daviexpanded",false)
 						.style('z-index',null)
@@ -607,19 +608,28 @@ class TimeTable{
 
 		
 		let item = d3.select("#"+DaViSettings.cellTextId+itemIndex)
-		if(!item.attr("daviexpanded") || item.attr("daviexpanded") === "false")
-			this.fillText(item,groupStart,new Vec(10000,10000),true)
-				.attr("daviexpanded",true)
+		if(!item.attr("daviexpanded") || item.attr("daviexpanded") === "false"){
+			let t = this.fillText(item,groupStart,new Vec(10000,10000),true)
+			t.attr("daviexpanded",true)
+				.style("max-width",null)
+				.style('z-index',2000)
 				.transition()
 				.duration(DaViSettings.defaultDelay)
 				.ease(d3.easeCubicOut)
 				.style('font-size',DaViSettings.cellFontDefault)
 				.style('width',"auto")
 				.style('height',"auto")
-				.style('border',"1px solid")
 				.style('padding', "10px")
 				.style('box-shadow',"5px 10px 18px #888888")
-				.style('z-index',2000)
+			for(let i = 0;i<group.height;i++){
+				let key = this.cellBackId(group.start.x,group.start.y+i);
+				d3.select("#"+key)
+					.transition()
+					.duration(DaViSettings.defaultDelay)
+					.ease(d3.easeCubicOut)
+					.style("fill","white");
+			}
+		}	
 		else
 			reset(group,this)
 				
@@ -655,12 +665,21 @@ class TimeTable{
 			if(everythingFit){
 				if(!isFirst)
 					text.append("hr")
+					.attr("noshade","noshade")
+					.style("background-color","red")
+					.style("color","darkred")
 				let detailsDiv = text.append("div")
-				if(isExepandedMode)
-					detailsDiv.transition()
+				if(isExepandedMode){
+					let color = this.getColor(slot)
+					let temp = detailsDiv.transition()
 						.ease(d3.easeCubicOut)
 						.duration(DaViSettings.defaultDelay)
-						.style("background-color",this.getColor(slot))
+						.style("background-color",color)
+					if(dictLen(slots)>1)
+						temp.style("padding","2px")
+						.style("border","2px solid")
+						.style("border-color",d3.interpolateLab(color, "black")(0.5))
+				}
 				detailsDiv.append("a")
 					.text(coursId+" ("+course.code+")")
 					.classed(DaViSettings.cellTitleTextClass,true)
@@ -670,7 +689,16 @@ class TimeTable{
 					stuffDiv.append('div')
 						.text('👁')
 						.classed("left",true)
-						.on("click",()=>{d3.event.stopPropagation();courselist.showDetails(coursId, course)})
+						.on("click",()=>{
+							d3.event.stopPropagation();
+							courselist.showDetails(coursId, course);
+							d3.select("#courseInfo")
+							.style('background-color',"rebeccapurple")
+							.transition()
+							.duration(DaViSettings.shortNoticeableDelay)
+							.ease(d3.easeCubicOut)
+							.style('background-color',"white");
+						})
 					stuffDiv.append('div')
 						.text('❌')
 						.classed("right",true)
@@ -697,6 +725,7 @@ class TimeTable{
 				isFirst = false
 			}
 		}
+
 		if(!everythingFit){
 			text.html("");
 			isFirst = true
@@ -723,6 +752,21 @@ class TimeTable{
 				}
 				isFirst = false
 				everythingFit = isOk(Vec.Dim(text.node().getBoundingClientRect()))
+			}
+		}
+		
+		if(!everythingFit){
+			let dictKeys = Object.keys(slots);
+			if(dictKeys.length ==1){
+				let size =0.9;
+				text.html("");
+				let nSpan = text.append("span")
+					.text(dictKeys[0])
+				for(let i =0;i<6 && !everythingFit;i++){
+					nSpan.style('font-size',size+"em")
+					size *= 0.9;
+					everythingFit = isOk(Vec.Dim(text.node().getBoundingClientRect()))
+				}
 			}
 		}
 		if(!everythingFit){
@@ -803,25 +847,31 @@ class TimeTable{
 				
 		
 	}
-	
-	
-	switchDisplayMode(){
-		let table = document.getElementById(DaViSettings.timeTableId);
-		let button = document.getElementById(DaViSettings.rescaleTableButtonId);
-		
-		if(this.isDisplayBig){
 
-			this.setLevelOpcaity(1,0)
-			this.setLevelOpcaity(2,0)
-			this.setLevelOpcaity(0,1)
-			this.isDisplayBig = false
-		}else{
-			this.setLevelOpcaity(1,1)
-			this.setLevelOpcaity(2,1)
-			this.setLevelOpcaity(0,1)
-			this.isDisplayBig = true
+	getDetailledDailyWorkload(){
+		let cumulativeworkloads = {}
+		DaViSettings.activities.forEach(a=>{
+			cumulativeworkloads[a] = Array.apply(null, Array(DaViSettings.workdays.length)).map(()=>0);
+		})
+		cumulativeworkloads["conflict"] = Array.apply(null, Array(DaViSettings.workdays.length)).map(()=>0);
+		for(let day = 0; day<DaViSettings.workdays.length;day++){
+			for(let hour = 0;hour<DaViSettings.dayEnd-DaViSettings.dayStart;hour++){
+				let key = this.cellBackId(day,hour)
+				let slot = this.slotDict[key];
+				if(slot){
+					let vals = Object.values(slot);
+					if(vals.length >1)
+						cumulativeworkloads["conflict"][day]++;
+					else if(vals.length){
+						cumulativeworkloads[vals[0].activity][day]++;
+					}
+				}
+			}
 		}
+		return cumulativeworkloads;
 	}
+	
+	
 }
 
 var timtable = new TimeTable()
