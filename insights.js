@@ -366,6 +366,9 @@ class Insights{
 	onCreditClicked(){
 		courselist.showTopSpe(0,"#062F4F",(c)=>c.credits+" credits");
 	}
+	onLegenClicked(act,actname, color){
+		courselist.showTopSpe(actname,color,(c)=>c.timeslots.findIndex(s=>s.activity == act)>-1);
+	}
 }
 
 insightsHandle = new Insights()
