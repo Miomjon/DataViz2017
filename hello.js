@@ -116,7 +116,7 @@ class TimeTable{
 			colors = colors.sort();
 			let patterName = (DaViSettings.dashPatternPrefix + colors.join("_")).split("#").join("")
 				
-			if(!document.getElementById("#"+patterName)){
+			if(!document.getElementById(patterName)){
 				let patternDim = DaViSettings.dashdPatternDims
 				let pattern = d3.select("#"+DaViSettings.timeTableId).select("defs")
 					.append("pattern")
@@ -253,9 +253,7 @@ class TimeTable{
 			}
 		}
 		function resolveConflict(newCourseID,oldCoursId,groupOld,slotNew){
-			
-			
-			
+						
 			if(!updatedItemIndex[groupOld.itemIndex]){
 				updatedGroups.push(groupOld)
 				updatedItemIndex[groupOld.itemIndex] = true;
@@ -522,32 +520,30 @@ class TimeTable{
 				let confCount = dictLen(this.slotDict[key])
 				delete this.slotDict[key][coursId];
 				scheduleUpdate(g);
-				if(confCount == 2){
-					delete this.slotDict[key][coursId];
-					let coursHere = Object.keys(this.slotDict[key])[0]
-					let slotHere = this.slotDict[key][coursHere]
-					
-					let upper = this.slotDict[this.cellBackId(g.start.x,g.start.y-1)]
-					let linkUp = false
-					let upcours = "";
-					if(upper && dictLen(upper) == 1)
-						for(upcours in upper){
-							let slot = upper[upcours];
-							linkUp = this.shouldGroup(upcours,slot,coursHere,slotHere)
-						}
-					let maybeUpGroup = ""
-					if(linkUp){
-						for(maybeUpGroup of this.groups[upcours]){
-							if(maybeUpGroup.start.y + maybeUpGroup.height == g.start.y){
-								g.height += maybeUpGroup.height
-								g.start = g.start.minus(0,maybeUpGroup.height);
-								scheduleRemoval(maybeUpGroup);
-							}
+			}
+		}
+		for(let course in this.groups){
+			if(course !== coursId){
+				let sortg  = this.groups[course].slice().sort((a,b) => a.start.x*100 + a.start.y - (b.start.x*100 + b.start.y));
+				for(let i = 1; i<sortg.length;i++){
+					let g = sortg[i]
+					let gPrev = sortg[i-1]
+					let keyhere = this.cellBackId(g.start.x,g.start.y)
+					let keyPrev = this.cellBackId(gPrev.start.x,gPrev.start.y + gPrev.height-1)
+					if(dictLen(this.slotDict[keyhere]) === 1 && dictLen(this.slotDict[keyPrev]) ===1){
+						let slotHere = this.slotDict[keyhere][course]
+						let upper = this.slotDict[keyPrev][course]
+						if(this.shouldGroup(course,upper,course,slotHere)){
+							g.height += gPrev.height
+							g.start = g.start.minus(0,gPrev.height);
+							scheduleRemoval(gPrev);
+							scheduleUpdate(g);
 						}
 					}
+					
 				}
-			
 			}
+			
 		}
 		
 		return {update:groupsToUpdate, removed:groupToRemove};
