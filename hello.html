@@ -27,11 +27,11 @@
 			</div>
 		</div>
 		<div id="insightDiv">
-			<div class="credSumDiv" style="order:0; background-color: #c2edc9">
+			<div class="credSumDiv" style="order:0; background-color: #c2edc9" onclick="insightsHandle.onCreditClicked()">
 				<span class="smallFlexTitle">Credits</span>
 				<span id="creditsSum" class="bigflexNumber"></span>
 			</div>
-			<div class="credSumDiv" style="order:1;">
+			<div class="credSumDiv" style="order:1;" onclick="insightsHandle.onCreditClicked()">
 				<span class="smallFlexTitle">Mandatory</span>
 				<span id="mandCreditsSum" class="bigflexNumber"></span>
 			</div>
@@ -41,14 +41,27 @@
 				<span id="workloadSum" class="bigflexNumber" style="order:1"></span>
 				<span style="order:2"> Hours at EPFL + Personal work</span>
 			</div>
-			<div style="border-left:1px solid #000;height:100%; width:3px;order:3"></div>
-			<div class="credSumDiv" style="order:4">
-				<svg id="insightfullPlot1" class="spePlot" xmlns="http://www.w3.org/2000/svg">
-				</svg>
-			</div>
 			<div class="credSumDiv" style="order:5">
-				<svg id="insightfullPlot2" class="spePlot" xmlns="http://www.w3.org/2000/svg">
-				</svg>
+				<div class="smallFlexTitle" >Credits per Specialisation</div>
+				<div class="credSumDiv" style="order:1">
+					<svg id="insightfullPlot1" style="order:2" class="spePlot" xmlns="http://www.w3.org/2000/svg">
+					</svg>
+				</div>
+			</div>
+			<div class="credSumDiv" style="order:5; background-color: #c2edc9" >
+				<div class="smallFlexTitle" >Activity Balance</div>
+				<div class="credSumDiv" style="order:1">
+					<svg id="insightfullPlot2" style="order:2" class="spePlot" xmlns="http://www.w3.org/2000/svg">
+					</svg>
+				</div>
+			</div>
+			<div class="credSumDiv" style="order:6;margin: 1em">
+				<div class="smallFlexTitle" >Legend</div>
+				<span><span style="background-color: #9ED4E0; order: 1;" class = "legendColorBox">   </span>Lecture</span>
+				<span><span style="background-color: #D1E874;order: 2;" class = "legendColorBox">   </span>Exercise</span>
+				<span><span style="background-color: #FDFF87;order: 3;" class = "legendColorBox">   </span>Project</span>
+				<span><span style="background-color: #67706F;order: 4;" class = "legendColorBox">   </span>TP</span>
+				<span><span style="background-color: #E54535;order: 5;" class = "legendColorBox">   </span>Conflict</span>
 			</div>
 		</div>
 	</div>
@@ -63,8 +76,9 @@
 
 	<script src="settings.js"></script>
 	<script src="courselist.js"></script>
-	<script src="insights.js"></script>
+
 	<script src="hello.js"></script>
+	<script src="insights.js"></script>
 
 </body>
 </html>

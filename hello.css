@@ -1,7 +1,7 @@
 
 #tableDiv{
-	border-style: solid;
-	border-width: 1px;
+	border-right-style: solid;
+	border-right-width: 1px;
 	float:left;
 	padding:2px;
 }
@@ -10,6 +10,7 @@
 html, body {
     margin: 0;
     height: 100%;
+    overflow-y: hidden; 
 }
 
 
@@ -42,9 +43,11 @@ html, body {
 	color: black;
 	position: fixed;
 	z-index: 10;
-  	align-items : center;
-  	text-align: center;
+	display: flex;
   	overflow: hidden;
+  	flex-direction:column;
+	justify-content: space-evenly;
+	font-size: 5px;
 }
 .cellTextClass {
 	color: black;
@@ -88,10 +91,30 @@ html, body {
 	display: flex; 
 
 }
+.legendColorBox {
+	padding-left: 0.7em;
+	 padding-right:  0.7em;
+	 margin: 0.5em
+}
+.starLine{
+  stroke: #aaa;
+  stroke-width: 2px;
+  stroke-dasharray: 4 4;
+}
+.StarLabel{
+	font-family: sans-serif;
+	font-size: 0.7em;
+}
 .speSpanClass0{
 	padding-right: 0.6em;
 	padding-left: 0.6em;
 	margin: 1em 1em;
+	white-space: nowrap;
+}
+.speSpanClass{
+	padding-right: 0.6em;
+	padding-left: 0.6em;
+	margin: 0.2em 0.2em;
 }
 .credSumDiv{
 	display: flex;
@@ -100,10 +123,12 @@ html, body {
 	padding:5px;
 }
 .smallFlexTitle{
-	order :1;
+	order :0;
 	text-align: center;
 	padding-left :0.5em;
 	padding-right :0.5em;
+	font-family: "Oswald";
+	font-weight: bold;
 }
 .bigflexNumber{
 	order :1;
@@ -119,11 +144,13 @@ html, body {
 }
 #subflex{
 	flex : 0 0 auto;
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
 }
 #courseInfo{
 	top : 0px;
 	height: 480px;
-	width: 200px;
+	width: 40%;
 	overflow: hidden;
 	position: sticky;
 	display: flex; 
@@ -157,7 +184,7 @@ html, body {
 #courseListDiv{
 	overflow:hidden;
 	top : 0px;
-	height: 480px;
+	height: 490px;
 	display: flex;
 	flex-direction:row;
 

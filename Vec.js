@@ -165,5 +165,10 @@ class Vec{
   	invert(){
   		return new Vec(1.0/this.y,1.0/this.y)
   	}
+  	rotate(angleRad){
+  		let cs = Math.cos(angleRad)
+  		let sn = Math.sin(angleRad)
+  		return new Vec(this.x * cs - this.y * sn,this.x * sn + this.y * cs)
+  	}
   	
 }

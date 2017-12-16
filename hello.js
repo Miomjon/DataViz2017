@@ -1,6 +1,7 @@
 
 
-
+// Intelligent agent, DIS, Auto speech, -Intel Agents.
+// Intelligent agent, ML
 
 class TimeTable{
 
@@ -89,6 +90,7 @@ class TimeTable{
 			.style("top",-1000+"px")
 			.style('padding',null)
 			.style('box-shadow',null)
+			.style('width',this.cellDim.x+"px")
 			.attr("daviexpanded",false)
 			.style('z-index',null)
 	}
@@ -354,6 +356,8 @@ class TimeTable{
 		return a.activity === b.activity && a.time+1 == b.time
 	}
 	initTimetable() {
+		
+		
 		this.groupFunction = "groupByActivity";
 		let figure = d3.select("#"+DaViSettings.timeTableId);
 		let tableBody = d3.select("#"+DaViSettings.timeTableDivId);
@@ -375,7 +379,14 @@ class TimeTable{
 					.attr("width",this.cellDim.x)
 					.attr("height",this.cellDim.y)
 					.attr("id",this.cellBackId(day,hour))
-					.attr('fill',DaViSettings.cellDefaultColor);
+					.attr('fill',DaViSettings.cellDefaultColor)
+					.on("click",()=>{
+						window.courselist.showTopSpe(
+							DaViSettings.days[day]+" "+(DaViSettings.dayStart + hour)+"H",
+							"#F6630C",
+							timeFilter(day,hour))
+						}
+					);
 		}
 		for(let day = 0;day<DaViSettings.days.length;day++){
 			let text = figure.append("text")
@@ -383,6 +394,13 @@ class TimeTable{
 					.attr("y",0)
 					.style('text-anchor', 'middle')
 					.text(DaViSettings.days[day])
+					.on("click",()=>{
+						window.courselist.showTopSpe(
+							DaViSettings.days[day],
+							"#F6630C",
+							timeFilter(day,""))
+						}
+					);
 			this.alignText(text,new Vec(this.cellDimWmargin.x * day + cellMargin.x + offset.x, 0).minus(this.tableAbsOrigin), new Vec(this.cellDimWmargin.x,offset.y),200)	
 		}
 		for(let hour = DaViSettings.dayStart;hour <= DaViSettings.dayEnd;hour++){
@@ -391,17 +409,24 @@ class TimeTable{
 				.attr("x",-80)
 				.attr("y",posY)
 				.text(""+hour+" _ ")
+				.on("click",()=>{
+						window.courselist.showTopSpe(
+							hour+"H",
+							"#F6630C",
+							timeFilter("",hour-DaViSettings.dayStart))
+						}
+				)
 				.transition()
 				.duration(500)
 				.attr("x",cellMargin.x)
 				.ease(d3.easeCubicOut)
+				
 		}
 		for(let i = 0 ;i < DaViSettings.tableTextCount;i++){
 
 			let txt = tableBody.append("div")
 				.attr("id",DaViSettings.cellTextId+i)
 				.classed(DaViSettings.cellTextClass,true)
-				.style('text-anchor', 'middle')
 				.style('border',"1px solid")
 
 			this.resetCellText(DaViSettings.cellTextId+i)
@@ -419,13 +444,13 @@ class TimeTable{
 			timetable.switchGroupExpand(grp);
 		}
 		let item = d3.select("#"+DaViSettings.cellTextId+itemIndex)
-
+					.style("max-width",this.cellDim.x+"px")
 		let textOnTheWay = this.fillText(item,groupStart,textDim)
 			.on("click",()=>expand(group,this))
 			.transition()
 			.duration(DaViSettings.shortNoticeableDelay)
 			.ease(d3.easeCubicOut)
-			.style("width",this.cellDim.x)
+			.style("width",this.cellDim.x+"px")
 			.style('font-size',DaViSettings.cellFontDefault)
 			.style("opacity",1)
 			.style("background-color",color)
@@ -464,6 +489,7 @@ class TimeTable{
 	}
 	removeGroupFromSlots(groups,coursId){
 		let updated = {};
+		let removedTracker = {};
 		let groupsToUpdate = [];
 		let nameToUpdate = ""
 		let groupToRemove= []
@@ -473,9 +499,15 @@ class TimeTable{
 				groupsToUpdate.push(ugr);
 			}
 		}
+		function scheduleRemoval(rgr){
+			if(!removedTracker[rgr.itemIndex]){
+				removedTracker[rgr.itemIndex] = true;
+				groupToRemove.push(rgr);
+			}
+		}
 		for(let g of groups){
 			if(!this.isGroupConflict(g)){
-				groupToRemove.push(g)
+				scheduleRemoval(g)
 				for(let i =0; i < g.height;i++){
 
 					let key = this.cellBackId(g.start.x,g.start.y+i)
@@ -489,9 +521,8 @@ class TimeTable{
 				let key = this.cellBackId(g.start.x,g.start.y)
 				let confCount = dictLen(this.slotDict[key])
 				delete this.slotDict[key][coursId];
-				if(confCount>2){
-					scheduleUpdate(g);
-				}else{
+				scheduleUpdate(g);
+				if(confCount == 2){
 					delete this.slotDict[key][coursId];
 					let coursHere = Object.keys(this.slotDict[key])[0]
 					let slotHere = this.slotDict[key][coursHere]
@@ -504,49 +535,16 @@ class TimeTable{
 							let slot = upper[upcours];
 							linkUp = this.shouldGroup(upcours,slot,coursHere,slotHere)
 						}
-					
-					
-					let lower = this.slotDict[this.cellBackId(g.start.x,g.start.y+1)]
-					let linkDown = false
-					let lowcours = "";
-					if(lower && dictLen(lower) == 1){
-						for(lowcours in lower){
-							let slot = lower[lowcours];
-							linkDown = this.shouldGroup(coursHere,slotHere,lowcours,slot)
-						}
-					}
-					
 					let maybeUpGroup = ""
 					if(linkUp){
-						groupToRemove.push(g)
 						for(maybeUpGroup of this.groups[upcours]){
 							if(maybeUpGroup.start.y + maybeUpGroup.height == g.start.y){
-								maybeUpGroup.height += 1
-								scheduleUpdate(maybeUpGroup);
+								g.height += maybeUpGroup.height
+								g.start = g.start.minus(0,maybeUpGroup.height);
+								scheduleRemoval(maybeUpGroup);
 							}
 						}
 					}
-					if(linkDown){
-						groupToRemove.push(g)
-						for(let maybeDownGroup of this.groups[lowcours]){
-							if(maybeDownGroup.start.y == g.start.y + 1){
-								if(linkUp){
-									groupToRemove.push(maybeDownGroup)
-									maybeUpGroup.height += maybeDownGroup.height + g.height
-									scheduleUpdate(maybeUpGroup);
-								}else{
-									maybeDownGroup.height += 1
-									maybeDownGroup.start = maybeDownGroup.start.minus(0,g.height);
-									scheduleUpdate(maybeDownGroup);
-								}
-								break;
-							}
-						}
-					}
-					if(!(linkUp || linkDown)){
-						scheduleUpdate(g);
-					}
-					
 				}
 			
 			}
@@ -576,8 +574,10 @@ class TimeTable{
 		for(let course in this.groups){
 			this.groups[course] = this.groups[course].filter(g => g.itemIndex !== -2)
 		}
-		for(let change of changes.update)
-			this.updateGroup(change,coursId);
+		for(let change of changes.update){
+			if(change.itemIndex>=0)
+				this.updateGroup(change,coursId);
+		}
 		
 		delete this.groups[coursId]
 		
@@ -611,6 +611,7 @@ class TimeTable{
 		if(!item.attr("daviexpanded") || item.attr("daviexpanded") === "false"){
 			let t = this.fillText(item,groupStart,new Vec(10000,10000),true)
 			t.attr("daviexpanded",true)
+				.style("max-width",null)
 				.style('z-index',2000)
 				.transition()
 				.duration(DaViSettings.defaultDelay)
@@ -724,6 +725,7 @@ class TimeTable{
 				isFirst = false
 			}
 		}
+
 		if(!everythingFit){
 			text.html("");
 			isFirst = true
@@ -750,6 +752,21 @@ class TimeTable{
 				}
 				isFirst = false
 				everythingFit = isOk(Vec.Dim(text.node().getBoundingClientRect()))
+			}
+		}
+		
+		if(!everythingFit){
+			let dictKeys = Object.keys(slots);
+			if(dictKeys.length ==1){
+				let size =0.9;
+				text.html("");
+				let nSpan = text.append("span")
+					.text(dictKeys[0])
+				for(let i =0;i<6 && !everythingFit;i++){
+					nSpan.style('font-size',size+"em")
+					size *= 0.9;
+					everythingFit = isOk(Vec.Dim(text.node().getBoundingClientRect()))
+				}
 			}
 		}
 		if(!everythingFit){
@@ -829,6 +846,29 @@ class TimeTable{
 			t.style("height","auto");
 				
 		
+	}
+
+	getDetailledDailyWorkload(){
+		let cumulativeworkloads = {}
+		DaViSettings.activities.forEach(a=>{
+			cumulativeworkloads[a] = Array.apply(null, Array(DaViSettings.workdays.length)).map(()=>0);
+		})
+		cumulativeworkloads["conflict"] = Array.apply(null, Array(DaViSettings.workdays.length)).map(()=>0);
+		for(let day = 0; day<DaViSettings.workdays.length;day++){
+			for(let hour = 0;hour<DaViSettings.dayEnd-DaViSettings.dayStart;hour++){
+				let key = this.cellBackId(day,hour)
+				let slot = this.slotDict[key];
+				if(slot){
+					let vals = Object.values(slot);
+					if(vals.length >1)
+						cumulativeworkloads["conflict"][day]++;
+					else if(vals.length){
+						cumulativeworkloads[vals[0].activity][day]++;
+					}
+				}
+			}
+		}
+		return cumulativeworkloads;
 	}
 	
 	

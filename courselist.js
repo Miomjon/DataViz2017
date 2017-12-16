@@ -93,7 +93,7 @@ class CourseList {
       // courseName.className = DaViSettings.cellCourseRow;
 
       let hover = document.createElement("div");
-      hover.id = course + "_button";
+      hover.id = this.getId(course) + "_button";
       hover.style.background =  "#f6f6f6"
       hover.className = DaViSettings.tooltipClass;
       hover.innerHTML = ""
@@ -143,9 +143,9 @@ class CourseList {
       //exam type/block/
       var season = getSeason(metadata.exam_time, metadata.exam_type)
       inside.append("div")
-              .text("Time: " + season);
-      let coursteach =  metadata.teachers
+              .text("Exam : "+metadata.exam_type+" " + season);
       let teach = "Teacher"
+      let coursteach = metadata.teachers
       if(coursteach.indexOf(",") >0)
         teach+="s"
 
@@ -155,6 +155,7 @@ class CourseList {
   }
 
   enableCourse(c, event) {
+    let cid = this.getId(c)
     if(this.coursesInList.includes(c)) {
       var index = this.coursesInList.indexOf(c);
       if (index > -1) {
@@ -163,17 +164,18 @@ class CourseList {
         timtable.removeCourse(c, new Vec(event.clientX, event.clientY));
         var wasOrange = false;
         for(let conflict of this.conflictList.get(c)) {
-          if(document.getElementById(conflict+"_button").style.backgroundColor === "orange"||document.getElementById(conflict+"_button").style.backgroundColor === "green") {
-            document.getElementById(conflict+"_button").style.backgroundColor = "green";
+          let confid = this.getId(conflict)
+          if(document.getElementById(confid+"_button").style.backgroundColor === "orange"||document.getElementById(confid+"_button").style.backgroundColor === "green") {
+            document.getElementById(confid+"_button").style.backgroundColor = "green";
             wasOrange = true;
           } else {
-            document.getElementById(conflict+"_button").style.backgroundColor = "#f6f6f6"
+            document.getElementById(confid+"_button").style.backgroundColor = "#f6f6f6"
           }
         }
         if(wasOrange) {
-          document.getElementById(c+"_button").style.backgroundColor = DaViSettings.conflictColor;
+          document.getElementById(cid+"_button").style.backgroundColor = DaViSettings.conflictColor;
         } else {
-          document.getElementById(c+"_button").style.backgroundColor = "#f6f6f6"
+          document.getElementById(cid+"_button").style.backgroundColor = "#f6f6f6"
         }
       }
     } else {
@@ -182,34 +184,37 @@ class CourseList {
         timtable.addCourse(c, new Vec(event.clientX, event.clientY));
         var wasGreen = false;
         for(let conflict of this.conflictList.get(c)) {
-          if(document.getElementById(conflict+"_button").style.backgroundColor === "green" || document.getElementById(conflict+"_button").style.backgroundColor === "orange") {
-            document.getElementById(conflict+"_button").style.backgroundColor = "orange";
+          let confid = this.getId(conflict)
+          if(document.getElementById(confid+"_button").style.backgroundColor === "green" || document.getElementById(confid+"_button").style.backgroundColor === "orange") {
+            document.getElementById(confid+"_button").style.backgroundColor = "orange";
             wasGreen = true;
           } else {
-            document.getElementById(conflict+"_button").style.backgroundColor = DaViSettings.conflictColor
+            document.getElementById(confid+"_button").style.backgroundColor = DaViSettings.conflictColor
           }
         }
         if(wasGreen) {
-          document.getElementById(c+"_button").style.backgroundColor = "orange";
+          document.getElementById(cid+"_button").style.backgroundColor = "orange";
         } else {
-          document.getElementById(c+"_button").style.backgroundColor = "green";
+          document.getElementById(cid+"_button").style.backgroundColor = "green";
         }
     }
     for(let conf of this.enableCourseList) {
       var goesOrange = false;
       // console.log(Array.from(this.conflictList.get(conf)))
+      let confid = this.getId(conf)
       for(let list of this.conflictList.get(conf)) {
-        if(document.getElementById(list+"_button").style.backgroundColor === "green" || document.getElementById(list+"_button").style.backgroundColor === "orange") {
-          document.getElementById(list+"_button").style.backgroundColor = "orange";
+        let listid = this.getId(list)
+        if(document.getElementById(listid+"_button").style.backgroundColor === "green" || document.getElementById(listid+"_button").style.backgroundColor === "orange") {
+          document.getElementById(listid+"_button").style.backgroundColor = "orange";
           goesOrange = true;
         } else {
-          document.getElementById(list+"_button").style.backgroundColor = DaViSettings.conflictColor
+          document.getElementById(listid+"_button").style.backgroundColor = DaViSettings.conflictColor
         }
       }
       if(goesOrange) {
-        document.getElementById(conf+"_button").style.backgroundColor = "orange"
+        document.getElementById(confid+"_button").style.backgroundColor = "orange"
       } else {
-        document.getElementById(conf+"_button").style.backgroundColor = "green"
+        document.getElementById(confid+"_button").style.backgroundColor = "green"
       }
 
     }
@@ -218,11 +223,14 @@ class CourseList {
 
   }
 
-  showTopSpe(speLetter,speColor){
+  showTopSpe(speLetter,speColor,filter){
     if(this.topSpe !== speLetter){
       this.topSpe = speLetter;
       let bColor = d3.interpolateLab(speColor, "black")(0.15)
-      d3.selectAll(".speSpanClass0:not(.speSpanClass"+speLetter+")")
+      let textColor = "black";
+      if(d3.hsl(speColor).l<0.3)
+        textColor = "white";
+      d3.selectAll(".speSpanClass0")
         .text("")
         .transition()
         .duration(DaViSettings.shortNoticeableDelay)
@@ -230,14 +238,39 @@ class CourseList {
         .style("border",null)
         .style("background-color",null)
         .style("border-color",null);
-      d3.selectAll(".speSpanClass"+speLetter)
+      if(filter){
+        for(let c in ISA_data){
+          let a = filter(ISA_data[c],c)
+          if(a){
+            if(!speLetter ){
+              this.topSpe = a;
+            }
+            let cid = this.getId(c)
+            d3.select("#"+cid+"_button").select(".speSpanClass0")
+              .text(this.topSpe)
+              .transition()
+              .duration(DaViSettings.shortNoticeableDelay)
+              .ease(d3.easeQuad)
+              .style("border","1px solid")
+              .style("background-color",speColor)
+              .style("border-color",bColor)
+              .style("color",textColor);
+          }
+            
+        }
+        
+      }else{
+        d3.selectAll(".speSpanClass"+speLetter)
         .text(speLetter)
         .transition()
         .duration(DaViSettings.shortNoticeableDelay)
         .ease(d3.easeQuad)
         .style("border","1px solid")
         .style("background-color",speColor)
-        .style("border-color",bColor);
+        .style("border-color",bColor)
+        .style("color",textColor);
+      }
+      
     }
     
   }
@@ -313,10 +346,21 @@ class CourseList {
       let infoDivText = "Specialisation"
       if(spes.length>1)
         infoDivText +="s"
-      infoDivText+= ": "+spes.join(", ")
-      descrSub.append("div").text(infoDivText)
-      .style("padding-top","0.5em")
-      .style("padding-bottom","0.5em")
+      infoDivText+= ": "
+      let spediv = descrSub.append("div")
+        .style("padding-top","0.5em")
+        .style("padding-bottom","0.5em")
+      spediv.append("span")
+        .text(infoDivText)
+      spediv.selectAll("span.speSpanClass").data(spes).enter()
+        .append("span")
+        .text(d=>d)
+        .classed("speSpanClass",true)
+        .style("border","1px solid")
+        .style("background-color",d=>insightsHandle.speColor(d))
+        .style("border-color",d=>d3.interpolateLab(insightsHandle.speColor(d), "black")(0.15))
+        .on("click",d => this.showTopSpe(d,insightsHandle.speColor(d)))
+        .exit();
     }
     
     descrSub.append("div")
@@ -324,23 +368,27 @@ class CourseList {
 
 
   }
+  getId(s){
+    return s.replace(/[^\w]/g,"")
+  }
 }
 
 
-let courselist = new CourseList()
+var courselist = new CourseList()
 let data_map = buildMap(ISA_data);
 courselist.createCourseList(data_map)
 courselist.conflicts(data_map)
 for(let [course, metadata] of data_map) {
-  document.getElementById(course+"_button").onclick = (event) => courselist.enableCourse(course, event);
-  document.getElementById(course+"_button").onmouseover = function(){
+  let coursid = courselist.getId(course)
+  document.getElementById(coursid+"_button").onclick = (event) => courselist.enableCourse(course, event);
+  document.getElementById(coursid+"_button").onmouseover = function(){
     if(courselist.hoverTimout){
       window.clearTimeout(courselist.hoverTimout);
       courselist.hoverTimout = "";
     }
     courselist.hoverTimout = window.setTimeout(()=>courselist.showDetails(course, metadata),DaViSettings.HoverTimout)
   }
-  document.getElementById(course+"_button").onmouseout = function(){
+  document.getElementById(coursid+"_button").onmouseout = function(){
     if(courselist.hoverTimout){
       window.clearTimeout(courselist.hoverTimout);
       courselist.hoverTimout = "";

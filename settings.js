@@ -2,7 +2,8 @@ var DaViSettings = {
 
 	dayStart : 8,
 	dayEnd : 19,
-	days : ["Monday","Tuesday","Wensday","Thursday","Friday","Saturday"],
+	days : ["Monday","Tuesday","Wensday","Thursday","Friday"],
+	workdays : ["Monday","Tuesday","Wensday","Thursday","Friday"],
 	timeTableDivId : "tableDiv",
 	timeTableId : "svgTable",
 	courseListId : "courses",
@@ -35,14 +36,14 @@ var DaViSettings = {
 	defaultDelay : 200,
 	shortNoticeableDelay : 500,
 	dayshoursDivOffset : new Vec(30,30),
-	tableDimBig : new Vec(825,480),
-	tableDimSmall : new Vec(825,480),
+	tableDimBig : new Vec(775,480),
+	tableDimSmall : new Vec(775,480),
 	cellBigScale : new Vec(1.5,1.5),
 	cellMargin : new Vec(2,2),
 	tableTextCount  : 100,
 	tempTextId : "tempTextId",
 	conflictColor: "#E54535",
-	cellColorMap : {0:"#9ED4E0",1:"#D1E874",2:"#FDFF87",98:'#67706F',3:'#67706F'},
+	cellColorMap : {0:"#9ED4E0",1:"#D1E874",2:"#FDFF87",98:'#67706F',3:'#67706F',conflict:"#E54535"},
 	tooltipClass : "tooltip",
 	tooltipTextClass : "tooltiptext",
 	chartClass : "chart",
@@ -61,7 +62,9 @@ var DaViSettings = {
 	spePlotRectO : new Vec(0.1,0.7),
 	spePlotBarMargin : 0.03,
 	peBarMaxWidth : 0.5,
-	HoverTimout : 200
+	HoverTimout : 200,
+	startArmLenght :0.65,
+	activities : [0,1,2,98,"conflict"]
 
 
 }
