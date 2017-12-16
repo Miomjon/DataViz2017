@@ -334,6 +334,9 @@ class Insights{
 				speCreds[spe] += courseinfo.credits;
 			}
 		}
+		let credSumColor ="black"
+		if(totalCreditCount>=35)
+			credSumColor = "#FD7C04"
 		d3.select("#creditsSum").transition()
 			.duration(DaViSettings.shortNoticeableDelay)
 			.ease(d3.easeQuad)
@@ -342,6 +345,8 @@ class Insights{
 	                i = d3.interpolateNumber(that.text(), totalCreditCount);
 	            return function(t) { that.text(Math.round(i(t))); };
 	          })
+			.style("color",credSumColor)
+
 		d3.select("#mandCreditsSum").transition()
 			.duration(DaViSettings.shortNoticeableDelay)
 			.ease(d3.easeQuad)
