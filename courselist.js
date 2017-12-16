@@ -228,7 +228,9 @@ class CourseList {
       this.topSpe = speLetter;
       let bColor = d3.interpolateLab(speColor, "black")(0.15)
       let textColor = "black";
-      if(d3.hsl(speColor).l<0.5)
+      let c = d3.rgb(speColor);
+      let a = ( 0.299 * c.r + 0.587 * c.g+ 0.114 * c.b)/255;
+      if(a<0.5)
         textColor = "white";
       d3.selectAll(".speSpanClass0")
         .text("")
@@ -368,8 +370,9 @@ class CourseList {
         .style("background-color",d=>insightsHandle.speColor(d))
         .style("border-color",d=>d3.interpolateLab(insightsHandle.speColor(d), "black")(0.15))
         .style("color",d=>{
-          let c = insightsHandle.speColor(d);
-          if(d3.hsl(c).l<0.5)
+          let c = d3.rgb(insightsHandle.speColor(d));
+          let a = ( 0.299 * c.r + 0.587 * c.g+ 0.114 * c.b)/255;
+          if(a<0.5)
             return "white"
           return "black"
         })
