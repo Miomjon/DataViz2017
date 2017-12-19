@@ -64,7 +64,8 @@ var DaViSettings = {
 	peBarMaxWidth : 0.5,
 	HoverTimout : 200,
 	startArmLenght :0.65,
-	activities : [0,1,2,98,"conflict"]
+	activities : [0,1,2,98,"conflict"],
+	bigFontRatio : 0.3
 
 
 }

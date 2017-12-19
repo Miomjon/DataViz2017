@@ -9,11 +9,28 @@ class Insights{
 		this.starAmrs = []
 		this.mkStar()
 		this.updateStartParams(true)
+		this.updateFontSize()
 		d3.select("#insightfullPlot2")
-			.on("resize",()=>this.updateStartParams(false),this.updateStar())
+			.on("resize",()=>{this.updateStartParams(false);this.updateFontSize();this.update(courselist.enableCourseList)})
+		window.onresize = ()=>{this.updateStartParams(false);this.updateFontSize();this.update(courselist.enableCourseList)}
 	}
 	vecsToPointList(vecs){
 		return vecs.map(v=>v.x+","+v.y).join(" ")
+	}
+	updateFontSize(){
+		let h = document.body.clientHeight - d3.selectAll("#subflex").node().clientHeight ;
+		if(h > 400){
+			d3.select('#numbadiv')
+			.style("flex-flow","column")
+			d3.selectAll(".bigflexNumber")
+				.style("font-size",(h*DaViSettings.bigFontRatio/3)+"px")
+		}
+		else{
+			d3.select('#numbadiv')
+				.style("flex-flow","row")
+			d3.selectAll(".bigflexNumber")
+				.style("font-size",h* DaViSettings.bigFontRatio+"px")
+		}
 	}
 	mkStar(){
 		let svg = d3.select("#insightfullPlot2")
@@ -78,7 +95,6 @@ class Insights{
 			let vec = t[1];
 			let outEnd = this.starCenter.plus(vec)
 			let starline = d3.select("#StarLine"+day)
-			if(isInit)
 				starline = starline.transition()
 					.duration(DaViSettings.shortNoticeableDelay)
 					.ease(d3.easeQuad)
