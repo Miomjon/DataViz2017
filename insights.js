@@ -23,7 +23,7 @@ class Insights{
 			d3.select('#numbadiv')
 			.style("flex-flow","column")
 			d3.selectAll(".bigflexNumber")
-				.style("font-size",(h*DaViSettings.bigFontRatio/3)+"px")
+				.style("font-size",(h*DaViSettings.bigFontRatio/2.5)+"px")
 		}
 		else{
 			d3.select('#numbadiv')
@@ -73,6 +73,7 @@ class Insights{
 			.html(d=>d)
 			.attr('x',1000)
 			.attr('y',1000)
+			.classed("clickable",true)
 			.on("click",(d)=>{
 				window.courselist.showTopSpe(
 					d,
@@ -289,6 +290,7 @@ class Insights{
 			          })
 				let specolor = this.speColor(name)
 				slot.select('rect')
+					.classed("clickable",true)
 					.on("click",()=>{
 						this.favoriteSpe = name;
 						courselist.showTopSpe(name,specolor);

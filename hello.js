@@ -378,6 +378,7 @@ class TimeTable{
 					.attr("height",this.cellDim.y)
 					.attr("id",this.cellBackId(day,hour))
 					.attr('fill',DaViSettings.cellDefaultColor)
+					.classed("clickable",true)
 					.on("click",()=>{
 						window.courselist.showTopSpe(
 							DaViSettings.days[day]+" "+(DaViSettings.dayStart + hour)+"H",
@@ -392,6 +393,7 @@ class TimeTable{
 					.attr("y",0)
 					.style('text-anchor', 'middle')
 					.text(DaViSettings.days[day])
+					.classed("clickable",true)
 					.on("click",()=>{
 						window.courselist.showTopSpe(
 							DaViSettings.days[day],
@@ -407,6 +409,7 @@ class TimeTable{
 				.attr("x",-80)
 				.attr("y",posY)
 				.text(""+hour+" _ ")
+				.classed("clickable",true)
 				.on("click",()=>{
 						window.courselist.showTopSpe(
 							hour+"H",

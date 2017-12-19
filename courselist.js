@@ -376,6 +376,7 @@ class CourseList {
             return "white"
           return "black"
         })
+        .classed("clickable",true)
         .on("click",d => this.showTopSpe(d,insightsHandle.speColor(d)))
         .exit();
     }

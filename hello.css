@@ -49,6 +49,7 @@ html, body {
   	flex-direction:column;
 	justify-content: space-evenly;
 	font-size: 5px;
+	cursor: pointer;
 }
 .cellTextClass {
 	color: black;
@@ -57,6 +58,7 @@ html, body {
   	align-items : center;
   	text-align: center;
   	overflow: hidden;
+  	cursor: pointer;
 }
 .detailDiv{
 	width: 100%;
@@ -73,12 +75,14 @@ html, body {
 	height: 10%;
 	width: 16%;
 	text-align: center;
+	cursor: pointer;
 }
 .timetableCell{
 	background-color: #f6f6f6;
 	height: 10%;
 	width: 16%;
 	text-align: center;
+	cursor: pointer;
 }
 
 #table{
@@ -92,10 +96,14 @@ html, body {
 	display: flex; 
 
 }
+.clickable{
+	cursor: pointer;
+}
 .legendColorBox {
 	padding-left: 0.7em;
 	 padding-right:  0.7em;
-	 margin: 0.5em
+	 margin: 0.5em;
+	 cursor: pointer;
 }
 .starLine{
   stroke: #aaa;
@@ -105,6 +113,7 @@ html, body {
 .StarLabel{
 	font-family: sans-serif;
 	font-size: 0.7em;
+	cursor: pointer;
 
 }
 .speSpanClass0{
@@ -125,6 +134,8 @@ html, body {
 	text-align: center;
 	justify-content: space-between;
 	padding:5px;
+	flex-grow: 1;
+	flex-shrink: 1;
 }
 .smallFlexTitle{
 	order :0;
@@ -221,6 +232,7 @@ html, body {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     text-align: center;
     display: inline-block;
+    cursor: pointer;
 }
 
 /* Tooltip text */
