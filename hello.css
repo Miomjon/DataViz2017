@@ -39,6 +39,7 @@ html, body {
 	font-style: normal;
 	font-variant: normal;
 	position: sticky;
+	text-align: center;
 }
 .cellTextClass {
 	color: black;
@@ -171,7 +172,7 @@ html, body {
 	display: flex; 
 	order : 1;
 	flex-direction:column;
-	justify-content: space-evenly ;
+	justify-content: space-between;
 	flex-grow: 1;
 }
 
