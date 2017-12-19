@@ -7,30 +7,25 @@ class Insights{
 		this.displayedSpe = [];
 		this.starCenter = ""
 		this.starAmrs = []
-		this.mkStar()
-		this.updateStartParams(true)
+		//this.mkStar()
+		//this.updateStartParams(true)
 		this.updateFontSize()
 		d3.select("#insightfullPlot2")
-			.on("resize",()=>{this.updateStartParams(false);this.updateFontSize();this.update(courselist.enableCourseList)})
-		window.onresize = ()=>{this.updateStartParams(false);this.updateFontSize();this.update(courselist.enableCourseList)}
+			.on("resize",()=>{this.updateFontSize();this.update(courselist.enableCourseList)})
+		window.onresize = ()=>{this.updateFontSize();this.update(courselist.enableCourseList)}
 	}
 	vecsToPointList(vecs){
 		return vecs.map(v=>v.x+","+v.y).join(" ")
 	}
 	updateFontSize(){
-		let h = document.body.clientHeight - d3.selectAll("#subflex").node().clientHeight ;
-		if(h > 400){
-			d3.select('#numbadiv')
-			.style("flex-flow","column")
-			d3.selectAll(".bigflexNumber")
-				.style("font-size",(h*DaViSettings.bigFontRatio/2.5)+"px")
-		}
-		else{
-			d3.select('#numbadiv')
-				.style("flex-flow","row")
-			d3.selectAll(".bigflexNumber")
-				.style("font-size",h* DaViSettings.bigFontRatio+"px")
-		}
+		let h = d3.selectAll("#subflex").node().clientHeight ;
+		
+		d3.select('#numbadiv')
+		.style("flex-flow","column")
+		d3.selectAll(".bigflexNumber")
+			.style("font-size",(h*DaViSettings.bigFontRatio/2.5)+"px")
+		d3.select("#workloadSum")
+			.style("font-size",(h*DaViSettings.bigFontRatio/5)+"px")
 	}
 	mkStar(){
 		let svg = d3.select("#insightfullPlot2")
@@ -226,7 +221,7 @@ class Insights{
 				g.append('text')
 					.attr('id','speName')
 					.text("a spe")
-					.attr("y",15)
+					.attr("y",-10)
 					.attr("x",spePlotSquare.x/2)
 					.attr("text-anchor","middle")
 				return g;	
@@ -384,7 +379,7 @@ class Insights{
 	            return function(t) { that.text(Math.round(i1(t))+"+"+ Math.round(i2(t))); };
 	          })
 		this.updateSpe(speCreds)
-		this.updateStar()
+		//this.updateStar()
 	}
 	onCreditClicked(){
 		courselist.showTopSpe(0,"#062F4F",(c)=>c.credits+" credits");

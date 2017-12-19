@@ -23,10 +23,19 @@
 		  		<div id="listWrapper">
 			    	<table id="courses"></table>
 		  		</div>
-		      <div id ="courseInfo" class="appear"></div>
+		  		<div class="credSumDiv" style="order:6;margin: 1em">
+				<div class="smallFlexTitle" >Legend</div>
+				<span><span style="background-color: #9ED4E0;order: 1;" class = "legendColorBox" onclick="insightsHandle.onLegenClicked(0,'Lecture','#9ED4E0')">   </span>Lecture</span>
+				<span><span style="background-color: #D1E874;order: 2;" class = "legendColorBox" onclick="insightsHandle.onLegenClicked(1,'Exercise','#D1E874')">   </span>Exercise</span>
+				<span><span style="background-color: #FDFF87;order: 3;" class = "legendColorBox" onclick="insightsHandle.onLegenClicked(2,'TP','#FDFF87')">   </span>TP</span>
+				<span><span style="background-color: #67706F;order: 4;" class = "legendColorBox"  onclick="insightsHandle.onLegenClicked(98,'Project','#67706F')">   </span>Project</span>
+				<span><span style="background-color: #E54535;order: 5;" class = "legendColorBox">   </span>Conflict</span>
+			</div>
+		      
 			</div>
 		</div>
 		<div id="insightDiv">
+			<div id ="courseInfo" class="appear"></div>
 			<div class="credSumDiv" style="order:0; background-color: #c2edc9" onclick="insightsHandle.onCreditClicked()">
 				<span class="smallFlexTitle">Credits</span>
 				<span id="creditsSum" class="bigflexNumber"></span>
@@ -55,14 +64,7 @@
 					</svg>
 				</div>
 			</div>
-			<div class="credSumDiv" style="order:6;margin: 1em">
-				<div class="smallFlexTitle" >Legend</div>
-				<span><span style="background-color: #9ED4E0;order: 1;" class = "legendColorBox" onclick="insightsHandle.onLegenClicked(0,'Lecture','#9ED4E0')">   </span>Lecture</span>
-				<span><span style="background-color: #D1E874;order: 2;" class = "legendColorBox" onclick="insightsHandle.onLegenClicked(1,'Exercise','#D1E874')">   </span>Exercise</span>
-				<span><span style="background-color: #FDFF87;order: 3;" class = "legendColorBox" onclick="insightsHandle.onLegenClicked(2,'TP','#FDFF87')">   </span>TP</span>
-				<span><span style="background-color: #67706F;order: 4;" class = "legendColorBox"  onclick="insightsHandle.onLegenClicked(98,'Project','#67706F')">   </span>Project</span>
-				<span><span style="background-color: #E54535;order: 5;" class = "legendColorBox">   </span>Conflict</span>
-			</div>
+			
 		</div>
 	</div>
 	<script src="courses_scrapped_v3.js"></script>

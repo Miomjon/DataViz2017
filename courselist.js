@@ -307,45 +307,10 @@ class CourseList {
 
     details.append("span").text(course).classed("detailsTile",true)
 
-    var conflicts = details.append("div")
-
-    var confTitle = conflicts.append("span")
-                              .text("Conflicts")
-                              .classed(DaViSettings.titlesInfo, true)
-    let noActiveConf = []
-    let colorFlip = 0
-    for(var i = 0; i < this.conflictList.get(course).length; i++) {
-      let conflictCours = this.conflictList.get(course)[i]
-      if(this.enableCourseList.indexOf(conflictCours)>=0){
-       let a = conflicts.append("div")
-          .text(conflictCours)
-          .style("color",DaViSettings.conflictColor)
-        if(colorFlip % 2== 0)
-          a.style("background-color","#C2EDC9")
-        colorFlip ++;
-      }else{
-        noActiveConf.push(conflictCours)
-      }
-    }
-    for(let conf of noActiveConf){
-      let a = conflicts.append("div")
-          .text(conf)
-          .style("padding-bottom","0.2em")
-      if(colorFlip % 2== 0)
-          a.style("background-color","#C2EDC9")
-        colorFlip ++;
-    }
-
-    conflicts.classed("conflicts", true)
-
-    details.append("div").style("order","2").append("hr")
-
+  
     var descr = details.append("div")
       .classed("descriptions", true)
 
-    var descrTitle = descr.append("span")
-                           .text("Information")
-                           .classed(DaViSettings.titlesInfo, true)
     let descrSub = descr.append("div")
     if(DaViSettings.userSection == "IN" && metadata.mandatory_I || DaViSettings.userSection == "SC" && metadata.mandatory_C)
       descrSub.append("div")
