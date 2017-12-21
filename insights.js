@@ -282,7 +282,6 @@ class Insights{
 					.duration(DaViSettings.shortNoticeableDelay)
 					.ease(d3.easeQuad)
 					.attr("y",-height+20)
-					
 					.tween("text", function() {
 			            var that = d3.select(this),
 		                i = d3.interpolateNumber(that.text(), cred);
@@ -290,8 +289,10 @@ class Insights{
 			          })
 				if(height<40)
 					credTxt.attr("x", spePlotSquare.x*3/4)
+						.attr("y",-10)
 				else
 					credTxt.attr("x", spePlotSquare.x/2)
+						.attr("y",-height+20)
 				let specolor = this.speColor(name)
 				slot.select('rect')
 					.classed("clickable",true)
