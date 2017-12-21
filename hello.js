@@ -127,21 +127,27 @@ class TimeTable{
 					.attr('patternTransform',"rotate("+DaViSettings.dashedLineAngle+" 0 0)")
 				let lineWidth = patternDim.x/colors.length;
 				for(let i = 0;i< colors.length;i++){
-					let c = d3.interpolateLab(colors[i], DaViSettings.cellDefaultColor)(DaViSettings.shadowDarkness);
+
+					let c = d3.hsl(colors[i]);
+					c.l /=2;
+					c.s *= 2;
 					let x = i*lineWidth + lineWidth/2;
 					pattern.append("line")
 						.attr("x1",x)
 						.attr("x2",x)
 						.attr("y1",0)
 						.attr("y2",patternDim.y)
-						.style("stroke",c)
+						.style("stroke",c.toString())
 						.style("stroke-width",lineWidth);
 				}
 				
 			}
 			return 'url(#'+patterName+')'
 		}
-		return d3.interpolateLab(colors[0], DaViSettings.cellDefaultColor)(DaViSettings.shadowDarkness);
+		let c = d3.hsl(colors[0]);
+		c.l /=2;
+		c.s *= 2;
+		return c.toString();
 		
 	}
 	updateGroupShadow(cellkey,group){
@@ -177,7 +183,6 @@ class TimeTable{
 		let fill = this.getFilling(colors);
 		if(fill.startsWith('url')){
 			cell.style("fill",fill)
-			console.log(fill)
 		}
 		else
 			cell.transition()

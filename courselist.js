@@ -220,6 +220,9 @@ class CourseList {
     }
     insightsHandle.update(this.enableCourseList);
 
+    if(this.topSpe.indexOf("hour")>-1){
+      insightsHandle.onLegenClicked(98,'conflict','#67706F')
+    }
 
   }
 

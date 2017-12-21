@@ -266,23 +266,32 @@ class Insights{
 					.duration(DaViSettings.shortNoticeableDelay)
 					.ease(d3.easeQuad)
 					.attr("transform", "translate"+translation)
-				slot.select('#speName')
+				let spename = slot.select('#speName')
 					.text(name)
 					.transition()
 					.duration(DaViSettings.shortNoticeableDelay)
 					.ease(d3.easeQuad)
-					.attr("x", spePlotSquare.x/2)
 
-				slot.select('#speCredTxt').transition()
+				if(height<40)
+					spename.attr("x", spePlotSquare.x/4)
+				else
+					spename.attr("x", spePlotSquare.x/2)
+
+
+				let credTxt = slot.select('#speCredTxt').transition()
 					.duration(DaViSettings.shortNoticeableDelay)
 					.ease(d3.easeQuad)
 					.attr("y",-height+20)
-					.attr("x", spePlotSquare.x/2)
+					
 					.tween("text", function() {
 			            var that = d3.select(this),
 		                i = d3.interpolateNumber(that.text(), cred);
 			            return function(t) { that.text(Math.round(i(t))); };
 			          })
+				if(height<40)
+					credTxt.attr("x", spePlotSquare.x*3/4)
+				else
+					credTxt.attr("x", spePlotSquare.x/2)
 				let specolor = this.speColor(name)
 				slot.select('rect')
 					.classed("clickable",true)
@@ -385,7 +394,42 @@ class Insights{
 		courselist.showTopSpe(0,"#062F4F",(c)=>c.credits+" credits");
 	}
 	onLegenClicked(act,actname, color){
-		courselist.showTopSpe(actname,color,(c)=>c.timeslots.findIndex(s=>s.activity == act)>-1);
+		function countConflict(c,cname){
+			let confl = 0
+			let confltDict = {}
+			
+			for(let slot of c.timeslots){
+				let slotDict = timtable.slotDict
+				let key =  timtable.cellBackId(slot.day,slot.time)
+				let stack = slotDict[key]
+				let aConfHere = false;
+				if(stack)
+					for(let confCours in stack){
+						if(confCours !== cname){
+							aConfHere = true;
+							confltDict[confCours] = true;
+						}
+					}
+				if(aConfHere)
+					confl ++;
+				
+			}
+			if(confl){
+				let coursConfl = dictLen(confltDict);
+				let course = "course";
+				let hour = "hour"
+				if(confl>1)
+					hour+='s';
+				if(coursConfl>1)
+					course += "s";
+				return coursConfl+" "+course+", "+confl+" "+hour;
+			}
+			return false;
+		}
+		if(actname === "conflict")
+			courselist.showTopSpe(0,"#33090D",countConflict);
+		else
+			courselist.showTopSpe(actname,color,(c)=>c.timeslots.findIndex(s=>s.activity == act)>-1);
 	}
 }
 
