@@ -1,3 +1,4 @@
+// Builds a map from an Object
 function buildMap(obj) {
     let map = [];
     Object.keys(obj).forEach(key => {
@@ -6,6 +7,7 @@ function buildMap(obj) {
     return map;
 }
 
+//Checks if an Object is Iterable
 function isIterable(obj) {
   // checks for null and undefined
   if (obj == null) {
@@ -14,6 +16,7 @@ function isIterable(obj) {
   return typeof obj[Symbol.iterator] === 'function';
 }
 
+// Creates the activity metadata for a specific course
 function createActivityData(metadata) {
   var activities = [0,0,0,0];
   for(let times of metadata.timeslots) {
@@ -30,6 +33,7 @@ function createActivityData(metadata) {
   return datActivity;
 }
 
+// Gets the season exam and its type from the given metadata
 function getSeason(exam_time, exam_type) {
   if(exam_time === "Winter") {
     if(exam_type === "During the semester") {
@@ -45,6 +49,7 @@ function getSeason(exam_time, exam_type) {
 
 class CourseList {
 
+  //Constructor of the class
   constructor() {
     this.enableCourseList = [];
     this.coursesInList = [];
@@ -53,12 +58,17 @@ class CourseList {
     this.topSpe = "";
   }
 
+  // Creates the course list itself
   createCourseList(data) {
+
+    // Checks if a course is mandatory
     function isObl(c){
       if(DaViSettings.userSection === "IN")
         return c.mandatory_I
       return c.mandatory_C
     }
+
+    // Sorts by mandatory courses
     function copareCourses(a,b){
       if(isObl(a[1])){
         if(!isObl(b[1]))
@@ -67,6 +77,8 @@ class CourseList {
         return 1;
         return a[0]>b[0];
     }
+
+    // Starts the creation of the div
     let table = document.getElementById(DaViSettings.courseListId);
 
     let tbody = document.createElement("tbody");
@@ -80,7 +92,8 @@ class CourseList {
     titlerow.appendChild(cell)
     tbody.appendChild(titlerow)
     data.sort(copareCourses)
-    let i =0
+    let i = 0
+    // For each course we create a cell with all the information inside
     for(let [course, metadata] of data) {
       let row = document.createElement("tr");
       row.className = DaViSettings.courseListRowClass;
@@ -88,15 +101,13 @@ class CourseList {
 
       let courseName = document.createElement("td");
       row.appendChild(courseName)
-      // courseName.innerHTML = course;
-
-      // courseName.className = DaViSettings.cellCourseRow;
 
       let hover = document.createElement("div");
       hover.id = this.getId(course) + "_button";
       hover.style.background =  "#f6f6f6"
       hover.className = DaViSettings.tooltipClass;
       hover.innerHTML = ""
+      // If the course is mandatory add a diamond
       if(isObl(metadata))
         hover.innerHTML += "🔸 "
       hover.innerHTML += course;
@@ -106,9 +117,9 @@ class CourseList {
       hover.appendChild(speSpan);
       courseName.appendChild(hover)
 
+      // Creates the tooltip
       let hoverInside = document.createElement("div");
       hoverInside.className = DaViSettings.tooltipTextClass;
-      // hoverInside.innerHTML = course
       hoverInside.id = "Fixme2"+i
       hover.appendChild(hoverInside)
 
@@ -122,6 +133,7 @@ class CourseList {
       var inside = d3.select("#"+hoverInside.id)
                       .append("div")
 
+      // Creates the chart inside the hover
       inside.append("div")
           .style("float", "left")
           .selectAll('div')
@@ -154,8 +166,10 @@ class CourseList {
     }
   }
 
+  // Function called when an element of the list is clicked
   enableCourse(c, event) {
     let cid = this.getId(c)
+    // If the course is already clicked it removes it from the chosen list
     if(this.coursesInList.includes(c)) {
       var index = this.coursesInList.indexOf(c);
       if (index > -1) {
@@ -163,44 +177,55 @@ class CourseList {
         this.coursesInList.splice(index, 1);
         timtable.removeCourse(c, new Vec(event.clientX, event.clientY));
         var wasOrange = false;
+        // For all of the conflicts modify the color
         for(let conflict of this.conflictList.get(c)) {
           let confid = this.getId(conflict)
+          // If a conflict was chosen, remove the orange color coming from the removed element
           if(document.getElementById(confid+"_button").style.backgroundColor === "orange"||document.getElementById(confid+"_button").style.backgroundColor === "rgb(0, 171, 120)") {
             document.getElementById(confid+"_button").style.backgroundColor = "rgb(0, 171, 120)";
             wasOrange = true;
           } else {
+            // If the conflict was not chosen (it was red) set it to default unchosen color
             document.getElementById(confid+"_button").style.backgroundColor = "#f6f6f6"
           }
         }
         if(wasOrange) {
+          // Still is in conflict with a current course, keep it red
           document.getElementById(cid+"_button").style.backgroundColor = DaViSettings.conflictColor;
         } else {
+          // No conflict becomes white
           document.getElementById(cid+"_button").style.backgroundColor = "#f6f6f6"
         }
       }
     } else {
+        // If the course was not already chosen we add it to the list
         this.enableCourseList.push(c)
         this.coursesInList.push(c)
         timtable.addCourse(c, new Vec(event.clientX, event.clientY));
         var wasGreen = false;
+        // Checks color of conflicting courses
         for(let conflict of this.conflictList.get(c)) {
           let confid = this.getId(conflict)
+          // If a conflict was already chosen the conflict becomes orange
           if(document.getElementById(confid+"_button").style.backgroundColor === "rgb(0, 171, 120)" || document.getElementById(confid+"_button").style.backgroundColor === "orange") {
             document.getElementById(confid+"_button").style.backgroundColor = "orange";
             wasGreen = true;
           } else {
+            // If not set them to red
             document.getElementById(confid+"_button").style.backgroundColor = DaViSettings.conflictColor
           }
         }
         if(wasGreen) {
+          // If a conflict was already chosen the chosen course becomes orange
           document.getElementById(cid+"_button").style.backgroundColor = "orange";
         } else {
+          // If not it becomes 'green'
           document.getElementById(cid+"_button").style.backgroundColor = "rgb(0, 171, 120)";
         }
     }
+    // Check all the conflicts and update their colors if it was not done before
     for(let conf of this.enableCourseList) {
       var goesOrange = false;
-      // console.log(Array.from(this.conflictList.get(conf)))
       let confid = this.getId(conf)
       for(let list of this.conflictList.get(conf)) {
         let listid = this.getId(list)
@@ -226,6 +251,7 @@ class CourseList {
 
   }
 
+  // Shows the top specialization first in its div
   showTopSpe(speLetter,speColor,filter){
     if(this.topSpe !== speLetter){
       this.topSpe = speLetter;
@@ -279,7 +305,8 @@ class CourseList {
     }
 
   }
-// remove and do a function that precomputes the conflicts for each course
+
+  // Creates the conflict map
   conflicts(data) {
     for(let [course, metadata] of data) {
       var list = [];
@@ -301,6 +328,7 @@ class CourseList {
     }
   }
 
+  // Shows the description details of the course selected
   showDetails(course, metadata) {
 
     var details = d3.select("#courseInfo")
@@ -354,16 +382,21 @@ class CourseList {
 
 
   }
+  // Gets the ids
   getId(s){
     return s.replace(/[^\w]/g,"")
   }
 }
 
-
+// Initiates the class
 var courselist = new CourseList()
+// Creates a map with the data scrapped
 let data_map = buildMap(ISA_data);
+// Creates the course list
 courselist.createCourseList(data_map)
+// Creates the conflict map
 courselist.conflicts(data_map)
+// For each element of the list we create the button and hover functions
 for(let [course, metadata] of data_map) {
   let coursid = courselist.getId(course)
   document.getElementById(coursid+"_button").onclick = (event) => courselist.enableCourse(course, event);
