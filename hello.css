@@ -4,6 +4,7 @@
 	border-right-width: 1px;
 	float:left;
 	padding:2px;
+    margin: 5px;
 	flex: 1 1 auto;
 }
 
@@ -11,7 +12,7 @@
 html, body {
     margin: 0;
     height: 100%;
-    overflow-y: hidden; 
+    overflow-y: hidden;
 }
 
 
@@ -72,6 +73,10 @@ html, body {
 .timetableRow{
 	height: 10%;
 }
+.timetable{
+    height: 100%;
+    width: 100%;
+}
 .timetableCell{
 	background-color: #f6f6f6;
 	height: 10%;
@@ -96,7 +101,7 @@ html, body {
 	flex-direction:row;
 	height: auto;
 	justify-content: space-evenly;
-	display: flex; 
+	display: flex;
 	overflow-y: hidden;
 
 }
@@ -153,8 +158,8 @@ html, body {
 }
 .bigflexNumber{
 	order :1;
-	font-family: "Montsserat";
-	font-weight : bold;
+	font-family: 'Montserrat', sans-serif;
+    font-weight: bold;
 	font-size: 5em;
 	text-align: center;
 }
@@ -177,7 +182,7 @@ html, body {
 	width: 40%;
 	overflow-y:hidden;
 	position: sticky;
-	display: flex; 
+	display: flex;
 	order : 1;
 	flex-direction:column;
 	justify-content: flex-start;
