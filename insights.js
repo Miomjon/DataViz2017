@@ -7,30 +7,25 @@ class Insights{
 		this.displayedSpe = [];
 		this.starCenter = ""
 		this.starAmrs = []
-		this.mkStar()
-		this.updateStartParams(true)
+		//this.mkStar()
+		//this.updateStartParams(true)
 		this.updateFontSize()
 		d3.select("#insightfullPlot2")
-			.on("resize",()=>{this.updateStartParams(false);this.updateFontSize();this.update(courselist.enableCourseList)})
-		window.onresize = ()=>{this.updateStartParams(false);this.updateFontSize();this.update(courselist.enableCourseList)}
+			.on("resize",()=>{this.updateFontSize();this.update(courselist.enableCourseList)})
+		window.onresize = ()=>{this.updateFontSize();this.update(courselist.enableCourseList)}
 	}
 	vecsToPointList(vecs){
 		return vecs.map(v=>v.x+","+v.y).join(" ")
 	}
 	updateFontSize(){
-		let h = document.body.clientHeight - d3.selectAll("#subflex").node().clientHeight ;
-		if(h > 400){
-			d3.select('#numbadiv')
-			.style("flex-flow","column")
-			d3.selectAll(".bigflexNumber")
-				.style("font-size",(h*DaViSettings.bigFontRatio/2.5)+"px")
-		}
-		else{
-			d3.select('#numbadiv')
-				.style("flex-flow","row")
-			d3.selectAll(".bigflexNumber")
-				.style("font-size",h* DaViSettings.bigFontRatio+"px")
-		}
+		let h = d3.selectAll("#subflex").node().clientHeight ;
+		
+		d3.select('#numbadiv')
+		.style("flex-flow","column")
+		d3.selectAll(".bigflexNumber")
+			.style("font-size",(h*DaViSettings.bigFontRatio/2.5)+"px")
+		d3.select("#workloadSum")
+			.style("font-size",(h*DaViSettings.bigFontRatio/5)+"px")
 	}
 	mkStar(){
 		let svg = d3.select("#insightfullPlot2")
@@ -226,7 +221,7 @@ class Insights{
 				g.append('text')
 					.attr('id','speName')
 					.text("a spe")
-					.attr("y",15)
+					.attr("y",-10)
 					.attr("x",spePlotSquare.x/2)
 					.attr("text-anchor","middle")
 				return g;	
@@ -271,23 +266,33 @@ class Insights{
 					.duration(DaViSettings.shortNoticeableDelay)
 					.ease(d3.easeQuad)
 					.attr("transform", "translate"+translation)
-				slot.select('#speName')
+				let spename = slot.select('#speName')
 					.text(name)
 					.transition()
 					.duration(DaViSettings.shortNoticeableDelay)
 					.ease(d3.easeQuad)
-					.attr("x", spePlotSquare.x/2)
 
-				slot.select('#speCredTxt').transition()
+				if(height<40)
+					spename.attr("x", spePlotSquare.x/4)
+				else
+					spename.attr("x", spePlotSquare.x/2)
+
+
+				let credTxt = slot.select('#speCredTxt').transition()
 					.duration(DaViSettings.shortNoticeableDelay)
 					.ease(d3.easeQuad)
 					.attr("y",-height+20)
-					.attr("x", spePlotSquare.x/2)
 					.tween("text", function() {
 			            var that = d3.select(this),
 		                i = d3.interpolateNumber(that.text(), cred);
 			            return function(t) { that.text(Math.round(i(t))); };
 			          })
+				if(height<40)
+					credTxt.attr("x", spePlotSquare.x*3/4)
+						.attr("y",-10)
+				else
+					credTxt.attr("x", spePlotSquare.x/2)
+						.attr("y",-height+20)
 				let specolor = this.speColor(name)
 				slot.select('rect')
 					.classed("clickable",true)
@@ -384,13 +389,48 @@ class Insights{
 	            return function(t) { that.text(Math.round(i1(t))+"+"+ Math.round(i2(t))); };
 	          })
 		this.updateSpe(speCreds)
-		this.updateStar()
+		//this.updateStar()
 	}
 	onCreditClicked(){
 		courselist.showTopSpe(0,"#062F4F",(c)=>c.credits+" credits");
 	}
 	onLegenClicked(act,actname, color){
-		courselist.showTopSpe(actname,color,(c)=>c.timeslots.findIndex(s=>s.activity == act)>-1);
+		function countConflict(c,cname){
+			let confl = 0
+			let confltDict = {}
+			
+			for(let slot of c.timeslots){
+				let slotDict = timtable.slotDict
+				let key =  timtable.cellBackId(slot.day,slot.time)
+				let stack = slotDict[key]
+				let aConfHere = false;
+				if(stack)
+					for(let confCours in stack){
+						if(confCours !== cname){
+							aConfHere = true;
+							confltDict[confCours] = true;
+						}
+					}
+				if(aConfHere)
+					confl ++;
+				
+			}
+			if(confl){
+				let coursConfl = dictLen(confltDict);
+				let course = "course";
+				let hour = "hour"
+				if(confl>1)
+					hour+='s';
+				if(coursConfl>1)
+					course += "s";
+				return coursConfl+" "+course+", "+confl+" "+hour;
+			}
+			return false;
+		}
+		if(actname === "conflict")
+			courselist.showTopSpe(0,"#33090D",countConflict);
+		else
+			courselist.showTopSpe(actname,color,(c)=>c.timeslots.findIndex(s=>s.activity == act)>-1);
 	}
 }
 

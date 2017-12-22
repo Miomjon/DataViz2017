@@ -4,13 +4,15 @@
 	border-right-width: 1px;
 	float:left;
 	padding:2px;
+    margin: 5px;
+	flex: 1 1 auto;
 }
 
 
 html, body {
     margin: 0;
     height: 100%;
-    overflow-y: hidden; 
+    overflow-y: hidden;
 }
 
 
@@ -43,7 +45,7 @@ html, body {
 }
 .cellTextClass {
 	color: black;
-	position: fixed;
+	position: absolute;
 	z-index: 10;
 	display: flex;
   	overflow: hidden;
@@ -54,7 +56,7 @@ html, body {
 }
 .cellTextClass {
 	color: black;
-	position: fixed;
+	position: absolute;
 	z-index: 10;
   	align-items : center;
   	text-align: center;
@@ -70,6 +72,10 @@ html, body {
 }
 .timetableRow{
 	height: 10%;
+}
+.timetable{
+    height: 100%;
+    width: 100%;
 }
 .timetableCell{
 	background-color: #f6f6f6;
@@ -93,8 +99,10 @@ html, body {
 	background-color:#efefef;
 	flex : 1 1 auto;
 	flex-direction:row;
+	height: auto;
 	justify-content: space-evenly;
-	display: flex; 
+	display: flex;
+	overflow-y: hidden;
 
 }
 .clickable{
@@ -105,6 +113,7 @@ html, body {
 	 padding-right:  0.7em;
 	 margin: 0.5em;
 	 cursor: pointer;
+	 box-shadow: 3px 3px 5px #aaaaaa;
 }
 .starLine{
   stroke: #aaa;
@@ -127,6 +136,7 @@ html, body {
 	padding-right: 0.6em;
 	padding-left: 0.6em;
 	margin: 0.2em 0.2em;
+	box-shadow: 2px 2px 5px #aaaaaa;
 
 }
 .credSumDiv{
@@ -148,8 +158,8 @@ html, body {
 }
 .bigflexNumber{
 	order :1;
-	font-family: "Montsserat";
-	font-weight : bold;
+	font-family: 'Montserrat', sans-serif;
+    font-weight: bold;
 	font-size: 5em;
 	text-align: center;
 }
@@ -157,22 +167,25 @@ html, body {
 	display: flex;
 	flex-flow: column;
 	height: 100%;
+	overflow: hidden;
 }
 #subflex{
-	flex : 0 0 auto;
+	flex : 2 1 auto;
+	height: 500px;
 	border-bottom-style: solid;
 	border-bottom-width: 1px;
+	display: flex;
+	flex-flow: row;
+
 }
 #courseInfo{
-	top : 0px;
-	height: 480px;
 	width: 40%;
-	overflow: hidden;
+	overflow-y:hidden;
 	position: sticky;
-	display: flex; 
+	display: flex;
 	order : 1;
 	flex-direction:column;
-	justify-content: space-between;
+	justify-content: flex-start;
 	flex-grow: 1;
 }
 
@@ -189,10 +202,11 @@ html, body {
 #listWrapper{
 	order : 0;
 	display: inline-block;
-	height: 100%;
+	height: auto;
 	overflow-y:auto;
 	overflow-x:hidden;
 	flex-grow: 1;
+	max-width: 25%;
 }
 .timetableCellExercise{
 	fill: #3f43a9;
@@ -248,7 +262,7 @@ html, body {
 
     /* Position the tooltip text */
     position: absolute;
-    z-index: 1;
+    z-index: 99999;
 		top: 150%;
     left: 50%;
 		margin-left: -50%;
@@ -280,6 +294,7 @@ html, body {
     visibility: visible;
     opacity: 1;
     position: absolute;
+    z-index: 99999;
 }
 
 .chart div {

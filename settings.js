@@ -35,7 +35,7 @@ var DaViSettings = {
 	cellNameDiv : "cellNameDiv",
 	defaultDelay : 200,
 	shortNoticeableDelay : 500,
-	dayshoursDivOffset : new Vec(30,30),
+	dayshoursDivOffset : new Vec(40,40),
 	tableDimBig : new Vec(775,480),
 	tableDimSmall : new Vec(775,480),
 	cellBigScale : new Vec(1.5,1.5),

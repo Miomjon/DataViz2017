@@ -5,7 +5,7 @@
 
 class TimeTable{
 
-	
+
 	constructor() {
 
 		this.groups = {}
@@ -14,24 +14,30 @@ class TimeTable{
 		this.tableAbsOrigin = ""
 	    this.isDisplayBig = false;
 	    this.classDict = [DaViSettings.cellCourseClass,DaViSettings.cellExerciseClass]
+        let svgtable = d3.select("#svgTable").node()
+        let tableDim = new Vec(svgTable.clientWidth,svgTable.clientHeight)
+        DaViSettings.tableDim = tableDim
+        DaViSettings.tableDimSmall = tableDim
+        DaViSettings.tableDimBig = tableDim
+
 	    this.cellDimWmargin = DaViSettings.tableDimSmall.minus(DaViSettings.dayshoursDivOffset).divide(DaViSettings.days.length,DaViSettings.dayEnd-DaViSettings.dayStart);
 		this.cellDim = this.cellDimWmargin.minus(DaViSettings.cellMargin.time(2));
 		this.getColor = (s)=>DaViSettings.cellColorMap[s.activity];
-		
+
   	}
-	
+
 	Group(slot){
 		function mk(slot){
 			this.start=new Vec(slot.day,slot.time)
 			this.height = 1
 			this.itemIndex=-1
 		}
-		
+
 		return new mk(slot);
 	}
-	
+
 	cellBackId(...args){
-		
+
 		if(args.length == 1){
 			let v = args[0]
 			let dayIndex = v[0]
@@ -70,7 +76,7 @@ class TimeTable{
 				.attr("width",boxDim.x)
 				.attr("height",boxDim.y)
 		}
-		
+
 	}
 	resetCellText(key,trTime,mousepos){
 		let tableDim = DaViSettings.tableDimSmall
@@ -115,7 +121,7 @@ class TimeTable{
 		if(colors.length > 1){
 			colors = colors.sort();
 			let patterName = (DaViSettings.dashPatternPrefix + colors.join("_")).split("#").join("")
-				
+
 			if(!document.getElementById(patterName)){
 				let patternDim = DaViSettings.dashdPatternDims
 				let pattern = d3.select("#"+DaViSettings.timeTableId).select("defs")
@@ -127,30 +133,36 @@ class TimeTable{
 					.attr('patternTransform',"rotate("+DaViSettings.dashedLineAngle+" 0 0)")
 				let lineWidth = patternDim.x/colors.length;
 				for(let i = 0;i< colors.length;i++){
-					let c = d3.interpolateLab(colors[i], DaViSettings.cellDefaultColor)(DaViSettings.shadowDarkness);
+
+					let c = d3.hsl(colors[i]);
+					c.l /=2;
+					c.s *= 2;
 					let x = i*lineWidth + lineWidth/2;
 					pattern.append("line")
 						.attr("x1",x)
 						.attr("x2",x)
 						.attr("y1",0)
 						.attr("y2",patternDim.y)
-						.style("stroke",c)
+						.style("stroke",c.toString())
 						.style("stroke-width",lineWidth);
 				}
-				
+
 			}
 			return 'url(#'+patterName+')'
 		}
-		return d3.interpolateLab(colors[0], DaViSettings.cellDefaultColor)(DaViSettings.shadowDarkness);
-		
+		let c = d3.hsl(colors[0]);
+		c.l /=2;
+		c.s *= 2;
+		return c.toString();
+
 	}
 	updateGroupShadow(cellkey,group){
 		let cell = d3.select("#"+cellkey)
 		let posTiled = this.cellPos(cellkey)
 
 		let slots = this.slotDict[cellkey]
-		
-		
+
+
 		let isFirst = true;
 		let isLast = true;
 		let colors = [];
@@ -161,7 +173,7 @@ class TimeTable{
 		}else for(let courseId in slots){
 			colors.push(this.getColor(slots[courseId]))
 		}
-		
+
 		let dim = this.cellDim
 		let cellDimWmargin = this.cellDimWmargin;
 		let pos = posTiled.time(cellDimWmargin)
@@ -177,7 +189,6 @@ class TimeTable{
 		let fill = this.getFilling(colors);
 		if(fill.startsWith('url')){
 			cell.style("fill",fill)
-			console.log(fill)
 		}
 		else
 			cell.transition()
@@ -198,7 +209,7 @@ class TimeTable{
 	}
 	coursStackHeight(group){
 		let s = this.slotDict[this.cellBackId(group.start)];
-		return dictLen(s) 
+		return dictLen(s)
 	}
 	getGroupColor(group){
 		let s = this.slotDict[this.cellBackId(group.start)];
@@ -221,11 +232,11 @@ class TimeTable{
 				groupOf = []
 			groupOf.push(g)
 			timetable.groups[id] = groupOf;
-			
+
 			updatedGroups.push(g)
 		}
 		function appendSlot(key,id,slot){
-			let slotsNow = timetable.slotDict[key] 
+			let slotsNow = timetable.slotDict[key]
 			if(!slotsNow)
 				slotsNow = {}
 			slotsNow[id] = slot
@@ -253,17 +264,17 @@ class TimeTable{
 			}
 		}
 		function resolveConflict(newCourseID,oldCoursId,groupOld,slotNew){
-						
+
 			if(!updatedItemIndex[groupOld.itemIndex]){
 				updatedGroups.push(groupOld)
 				updatedItemIndex[groupOld.itemIndex] = true;
 			}
-			
+
 			if(timetable.coursStackHeight(groupOld) <= 2){
 				let key = timetable.cellBackId(slotNew.day,slotNew.time)
 				let slotOld = timetable.slotDict[key][oldCoursId];
 				if(slotNew.time == groupOld.start.y && slotNew.time +1 === groupOld.start.y + groupOld.height){
-					appendGroup(newCourseID,groupOld) 
+					appendGroup(newCourseID,groupOld)
 					return;
 				}
 				let conflictGroup = timetable.Group(slotOld)
@@ -297,7 +308,7 @@ class TimeTable{
 		}
 		function entry(id,slot){
 			let key = timetable.cellBackId(slot.day,slot.time)
-			appendSlot(key,id,slot)	
+			appendSlot(key,id,slot)
 		}
 		let course = ISA_data[coursId];
 		let groupedSlot = [];
@@ -324,15 +335,15 @@ class TimeTable{
 					lastGroup = group(coursId,slot,this.getColor(slot))
 					last = slot;
 				}
-				
+
 			}
 
-		} 	
-		
+		}
+
 		return {slotDict:newSlots,groups:updatedGroups}
 	}
-	
-	
+
+
 	takeTextId(){
 		for(let i = 0; i < DaViSettings.tableTextCount; i++){
 			if(!this.textInUse[i]){
@@ -354,8 +365,8 @@ class TimeTable{
 		return a.activity === b.activity && a.time+1 == b.time
 	}
 	initTimetable() {
-		
-		
+
+
 		this.groupFunction = "groupByActivity";
 		let figure = d3.select("#"+DaViSettings.timeTableId);
 		let tableBody = d3.select("#"+DaViSettings.timeTableDivId);
@@ -363,8 +374,8 @@ class TimeTable{
 		figure.selectAll("*").remove();
 		figure.append("defs")
 		let tableDim = DaViSettings.tableDimSmall
-		figure.attr("width",tableDim.x)
-			.attr("height",tableDim.y)
+		// figure.attr("width",tableDim.x)
+		// 	.attr("height",tableDim.y)
 		let offset = DaViSettings.dayshoursDivOffset
 		let cellMargin = DaViSettings.cellMargin;
 		let tableBox = tableBody.node();
@@ -401,7 +412,7 @@ class TimeTable{
 							timeFilter(day,""))
 						}
 					);
-			this.alignText(text,new Vec(this.cellDimWmargin.x * day + cellMargin.x + offset.x, 0).minus(this.tableAbsOrigin), new Vec(this.cellDimWmargin.x,offset.y),200)	
+			this.alignText(text,new Vec(this.cellDimWmargin.x * day + cellMargin.x + offset.x, 0).minus(this.tableAbsOrigin), new Vec(this.cellDimWmargin.x,offset.y),200)
 		}
 		for(let hour = DaViSettings.dayStart;hour <= DaViSettings.dayEnd;hour++){
 			let posY = (hour - DaViSettings.dayStart) * this.cellDimWmargin.y + offset.y;
@@ -421,7 +432,7 @@ class TimeTable{
 				.duration(500)
 				.attr("x",cellMargin.x)
 				.ease(d3.easeCubicOut)
-				
+
 		}
 		for(let i = 0 ;i < DaViSettings.tableTextCount;i++){
 
@@ -431,9 +442,9 @@ class TimeTable{
 				.style('border',"1px solid")
 
 			this.resetCellText(DaViSettings.cellTextId+i)
-				
+
 		}
-		
+
 
 	}
 	updateGroup(group){
@@ -477,8 +488,8 @@ class TimeTable{
 				let isNew = group.itemIndex === -1
 				if(isNew)
 					group.itemIndex = this.takeTextId();
-				
-				
+
+
 				if(!isUndef(mousePos)){
 					d3.select("#"+DaViSettings.cellTextId+group.itemIndex).style("left" , mousePos.x+"px")
 						.style("top" ,mousePos.y+"px")
@@ -486,7 +497,7 @@ class TimeTable{
 				this.updateGroup(group);
 			}
 		}
-		
+
 	}
 	removeGroupFromSlots(groups,coursId){
 		let updated = {};
@@ -543,17 +554,17 @@ class TimeTable{
 							scheduleUpdate(g);
 						}
 					}
-					
+
 				}
 			}
-			
+
 		}
-		
+
 		return {update:groupsToUpdate, removed:groupToRemove};
 
 	}
 	removeCourse(coursId,mousepos){
-		
+
 		let deletedGroups = this.groups[coursId]
 		if(!deletedGroups)
 			return
@@ -577,9 +588,9 @@ class TimeTable{
 			if(change.itemIndex>=0)
 				this.updateGroup(change,coursId);
 		}
-		
+
 		delete this.groups[coursId]
-		
+
 
 	}
 	switchGroupExpand(group){
@@ -605,7 +616,7 @@ class TimeTable{
 			}
 		}
 
-		
+
 		let item = d3.select("#"+DaViSettings.cellTextId+itemIndex)
 		if(!item.attr("daviexpanded") || item.attr("daviexpanded") === "false"){
 			let t = this.fillText(item,groupStart,new Vec(10000,10000),true)
@@ -628,10 +639,10 @@ class TimeTable{
 					.ease(d3.easeCubicOut)
 					.style("fill","white");
 			}
-		}	
+		}
 		else
 			reset(group,this)
-				
+
 
 	}
 	fillText(parent,groupStart,maxDims,isExepandedMode){
@@ -645,7 +656,7 @@ class TimeTable{
 				.classed(DaViSettings.roomLinkTextClass)
 		}
 		parent.style('font-size',DaViSettings.cellFontDefault)
-		
+
 		parent.html("")
 		let text = parent.append("div")
 			.classed(DaViSettings.detailDiv,true)
@@ -710,7 +721,7 @@ class TimeTable{
 							.txt(",")
 						mkRoomLink(roomsDiv,rooms[i]);
 					}
-					
+
 				}else{
 					let roomsDiv = detailsDiv.append("div")
 					mkRoomLink(roomsDiv,rooms[0])
@@ -731,10 +742,10 @@ class TimeTable{
 			for(let coursId in slots){
 				if(!everythingFit)
 					break;
-				
+
 				let slot = slots[coursId]
 				let course = ISA_data[coursId]
-				
+
 				if(!isFirst)
 					text.append("hr")
 				let detailsDiv = text.append("div")
@@ -753,7 +764,7 @@ class TimeTable{
 				everythingFit = isOk(Vec.Dim(text.node().getBoundingClientRect()))
 			}
 		}
-		
+
 		if(!everythingFit){
 			let dictKeys = Object.keys(slots);
 			if(dictKeys.length ==1){
@@ -793,8 +804,8 @@ class TimeTable{
 				}
 				isFirst = false
 				everythingFit = isOk(Vec.Dim(text.node().getBoundingClientRect()))
-				
-				
+
+
 			}
 		}
 		if(!everythingFit){
@@ -802,7 +813,7 @@ class TimeTable{
 			text.classed(DaViSettings.cellTitleTextClass,true)
 			text.text(allTitleName.join(" / "))
 			everythingFit = isOk(Vec.Dim(text.node().getBoundingClientRect()))
-			
+
 		}
 		if(!everythingFit){
 			let titleDims = Vec.Dim(text.node().getBoundingClientRect())
@@ -825,9 +836,9 @@ class TimeTable{
 				everythingFit = isOk(Vec.Dim(text.node().getBoundingClientRect()))
 			}
 		}
-		
+
 		parent.style('font-size',DaViSettings.cellFontVerySmall)
-		
+
 		return parent;
 
 	}
@@ -843,8 +854,8 @@ class TimeTable{
 			t.style("height",0+"px")
 		else
 			t.style("height","auto");
-				
-		
+
+
 	}
 
 	getDetailledDailyWorkload(){
@@ -869,11 +880,10 @@ class TimeTable{
 		}
 		return cumulativeworkloads;
 	}
-	
-	
+
+
 }
 
 var timtable = new TimeTable()
 timtable.initTimetable(ISA_data,false)
-testThing =document.getElementById(DaViSettings.rescaleTableButtonId) 
-
+testThing =document.getElementById(DaViSettings.rescaleTableButtonId)
