@@ -10,7 +10,8 @@
 This project is aimed at EPFL masters students, more specifically in Computer Science, to offer them a better visualisation of their course schedule than what offer the default tool IS Academia. It offers much improved interactivity and fluidity, without requiring reloading of the page to change the schedule.
 
 ### Usage
-To use it, simply open the website at https://miomjon.github.io/DataViz2017/ 
+To test it, simply open the website at https://miomjon.github.io/DataViz2017/ 
+The course and specializations displayed are the ones of the Autumn semester in IN.
 Then, courses can be added to the schedule by clicking on them on the list. From there, most elements on the screen can be interacted with to highlight certain informations. Here are some examples:
 
 1. Clicking on a day on the top row will highlight all courses that are scheduled during the given day
