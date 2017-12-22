@@ -165,8 +165,8 @@ class CourseList {
         var wasOrange = false;
         for(let conflict of this.conflictList.get(c)) {
           let confid = this.getId(conflict)
-          if(document.getElementById(confid+"_button").style.backgroundColor === "orange"||document.getElementById(confid+"_button").style.backgroundColor === "green") {
-            document.getElementById(confid+"_button").style.backgroundColor = "green";
+          if(document.getElementById(confid+"_button").style.backgroundColor === "orange"||document.getElementById(confid+"_button").style.backgroundColor === "rgb(0, 171, 120)") {
+            document.getElementById(confid+"_button").style.backgroundColor = "rgb(0, 171, 120)";
             wasOrange = true;
           } else {
             document.getElementById(confid+"_button").style.backgroundColor = "#f6f6f6"
@@ -185,7 +185,7 @@ class CourseList {
         var wasGreen = false;
         for(let conflict of this.conflictList.get(c)) {
           let confid = this.getId(conflict)
-          if(document.getElementById(confid+"_button").style.backgroundColor === "green" || document.getElementById(confid+"_button").style.backgroundColor === "orange") {
+          if(document.getElementById(confid+"_button").style.backgroundColor === "rgb(0, 171, 120)" || document.getElementById(confid+"_button").style.backgroundColor === "orange") {
             document.getElementById(confid+"_button").style.backgroundColor = "orange";
             wasGreen = true;
           } else {
@@ -195,7 +195,7 @@ class CourseList {
         if(wasGreen) {
           document.getElementById(cid+"_button").style.backgroundColor = "orange";
         } else {
-          document.getElementById(cid+"_button").style.backgroundColor = "green";
+          document.getElementById(cid+"_button").style.backgroundColor = "rgb(0, 171, 120)";
         }
     }
     for(let conf of this.enableCourseList) {
@@ -204,7 +204,7 @@ class CourseList {
       let confid = this.getId(conf)
       for(let list of this.conflictList.get(conf)) {
         let listid = this.getId(list)
-        if(document.getElementById(listid+"_button").style.backgroundColor === "green" || document.getElementById(listid+"_button").style.backgroundColor === "orange") {
+        if(document.getElementById(listid+"_button").style.backgroundColor === "rgb(0, 171, 120)" || document.getElementById(listid+"_button").style.backgroundColor === "orange") {
           document.getElementById(listid+"_button").style.backgroundColor = "orange";
           goesOrange = true;
         } else {
@@ -214,12 +214,15 @@ class CourseList {
       if(goesOrange) {
         document.getElementById(confid+"_button").style.backgroundColor = "orange"
       } else {
-        document.getElementById(confid+"_button").style.backgroundColor = "green"
+        document.getElementById(confid+"_button").style.backgroundColor = "rgb(0, 171, 120)"
       }
 
     }
     insightsHandle.update(this.enableCourseList);
 
+    if(this.topSpe.indexOf("hour")>-1){
+      insightsHandle.onLegenClicked(98,'conflict','#67706F')
+    }
 
   }
 
@@ -307,45 +310,10 @@ class CourseList {
 
     details.append("span").text(course).classed("detailsTile",true)
 
-    var conflicts = details.append("div")
-
-    var confTitle = conflicts.append("span")
-                              .text("Conflicts")
-                              .classed(DaViSettings.titlesInfo, true)
-    let noActiveConf = []
-    let colorFlip = 0
-    for(var i = 0; i < this.conflictList.get(course).length; i++) {
-      let conflictCours = this.conflictList.get(course)[i]
-      if(this.enableCourseList.indexOf(conflictCours)>=0){
-       let a = conflicts.append("div")
-          .text(conflictCours)
-          .style("color",DaViSettings.conflictColor)
-        if(colorFlip % 2== 0)
-          a.style("background-color","#C2EDC9")
-        colorFlip ++;
-      }else{
-        noActiveConf.push(conflictCours)
-      }
-    }
-    for(let conf of noActiveConf){
-      let a = conflicts.append("div")
-          .text(conf)
-          .style("padding-bottom","0.2em")
-      if(colorFlip % 2== 0)
-          a.style("background-color","#C2EDC9")
-        colorFlip ++;
-    }
-
-    conflicts.classed("conflicts", true)
-
-    details.append("div").style("order","2").append("hr")
 
     var descr = details.append("div")
       .classed("descriptions", true)
 
-    var descrTitle = descr.append("span")
-                           .text("Information")
-                           .classed(DaViSettings.titlesInfo, true)
     let descrSub = descr.append("div")
     if(DaViSettings.userSection == "IN" && metadata.mandatory_I || DaViSettings.userSection == "SC" && metadata.mandatory_C)
       descrSub.append("div")
