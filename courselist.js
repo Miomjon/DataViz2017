@@ -165,8 +165,8 @@ class CourseList {
         var wasOrange = false;
         for(let conflict of this.conflictList.get(c)) {
           let confid = this.getId(conflict)
-          if(document.getElementById(confid+"_button").style.backgroundColor === "orange"||document.getElementById(confid+"_button").style.backgroundColor === "green") {
-            document.getElementById(confid+"_button").style.backgroundColor = "green";
+          if(document.getElementById(confid+"_button").style.backgroundColor === "orange"||document.getElementById(confid+"_button").style.backgroundColor === "rgb(0, 171, 120)") {
+            document.getElementById(confid+"_button").style.backgroundColor = "rgb(0, 171, 120)";
             wasOrange = true;
           } else {
             document.getElementById(confid+"_button").style.backgroundColor = "#f6f6f6"
@@ -185,7 +185,7 @@ class CourseList {
         var wasGreen = false;
         for(let conflict of this.conflictList.get(c)) {
           let confid = this.getId(conflict)
-          if(document.getElementById(confid+"_button").style.backgroundColor === "green" || document.getElementById(confid+"_button").style.backgroundColor === "orange") {
+          if(document.getElementById(confid+"_button").style.backgroundColor === "rgb(0, 171, 120)" || document.getElementById(confid+"_button").style.backgroundColor === "orange") {
             document.getElementById(confid+"_button").style.backgroundColor = "orange";
             wasGreen = true;
           } else {
@@ -195,7 +195,7 @@ class CourseList {
         if(wasGreen) {
           document.getElementById(cid+"_button").style.backgroundColor = "orange";
         } else {
-          document.getElementById(cid+"_button").style.backgroundColor = "green";
+          document.getElementById(cid+"_button").style.backgroundColor = "rgb(0, 171, 120)";
         }
     }
     for(let conf of this.enableCourseList) {
@@ -204,7 +204,7 @@ class CourseList {
       let confid = this.getId(conf)
       for(let list of this.conflictList.get(conf)) {
         let listid = this.getId(list)
-        if(document.getElementById(listid+"_button").style.backgroundColor === "green" || document.getElementById(listid+"_button").style.backgroundColor === "orange") {
+        if(document.getElementById(listid+"_button").style.backgroundColor === "rgb(0, 171, 120)" || document.getElementById(listid+"_button").style.backgroundColor === "orange") {
           document.getElementById(listid+"_button").style.backgroundColor = "orange";
           goesOrange = true;
         } else {
@@ -214,7 +214,7 @@ class CourseList {
       if(goesOrange) {
         document.getElementById(confid+"_button").style.backgroundColor = "orange"
       } else {
-        document.getElementById(confid+"_button").style.backgroundColor = "green"
+        document.getElementById(confid+"_button").style.backgroundColor = "rgb(0, 171, 120)"
       }
 
     }
@@ -310,7 +310,7 @@ class CourseList {
 
     details.append("span").text(course).classed("detailsTile",true)
 
-  
+
     var descr = details.append("div")
       .classed("descriptions", true)
 
