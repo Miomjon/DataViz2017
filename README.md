@@ -3,9 +3,10 @@
 ### Tested on:
 * Chrome 63
 * Firefox Quantum
+* Safari 11
 
 ### Reported not working on:
-* Safari 11
+---
 
 This project is aimed at EPFL masters students, more specifically in Computer Science, to offer them a better visualisation of their course schedule than what offer the default tool IS Academia. It offers much improved interactivity and fluidity, without requiring reloading of the page to change the schedule.
 
