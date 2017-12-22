@@ -395,7 +395,7 @@ let data_map = buildMap(ISA_data);
 // Creates the course list
 courselist.createCourseList(data_map)
 // Creates the conflict map
-courselist.conflicts(data_map
+courselist.conflicts(data_map)
 // For each element of the list we create the button and hover functions
 for(let [course, metadata] of data_map) {
   let coursid = courselist.getId(course)
