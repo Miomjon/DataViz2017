@@ -56,6 +56,7 @@ class CourseList {
     this.conflictList = new Map();
     this.hoverTimout = "";
     this.topSpe = "";
+    this.oldWidth = "";
   }
 
   // Creates the course list itself
@@ -251,7 +252,13 @@ class CourseList {
 
   }
 
-  // Shows the top specialization first in its div
+  // Shows enable labels for relevent list items.
+  // The design of this method is wierd as it have been expanded progressively.
+  // The historical part is the one that happend if filter is not defined.
+  // If filter is a funtion that either return true or false, speLetter is displayed in the labels of the course for which filter was true
+  // If filter return non boolean, the course labels will contained the value return by filter when evaluating
+  // thier course if this value vealute to true as a boolean.
+  // filter is function(courseData, coursName)
   showTopSpe(speLetter,speColor,filter){
     if(this.topSpe !== speLetter){
       this.topSpe = speLetter;
@@ -303,6 +310,12 @@ class CourseList {
       }
 
     }
+    let newWidth = document.getElementById("listWrapper").clientWidth;
+    if(newWidth !== courselist.oldWidth){
+      courselist.oldWidth = newWidth;
+      timtable.resize();
+    }
+    
 
   }
 
@@ -414,3 +427,4 @@ for(let [course, metadata] of data_map) {
     }
   }
 }
+courselist.oldWidth = document.getElementById("subflex").clientWidth;

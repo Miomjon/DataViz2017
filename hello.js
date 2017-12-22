@@ -14,18 +14,13 @@ class TimeTable{
 		this.tableAbsOrigin = ""
 	    this.isDisplayBig = false;
 	    this.classDict = [DaViSettings.cellCourseClass,DaViSettings.cellExerciseClass]
-        let svgtable = d3.select("#svgTable").node()
-        let tableDim = new Vec(svgTable.clientWidth,svgTable.clientHeight)
-        DaViSettings.tableDim = tableDim
-        DaViSettings.tableDimSmall = tableDim
-        DaViSettings.tableDimBig = tableDim
-
-	    this.cellDimWmargin = DaViSettings.tableDimSmall.minus(DaViSettings.dayshoursDivOffset).divide(DaViSettings.days.length,DaViSettings.dayEnd-DaViSettings.dayStart);
-		this.cellDim = this.cellDimWmargin.minus(DaViSettings.cellMargin.time(2));
+        
 		this.getColor = (s)=>DaViSettings.cellColorMap[s.activity];
 
   	}
 
+  	// Groups are reprentation of the div of text, they are called group because thier main use is to remember 
+  	// consecutiv timeslot that can be merged together.
 	Group(slot){
 		function mk(slot){
 			this.start=new Vec(slot.day,slot.time)
@@ -36,6 +31,7 @@ class TimeTable{
 		return new mk(slot);
 	}
 
+	// return theid of the cell from its tiled position (slot.day and slot.time)
 	cellBackId(...args){
 
 		if(args.length == 1){
@@ -53,6 +49,7 @@ class TimeTable{
 		return new Vec(sub.split("_"));
 	}
 
+	// Alligne either svg text of the text div on the right place
 	alignText(text,boxPos,boxDim,trTime){
 		let backMid = boxDim.divide(2)
 
@@ -78,6 +75,7 @@ class TimeTable{
 		}
 
 	}
+	// hid the text div and rest paramter that could have been changed (for exemple if the cell was expanded.)
 	resetCellText(key,trTime,mousepos){
 		let tableDim = DaViSettings.tableDimSmall
 		let text = d3.select("#"+key)
@@ -100,6 +98,7 @@ class TimeTable{
 			.attr("daviexpanded",false)
 			.style('z-index',null)
 	}
+	// Reset the shadow 
 	setCellIsolated(key,color){
 		let cell = d3.select("#"+key)
 		if(!color)
@@ -116,6 +115,9 @@ class TimeTable{
 			.style("fill",color)
 			.ease(d3.easeCubicOut)
 	}
+
+	// Return a string that for the color of a shadow, if colors have more than one lement, return a pointer to a pattern. 
+	// Create pattern when needed.
 	getFilling(colors){
 		colors = unics(colors)
 		if(colors.length > 1){
@@ -156,6 +158,7 @@ class TimeTable{
 		return c.toString();
 
 	}
+	// Refresh the color of the shadows behind a text div.
 	updateGroupShadow(cellkey,group){
 		let cell = d3.select("#"+cellkey)
 		let posTiled = this.cellPos(cellkey)
@@ -226,6 +229,7 @@ class TimeTable{
 		let updatedItemIndex = {}
 		let timetable =this;
 
+		// Create a new group, put it in the timatable record andin the list of thing that need update
 		function appendGroup(id,g){
 			let groupOf = timetable.groups[id];
 			if(!groupOf)
@@ -235,6 +239,7 @@ class TimeTable{
 
 			updatedGroups.push(g)
 		}
+		// Create a new slot, put it in the timatable record andin the list of thing that need update
 		function appendSlot(key,id,slot){
 			let slotsNow = timetable.slotDict[key]
 			if(!slotsNow)
@@ -263,6 +268,8 @@ class TimeTable{
 				}
 			}
 		}
+
+		// Find how many group need to be created to display the conflict properly and create them
 		function resolveConflict(newCourseID,oldCoursId,groupOld,slotNew){
 
 			if(!updatedItemIndex[groupOld.itemIndex]){
@@ -343,7 +350,7 @@ class TimeTable{
 		return {slotDict:newSlots,groups:updatedGroups}
 	}
 
-
+	// Text element are reused, so we keep track of thier id.
 	takeTextId(){
 		for(let i = 0; i < DaViSettings.tableTextCount; i++){
 			if(!this.textInUse[i]){
@@ -352,19 +359,26 @@ class TimeTable{
 			}
 		}
 	}
+
 	freeTextId(i){
 		this.textInUse[i] = false
 	}
 
+	// Cheeckif the location of two slots allow  grouping, for now we alway group by actvivty , bu if you use an alternative legend, 
+	// for exmple with one color per course, you can change this.groupFunction
 	shouldGroup(id1,s1,id2,s2){
 		if(isUndef(s1) || isUndef(id1) ||isUndef(s2) ||isUndef(id2))
 			throw new Error([s1,id1,s2,id2].join());
 		return id1 === id2 && s1.day  === s2.day && s1.time+1  === s2.time && this[this.groupFunction](s1,s2)
 	}
+	// Return true if the two slot have the same activity 
 	groupByActivity(a,b){
-		return a.activity === b.activity && a.time+1 == b.time
+		return a.activity === b.activity 
 	}
+
+	//Initialise the time table. Creat all needed elements. Also used to resize the table(that is not optimal but is was the fastest to implement)
 	initTimetable() {
+
 
 
 		this.groupFunction = "groupByActivity";
@@ -373,13 +387,24 @@ class TimeTable{
 
 		figure.selectAll("*").remove();
 		figure.append("defs")
-		let tableDim = DaViSettings.tableDimSmall
-		// figure.attr("width",tableDim.x)
-		// 	.attr("height",tableDim.y)
 		let offset = DaViSettings.dayshoursDivOffset
 		let cellMargin = DaViSettings.cellMargin;
 		let tableBox = tableBody.node();
+
+       	let parent =tableBody.parentElement
+        let tableDim = new Vec(tableBox.clientWidth,tableBox.clientHeight).minus(30,30)
+      
+       
+        DaViSettings.tableDim = tableDim
+        DaViSettings.tableDimSmall = tableDim
+        DaViSettings.tableDimBig = tableDim
+
+	    this.cellDimWmargin = DaViSettings.tableDimSmall.minus(DaViSettings.dayshoursDivOffset).divide(DaViSettings.days.length,DaViSettings.dayEnd-DaViSettings.dayStart);
+		this.cellDim = this.cellDimWmargin.minus(DaViSettings.cellMargin.time(2));
+
 		this.tableAbsOrigin = offset.plus(tableBox.offsetLeft ,tableBox.offsetTop);
+		
+		//Create Shadows
 		for(let day = 0;day<DaViSettings.days.length;day++){
 			for (let hour = 0; hour < DaViSettings.dayEnd-DaViSettings.dayStart; hour++)
 				figure.append("rect")
@@ -398,6 +423,8 @@ class TimeTable{
 						}
 					);
 		}
+
+		// Time labels
 		for(let day = 0;day<DaViSettings.days.length;day++){
 			let text = figure.append("text")
 					.attr("x",this.cellDimWmargin.x * day + cellMargin.x + offset.x)
@@ -405,6 +432,7 @@ class TimeTable{
 					.style('text-anchor', 'middle')
 					.text(DaViSettings.days[day])
 					.classed("clickable",true)
+					.classed(DaViSettings.days[day],true)
 					.on("click",()=>{
 						window.courselist.showTopSpe(
 							DaViSettings.days[day],
@@ -419,8 +447,9 @@ class TimeTable{
 			figure.append("text")
 				.attr("x",-80)
 				.attr("y",posY)
-				.text(""+hour+" _ ")
+				.text(hour+" _ ")
 				.classed("clickable",true)
+				.classed("H"+hour,true)
 				.on("click",()=>{
 						window.courselist.showTopSpe(
 							hour+"H",
@@ -434,6 +463,8 @@ class TimeTable{
 				.ease(d3.easeCubicOut)
 
 		}
+
+		// Create divs that will display enabled courses
 		for(let i = 0 ;i < DaViSettings.tableTextCount;i++){
 
 			let txt = tableBody.append("div")
@@ -447,7 +478,9 @@ class TimeTable{
 
 
 	}
-	updateGroup(group){
+
+	// Refresh a display div (or group) content and location, also update shadows under this group.
+	updateGroup(group,enabling){
 		let groupStart = group.start;
 		let textDim = this.cellDim.time(1,group.height)
 		let color = this.getGroupColor(group);
@@ -457,7 +490,7 @@ class TimeTable{
 		}
 		let item = d3.select("#"+DaViSettings.cellTextId+itemIndex)
 					.style("max-width",this.cellDim.x+"px")
-		let textOnTheWay = this.fillText(item,groupStart,textDim)
+		let textOnTheWay = this.fillText(item,groupStart,textDim,false,enabling)
 			.on("click",()=>expand(group,this))
 			.transition()
 			.duration(DaViSettings.shortNoticeableDelay)
@@ -476,6 +509,8 @@ class TimeTable{
 			this.updateGroupShadow(key,group,true)
 		}
 	}
+
+	// Add add course in the schedul, mousepos is optional, it's used to make the dive pop from were the user clicked.
 	addCourse(coursId,mousePos){
 		if(this.groups[coursId])
 			return
@@ -494,11 +529,12 @@ class TimeTable{
 					d3.select("#"+DaViSettings.cellTextId+group.itemIndex).style("left" , mousePos.x+"px")
 						.style("top" ,mousePos.y+"px")
 				}
-				this.updateGroup(group);
+				this.updateGroup(group,true);
 			}
 		}
 
 	}
+	// Do the logical removal, update all tables and find all element that need to be changed.
 	removeGroupFromSlots(groups,coursId){
 		let updated = {};
 		let removedTracker = {};
@@ -536,6 +572,8 @@ class TimeTable{
 				scheduleUpdate(g);
 			}
 		}
+
+		//Handle the case if deletion of a conflict can allow new timeslot merging.
 		for(let course in this.groups){
 			if(course !== coursId){
 				let sortg  = this.groups[course].slice().sort((a,b) => a.start.x*100 + a.start.y - (b.start.x*100 + b.start.y));
@@ -563,6 +601,8 @@ class TimeTable{
 		return {update:groupsToUpdate, removed:groupToRemove};
 
 	}
+
+	// Remove a course
 	removeCourse(coursId,mousepos){
 
 		let deletedGroups = this.groups[coursId]
@@ -593,6 +633,8 @@ class TimeTable{
 
 
 	}
+
+	// Switch the display mod of a course div (big or small)
 	switchGroupExpand(group){
 
 		let itemIndex= group.itemIndex;
@@ -619,23 +661,23 @@ class TimeTable{
 
 		let item = d3.select("#"+DaViSettings.cellTextId+itemIndex)
 		if(!item.attr("daviexpanded") || item.attr("daviexpanded") === "false"){
-			let t = this.fillText(item,groupStart,new Vec(10000,10000),true)
+			let t = this.fillText(item,groupStart,new Vec(10000,10000),true,true)
 			t.attr("daviexpanded",true)
 				.style("max-width",null)
 				.style('z-index',2000)
+				.style('box-shadow',"5px 10px 18px #888888")
 				.transition()
 				.duration(DaViSettings.defaultDelay)
 				.ease(d3.easeCubicOut)
-				.style('font-size',DaViSettings.cellFontDefault)
 				.style('width',"auto")
 				.style('height',"auto")
 				.style('padding', "10px")
-				.style('box-shadow',"5px 10px 18px #888888")
+				.style('font-size',DaViSettings.cellFontDefault)
 			for(let i = 0;i<group.height;i++){
 				let key = this.cellBackId(group.start.x,group.start.y+i);
 				d3.select("#"+key)
 					.transition()
-					.duration(DaViSettings.defaultDelay)
+					.duration(DaViSettings.shortNoticeableDelay)
 					.ease(d3.easeCubicOut)
 					.style("fill","white");
 			}
@@ -645,7 +687,12 @@ class TimeTable{
 
 
 	}
-	fillText(parent,groupStart,maxDims,isExepandedMode){
+
+	// Create the text inside a course div from stored information, if isExepandedMode is false, 
+	// this methode will addapte the content so that the div have a width and heigh of exactly maxDims
+	// This methode just put content all in the div. If it don't fit it reduce the amount of display content and retry until everything fit.
+	// If the content cannot reducedanymore, the font size will be reduced instead.
+	fillText(parent,groupStart,maxDims,isExepandedMode,enabling){
 		function isOk(dim){
 			return dim.x <= maxDims.x + 1e-3 && dim.y < maxDims.y + 1e-3
 		}
@@ -836,28 +883,15 @@ class TimeTable{
 				everythingFit = isOk(Vec.Dim(text.node().getBoundingClientRect()))
 			}
 		}
-
-		parent.style('font-size',DaViSettings.cellFontVerySmall)
+		if(enabling)
+			parent = parent.style('font-size',DaViSettings.cellFontVerySmall)
 
 		return parent;
 
 	}
-	setLevelOpcaity(level,opacity,target){
-		if(isUndef(target))
-			target = d3;
-		let t = target.selectAll("."+DaViSettings.cellTextVis+level)
-				.transition()
-				.duration(DaViSettings.shortNoticeableDelay)
-				.ease(d3.easeCubicOut)
-				.style("opacity",opacity)
-		if(opacity == 0)
-			t.style("height",0+"px")
-		else
-			t.style("height","auto");
-
-
-	}
-
+	
+	// return data for the start plot, not used but could help
+	// It's here because the record kept by timetable are the most addapted to do this task.
 	getDetailledDailyWorkload(){
 		let cumulativeworkloads = {}
 		DaViSettings.activities.forEach(a=>{
@@ -881,9 +915,59 @@ class TimeTable{
 		return cumulativeworkloads;
 	}
 
+	// Callback function when thing are resize. For the moment this methode recreate every composent of the time table.
+	resize(){
 
+		this.groupFunction = "groupByActivity";
+		let figure = d3.select("#"+DaViSettings.timeTableId);
+		let tableBody = d3.select("#"+DaViSettings.timeTableDivId);
+		let offset = DaViSettings.dayshoursDivOffset
+		let cellMargin = DaViSettings.cellMargin;
+		let tableBox = tableBody.node();
+
+       	let parent =tableBody.parentElement
+        let tableDim = new Vec(tableBox.clientWidth,tableBox.clientHeight).minus(30,30)
+      
+       
+        DaViSettings.tableDim = tableDim
+        DaViSettings.tableDimSmall = tableDim
+        DaViSettings.tableDimBig = tableDim
+
+	    this.cellDimWmargin = DaViSettings.tableDimSmall.minus(DaViSettings.dayshoursDivOffset).divide(DaViSettings.days.length,DaViSettings.dayEnd-DaViSettings.dayStart);
+		this.cellDim = this.cellDimWmargin.minus(DaViSettings.cellMargin.time(2));
+
+		this.tableAbsOrigin = offset.plus(tableBox.offsetLeft ,tableBox.offsetTop);
+
+		for(let day = 0;day<DaViSettings.days.length;day++){
+			for (let hour = 0; hour < DaViSettings.dayEnd-DaViSettings.dayStart; hour++){
+				let key = timtable.cellBackId(day,hour);
+				timtable.setCellIsolated(key)
+			}
+		}
+		for(let day = 0;day<DaViSettings.days.length;day++){
+			let text = d3.select("."+DaViSettings.days[day])
+			this.alignText(text,new Vec(this.cellDimWmargin.x * day + cellMargin.x + offset.x, 0).minus(this.tableAbsOrigin), new Vec(this.cellDimWmargin.x,offset.y),200)
+		}
+		for (let cours in timtable.groups){
+			for(let g of timtable.groups[cours])
+				timtable.updateGroup(g)
+		}
+		for(let hour = DaViSettings.dayStart;hour <= DaViSettings.dayEnd;hour++){
+			let posY = (hour - DaViSettings.dayStart) * this.cellDimWmargin.y + offset.y;
+			d3.select(".H"+hour)
+				.transition()
+				.duration(500)
+				.attr("x",cellMargin.x)
+				.attr("y",posY)
+				.ease(d3.easeCubicOut)
+
+		}
+	}
 }
 
+// Timetable is a var as its a convinient way to allow coomunication between our composent. 
+// If the project scale that may need to be changed.
 var timtable = new TimeTable()
-timtable.initTimetable(ISA_data,false)
-testThing =document.getElementById(DaViSettings.rescaleTableButtonId)
+d3.select("#tableDiv").on("resize",()=>timtable.resize())
+
+

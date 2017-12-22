@@ -77,6 +77,16 @@
 
 	<script src="hello.js"></script>
 	<script src="insights.js"></script>
+	<script type="text/javascript">
+		timtable.initTimetable()
+		window.onresize = ()=>{
+			insightsHandle.resize();
+			timtable.resize();
+
+		}
+	
+
+	</script>
 
 </body>
 </html>

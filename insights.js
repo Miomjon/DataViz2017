@@ -12,11 +12,15 @@ class Insights{
 		this.updateFontSize()
 		d3.select("#insightfullPlot2")
 			.on("resize",()=>{this.updateFontSize();this.update(courselist.enableCourseList)})
-		window.onresize = ()=>{this.updateFontSize();this.update(courselist.enableCourseList)}
+		
 	}
+	resize(){this.updateFontSize();this.update(courselist.enableCourseList)}
+
+	// Parse a list of point to something a svg polyline can use
 	vecsToPointList(vecs){
 		return vecs.map(v=>v.x+","+v.y).join(" ")
 	}
+	// Update the big number font size to the available space.
 	updateFontSize(){
 		let h = d3.selectAll("#subflex").node().clientHeight ;
 		
@@ -27,6 +31,7 @@ class Insights{
 		d3.select("#workloadSum")
 			.style("font-size",(h*DaViSettings.bigFontRatio/5)+"px")
 	}
+	// Initialize the start plot, not used anymore but could be usefull to make an other starplot.
 	mkStar(){
 		let svg = d3.select("#insightfullPlot2")
 		let activities = DaViSettings.activities
@@ -77,6 +82,8 @@ class Insights{
 				}
 			);
 	}
+
+	// Addpte the start plot to the available space.
 	updateStartParams(isInit){
 		let parent = document.getElementById("insightfullPlot2").parentElement
 		this.starCenter = new Vec(parent.clientWidth,parent.clientHeight).divide(2);
@@ -135,6 +142,7 @@ class Insights{
 
 	}
 	
+	// Update displayed content of the star plot
 	updateStar(){
 		let days = DaViSettings.workdays;
 		let cumulativeworkloads = timtable.getDetailledDailyWorkload();
@@ -168,6 +176,8 @@ class Insights{
 
 	}
 
+	// Retunr a color from a letter. The pallette is on from d3. 
+	// I'm not sure I use it the right way but it give satifactory results
  	speColor(speLetter){
 		let index = speLetter.charCodeAt(0)-"A".charCodeAt(0);
 		let map ="1b9e77d95f027570b3e7298a66a61ee6ab02a6761d666666";
@@ -181,6 +191,8 @@ class Insights{
 		index*=6;
 		return "#"+map.substring(index,index+6);
 	}
+
+	// Update the spesialization bar chart
 	updateSpe(speCreds){
 		let unusedSlots = DaViSettings.maxDisplayedSpe - dictLen(this.displayedSpe)
 		let speToDisplay = []
@@ -203,6 +215,7 @@ class Insights{
 			
 			let spePlotSquare = new Vec(Math.min((svgDim.x-translate0.x)/specount - barSep * (specount-1),DaViSettings.peBarMaxWidth * svgDim.x),translate0.y/speToDisplay[0][1]);
 
+			// Make a new bar, a slot here is a g containing two text and a rect.
 			function mkSlot(slotId){
 				let g = svg.append("g")
 				g.attr("transform", "translate(1000,"+translate0.y+")")
@@ -227,6 +240,8 @@ class Insights{
 				return g;	
 			}
 			
+			// If the spe is already displayed return the spe plot,
+			// if not retrun a new slot or a slot of a spe that should not be displayed anymore.
 			function getSlot(speId){
 				if(document.getElementById(speId))
 					return d3.select("#"+speId)
@@ -329,6 +344,8 @@ class Insights{
 			
 
 	}
+
+	// Update everything called each time a course is toogled
 	update(courses){
 		function isObl(c){
 	      if(DaViSettings.userSection === "IN")
@@ -394,6 +411,8 @@ class Insights{
 	onCreditClicked(){
 		courselist.showTopSpe(0,"#062F4F",(c)=>c.credits+" credits");
 	}
+	// Callback for the legend button click. The big part is for the conflict button. 
+	// When this button is clicked we need to compute the number of conflicting slot and conflicting course for each course.
 	onLegenClicked(act,actname, color){
 		function countConflict(c,cname){
 			let confl = 0
